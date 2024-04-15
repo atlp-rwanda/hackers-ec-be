@@ -9,7 +9,7 @@ const sequelize = new Sequelize({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   dialect: process.env.DB_DIALECT as any,
-  models: [path.join(__dirname, "../models")],
+  models: [path.join(__dirname, "./models")],
 });
 
 export default sequelize;

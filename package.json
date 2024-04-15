@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "ts-node-dev --require dotenv/config src/index.ts",
     "build": "tsc",
-    "start": "node --require dotenv/config dist/index.js"
+    "start": "node --require dotenv/config dist/index.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "seed": "npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo:all"
   },
   "keywords": [],
   "author": "",

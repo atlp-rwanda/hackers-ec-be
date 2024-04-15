@@ -1,4 +1,4 @@
-import sequelize from "../database/config/db";
+import sequelize from "../database/db";
 const connectionToDatabase = async () => {
   try {
     await sequelize.authenticate();
