@@ -1,39 +1,39 @@
 import { Request, Response } from "express";
+import { NextFunction }  from 'express';
 import { User } from "../database/models/User";
 import bcrypt from "bcrypt"
+import passport from "passport";
+
 export const getUsers = async (req: Request, res: Response) => {
   const users = await User.findAll();
   res.status(200).json({ message: "List of all users", data: users });
 };
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response,next:NextFunction) => {
  try {
-  if(req.body){
-                     const salt=await bcrypt.genSalt(10);
-                  const hashedPass=await  bcrypt.hash(req.body.password,salt);
+  if(req.body){   
+    passport.authenticate('signup', { session: false }, (err:any, user:any) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(400).json({ 
+          message: 'User not created'
+         });
+      }
+  
+ return res.status(201).json({
+   message:'user Created'
+     })
+    })(req, res, next);
 
-    const newUSer= { 
-      fullName:req.body.fullName,
-      email:req.body.email,
-      password:hashedPass
-        };
-                
-const createUser= await User.create({...newUSer})
 
-return res.status(201).json({
-  message:'user Created',
-  userName:createUser.fullName
-})
-
-  }
-} catch (error) {
+}} catch (error) {
   res.status(500).json({ 
     message: 'Internal server error',    
    error:error
   });
-  
 
 }
-
 
 };

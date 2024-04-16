@@ -12,21 +12,16 @@ export class User extends Model {
     primaryKey: true,
   })
   id!: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  fullName!: string;
-
-  @Column({
+   @Column({
     type: DataType.STRING,
     allowNull: false,
     unique: true,
-  })
+        })
   email!: string;
   @Column({
     type: DataType.STRING,
     allowNull: false,
+    unique: true,
   })
   password!: string;
   @Column({

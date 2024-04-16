@@ -5,7 +5,20 @@ import userRoutes from "./routes/userRoutes";
 import { PORT } from "./utils/keys";
 
 
+import session from "express-session";
+import passport from "./middlewares/passport"
+import { SESSION_SECRET } from "./utils/keys";
 const app = express();
+//app.use(expressSession);
+app.use(
+    session({
+      secret: SESSION_SECRET,
+      resave: false,
+      saveUninitialized: true,
+    })
+  );
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.json());
 
 const options = {

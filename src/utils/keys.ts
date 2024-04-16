@@ -1,2 +1,5 @@
 export const PORT = process.env.PORT;
-export const DBCONNECTION = process.env.DBCONNECTION;
+export const SESSION_SECRET = process.env.SESSION_SECRET as string;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+export const GOOGLE_SECRET_ID = process.env.GOOGLE_SECRET_ID;
+export const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
