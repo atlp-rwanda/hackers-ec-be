@@ -8,7 +8,6 @@ const userEXist = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if(req.body){
         const newUSer= { 
-            fullName:req.body.fullName,
             email:req.body.email,
             password:req.body.password
               };
