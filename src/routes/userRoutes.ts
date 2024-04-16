@@ -3,7 +3,6 @@ import userController from "../controllers/userController";
 import userMiddleware from "../middlewares/user.middleware";
 
 const userRoutes = express.Router();
-
 userRoutes.post(
   "/register",
   userMiddleware.userValid,

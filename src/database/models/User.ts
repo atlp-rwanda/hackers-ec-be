@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
 import { sequelizeConnection } from "../config/db.config";
 
+<<<<<<< HEAD
 export interface UserModelAttributes {
   id: string;
   userName: string;
@@ -10,6 +11,43 @@ export interface UserModelAttributes {
   password: string;
   confirmPassword: string;
   role: string;
+=======
+@Table({
+  timestamps: true,
+  tableName: "users",
+  modelName: "User",
+})
+export class User extends Model {
+  @Column({
+    type: DataType.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  })
+  id!: number;
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  fullName!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+    unique: true,
+  })
+  email!: string;
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  password!: string;
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+    defaultValue: "buyer",
+  })
+  role!: string;
+>>>>>>> 6598788 (ft(user signup):add user signup api)
 }
 type UserCreationAttributes = Optional<UserModelAttributes, "id"> & {
   role?: string;
