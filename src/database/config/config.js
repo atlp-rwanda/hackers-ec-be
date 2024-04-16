@@ -1,10 +1,17 @@
+import {
+  DB_NAME,
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+  DB_DIALECT,
+} from "../../utils/keys";
 module.exports = {
   development: {
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    dialect: process.env.DB_DIALECT,
+    database: DB_NAME,
+    host: DB_HOST,
+    username: DB_USER,
+    password: DB_PASSWORD,
+    dialect: DB_DIALECT,
   },
   test: {
     username: "root",

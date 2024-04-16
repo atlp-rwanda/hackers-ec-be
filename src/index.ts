@@ -1,6 +1,6 @@
 import app from "./app";
 import connectionToDatabase from "./services/db.postgres";
-const PORT = process.env.PORT || 3000;
+import { PORT } from "./utils/keys";
 
 connectionToDatabase();
 app.listen(PORT, () => {
