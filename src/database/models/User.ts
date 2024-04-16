@@ -12,7 +12,6 @@ export class User extends Model {
     primaryKey: true,
   })
   id!: number;
-
   @Column({
     type: DataType.STRING,
     allowNull: false,
