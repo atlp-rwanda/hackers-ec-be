@@ -45,7 +45,7 @@ const options = {
   };
 
   const swaggerSpec = swaggerJsdoc(options);
-  app.use("/api/v1/Docs",swaggerUi.serve,swaggerUi.setup(swaggerSpec))
+  app.use("/api/v1/docs",swaggerUi.serve,swaggerUi.setup(swaggerSpec))
 
 app.use("/api/v1", userRoutes);
 
