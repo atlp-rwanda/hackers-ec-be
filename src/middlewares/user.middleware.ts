@@ -8,7 +8,10 @@ export const userEXist =async (req: Request, res: Response,next:NextFunction) =>
     if(req.body){
         const newUSer= { 
             email:req.body.email,
-            password:req.body.password
+            password:req.body.password,
+            firstName:req.body.firstName,
+            lastName:req.body.lastName,
+            phone:req.body.phone,
               };
        
         const userEXist= await User.findOne({where:{
@@ -33,7 +36,10 @@ try {
     if(req.body){
         const newUSer= { 
             email:req.body.email,
-            password:req.body.password
+            password:req.body.password,
+            firstName:req.body.firstName,
+            lastName:req.body.lastName,
+            phone:req.body.phone,
               };
             const {error}=userValidate(newUSer)
         if(error){

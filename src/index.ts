@@ -1,5 +1,4 @@
 import app from "./app";
-
 import { PORT } from "./utils/keys";
 import { connectionToDatabase } from "./database/config/db.config";
 

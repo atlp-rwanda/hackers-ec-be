@@ -26,11 +26,12 @@ passport.use(
           const data = {
             email: email.trim(),
             password: await hashPassword(password),
+            firstName:req.body.firstName,
+            lastName:req.body.lastName,
+            phone:req.body.phone,
           };
-         // const createUser= await User.findAll()
           const createUser= await User.create({...data})     
-          console.log(data)
-          done(null,data);
+              done(null,data);
         } catch (error) {
           done(error);
         }
