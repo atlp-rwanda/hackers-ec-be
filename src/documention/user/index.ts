@@ -15,12 +15,11 @@ const users = {
           schema: {
             type: "object",
             properties: {
-             
-              email:{
-                type:string,
-              example: "email@example.com",
-            },
-            userName: {
+              email: {
+                type: string,
+                example: "email@example.com",
+              },
+              userName: {
                 type: "string",
                 example: "kalake250",
               },
@@ -40,15 +39,43 @@ const users = {
                 type: "string",
                 example: "passwordQWE123",
               },
+            },
           },
-        },
         },
       ],
       consumes: ["application/json"],
       responses,
     },
   },
-  
+  "/users/login": {
+    post: {
+      tags: ["User"],
+      security: [{ JWT: [] }],
+      summary: "Login user",
+      parameters: [
+        {
+          in: "body",
+          name: "request body",
+          required: true,
+          schema: {
+            type: "object",
+            properties: {
+              email: {
+                type: "string",
+                example: "email@example.com",
+              },
+              password: {
+                type: "string",
+                example: "password123",
+              },
+            },
+          },
+        },
+      ],
+      consumes: ["application/json"],
+      responses,
+    },
+  },
 };
 
 export default users;

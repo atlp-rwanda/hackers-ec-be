@@ -15,7 +15,6 @@ export const generateAccessToken = (userData: TokenData) => {
   return token;
 };
 
-
 export const verifyAccessToken = (token: string, res: Response) => {
   const tokenValidation = validateToken(token, ACCESS_TOKEN_SECRET as string);
 

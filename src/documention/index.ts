@@ -7,7 +7,7 @@ const defaults = swaggerDoc.paths;
 
 dotenv.config();
 
-const SERVER_HOST = process.env.HOST || `http://localhost:${PORT}`
+const SERVER_HOST = process.env.HOST || `http://localhost:${PORT}`;
 
 const host =
   process.env.DEV_MODE === "production"
@@ -15,8 +15,8 @@ const host =
     : (SERVER_HOST as string).split("http://")[1];
 
 const paths = {
-     ...defaults,
-   ...users  
+  ...defaults,
+  ...users,
 };
 
 const config = {
@@ -24,7 +24,7 @@ const config = {
   info: {
     title: "Hacker's E-commerce API",
     version: "1.0.0",
-    description: "cAPI endpoints for hacker's e-commerce documented on swagger"
+    description: "cAPI endpoints for hacker's e-commerce documented on swagger",
   },
   host,
   basePath: `/api/${process.env.API_VERSION || "v1"}`,
