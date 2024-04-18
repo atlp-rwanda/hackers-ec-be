@@ -1,30 +1,22 @@
-import {
-  DB_NAME,
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_DIALECT,
-} from "../../utils/keys";
+const dotenv = require("dotenv");
+
+dotenv.config();
 module.exports = {
   development: {
-    database: DB_NAME,
-    host: DB_HOST,
-    username: DB_USER,
-    password: DB_PASSWORD,
-    dialect: DB_DIALECT,
+    url: process.env.DBCONNECTION,
+    dialect: "postgres",
   },
   test: {
-    username: "root",
-    password: null,
-    database: "database_test",
-    host: "127.0.0.1",
+    url: process.env.DBCONNECTIONTEST,
     dialect: "postgres",
   },
   production: {
-    username: "root",
-    password: null,
-    database: "database_production",
-    host: "127.0.0.1",
-    dialect: "postgres",
+    url: process.env.DBCONNECTION,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   },
 };
