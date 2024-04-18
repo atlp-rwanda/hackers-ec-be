@@ -21,7 +21,7 @@ const registerUser = async (
           if (!user) {
             return res.status(404).json(new HttpException("NOT FOUND", "User not found!"));
           }
-          req.login(user, async () => {
+          (req as any).login(user, async () => {
             if (err) {
               return res.status(400).json(new HttpException("BAD REQUEST", "Bad Request!"));
             }
@@ -55,7 +55,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
           .status(409)
           .json(new HttpException("CONFLICT", info.message));
 
-      req.login(user, (error) => {
+      (req as any).login(user, (erro: Error) => {
         if (error)
           return res
             .status(400)

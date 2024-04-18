@@ -4,5 +4,5 @@ import { connectionToDatabase } from "./database/config/db.config";
 
 connectionToDatabase();
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+	console.log(`Server is running at http://localhost:${PORT}`);
 });
