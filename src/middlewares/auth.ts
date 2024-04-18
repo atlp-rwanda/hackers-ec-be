@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from "../utils/keys";
-// import { User } from "../database/models/User";
 
 interface ExpandedRequest extends Request {
     UserId?: JwtPayload;
@@ -18,11 +17,28 @@ export const authenticateUser = (req: ExpandedRequest, res: Response, next: Next
         if (!decoded) {
             return res.status(401).json({ message: "please login to continue!" });
         }
+
+        // check token expiration
+
+        if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+            return res.status(401).json({ message: "Token has expired, please login again!" });
+        }
+
+        req.UserId = decoded;
+
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        if (error instanceof jwt.TokenExpiredError) {
+            return res.status(401).json({ message: "Token has expired, please login again!" });
+        } else if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ message: "Invalid token!" });
+        }else {
+            return res.status(500).json({ message: "Internal server error" });
+        }
+
     }
 };
+
 
 // only buyers
 export const isBuyer = (req: ExpandedRequest, res: Response, next: NextFunction) => {
