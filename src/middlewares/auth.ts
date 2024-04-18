@@ -12,21 +12,23 @@ export const authenticateUser = (req: ExpandedRequest, res: Response, next: Next
     if (!token) {
         return res.status(401).json({ message: "Unauthorized" });
     }
+
+    //checking token expiration
+
+    const decoded = jwt.decode(token) as JwtPayload;
+    if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
+        return res.status(401).json({ message: "Token has expired, please login again!" });
+    }
+
     try {
-        const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
-        if (!decoded) {
+        const verifiedToken = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+        if (!verifiedToken) {
             return res.status(401).json({ message: "please login to continue!" });
         }
 
-        // check token expiration
-
-        if (decoded.exp && Date.now() >= decoded.exp * 1000) {
-            return res.status(401).json({ message: "Token has expired, please login again!" });
-        }
-
-        req.UserId = decoded;
-
+        req.UserId = verifiedToken;
         next();
+        
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
             return res.status(401).json({ message: "Token has expired, please login again!" });
