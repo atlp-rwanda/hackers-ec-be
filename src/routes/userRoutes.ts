@@ -5,6 +5,6 @@ import { userEXist,userValid } from "../middlewares/user.middleware";
 const userRoutes = express.Router();
 
 userRoutes.get("/users", getUsers);
-userRoutes.post("/register",userValid,userEXist,registerUser);
+userRoutes.post("/user/register",userValid,userEXist,registerUser);
 
 export default userRoutes;

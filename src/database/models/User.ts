@@ -1,4 +1,10 @@
-import { Table, Column, Model, DataType, AllowNull } from "sequelize-typescript";
+import { UUIDV4 } from "sequelize";
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+} from "sequelize-typescript";
 
 @Table({
   timestamps: true,
@@ -7,43 +13,52 @@ import { Table, Column, Model, DataType, AllowNull } from "sequelize-typescript"
 })
 export class User extends Model {
   @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
+    type: DataType.UUID,
     primaryKey: true,
+    defaultValue: UUIDV4,
   })
-  id!: number;
+  id!: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  firstName!:string;
+  userName!: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  lastName!:string;
+  firstName!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  lastName!: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
     unique: true,
   })
-  phone!:string;
-  
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    unique: true,
-        })
   email!: string;
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   password!: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
-    defaultValue: "buyer",
+  })
+  confirmPassword!: string;
+
+  @Column({
+    type: DataType.ENUM("BUYER", "ADMIN", "SELLER"),
+    allowNull: false,
+    defaultValue: "BUYER",
   })
   role!: string;
 }
