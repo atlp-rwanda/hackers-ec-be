@@ -3,20 +3,12 @@ const dotenv = require("dotenv");
 dotenv.config();
 module.exports = {
   development: {
-    url: process.env.DBCONNECTION,
-    dialect: "postgres",
+    url: process.env.DB_DEV_URL,
   },
   test: {
-    url: process.env.DBCONNECTIONTEST,
-    dialect: "postgres",
+    url: process.env.DB_TEST_URL,
   },
   production: {
-    url: process.env.DBCONNECTION,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
+    url: process.env.DB_PROD_URL,
   },
 };
