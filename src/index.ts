@@ -1,6 +1,7 @@
 import app from "./app";
-import connectionToDatabase from "./services/db.postgres";
+
 import { PORT } from "./utils/keys";
+import { connectionToDatabase } from "./database/config/db.config";
 
 connectionToDatabase();
 app.listen(PORT, () => {
