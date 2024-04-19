@@ -1,14 +1,31 @@
 "use strict";
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    /**
+     * Add altering commands here.
+     *
+     * Example:
+     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
+     */
+
     await queryInterface.createTable("users", {
       id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
+        allowNull: false,
       },
-      fullName: {
+      userName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      firstName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      lastName: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -21,10 +38,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      role: {
+      confirmPassword: {
         type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: "buyer",
+      },
+      role: {
+        type: Sequelize.ENUM("ADMIN", "BUYER", "SELLER"),
+        allowNull: false,
+        defaultValue: "BUYER",
       },
       createdAt: {
         allowNull: false,
