@@ -19,7 +19,7 @@
 		"beauty": "prettier . --write",
 		"check": "prettier . --check",
 		"prepare": "husky",
-		"precommit": "prettier . --write && eslint ."
+		"precommit": "prettier . --write && eslint --fix ."
   },
   "keywords": [],
   "author": "",

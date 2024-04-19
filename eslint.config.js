@@ -3,11 +3,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
 	{
-		ignores: [
-			"**/src/database/migrations/*.js",
-			"**/src/database/seeders/*.js",
-			"**src/database/config/*.js",
-		],
+		ignores: ["**/__test__", "**/*.json"],
 	},
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
@@ -48,6 +44,7 @@ export default tseslint.config(
 			"consistent-return": 0,
 			"no-param-reassign": 0,
 			"comma-dangle": 0,
+			"no-undef": 0,
 			curly: ["error", "multi-line"],
 		},
 	},
