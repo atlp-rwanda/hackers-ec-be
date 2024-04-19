@@ -31,6 +31,7 @@ passport.use(
               : req.body.userName,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
+          role:"BUYER"
         };
         const user = await User.create({ ...data });
         if (!user) {

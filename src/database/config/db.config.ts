@@ -47,7 +47,9 @@ export const connectionToDatabase = () =>
   sequelizeConnection
     .authenticate()
     .then(() => {
-      console.log("Database connected successfully.", db_uri);
+      sequelizeConnection.sync().then(() => {
+        console.log("Database connected successfully.", db_uri);
+      });
     })
     .catch((error) => {
       console.error("Unable to connect to the database:", error);
