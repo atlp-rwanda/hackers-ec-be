@@ -1,7 +1,7 @@
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
+const eslint = require("@eslint/js");
+const tseslint = require("typescript-eslint");
 
-export default tseslint.config(
+module.exports = tseslint.config(
 	{
 		ignores: ["**/__test__", "**/*.json"],
 	},
@@ -11,7 +11,6 @@ export default tseslint.config(
 		languageOptions: {
 			parserOptions: {
 				project: true,
-				tsconfigRootDir: import.meta.dirname,
 				ecmaVersion: 2020,
 			},
 		},
@@ -38,6 +37,7 @@ export default tseslint.config(
 			semi: "error",
 			"@typescript-eslint/no-unused-vars": 2,
 			"@typescript-eslint/no-explicit-any": 0,
+			"@typescript-eslint/no-var-requires": 0,
 			"no-shadow": [2, { allow: ["req", "res", "err"] }],
 			"new-cap": 0,
 			"one-var-declaration-per-line": 0,

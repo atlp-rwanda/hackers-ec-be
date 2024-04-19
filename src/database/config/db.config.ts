@@ -10,46 +10,46 @@ const DB_HOST_MODE: string = process.env.DB_HOSTED_MODE as string;
 let dialect_option: any;
 
 switch (APP_MODE) {
-  case "test":
-    db_uri = process.env.DB_TEST_URL as string;
-    break;
+	case "test":
+		db_uri = process.env.DB_TEST_URL as string;
+		break;
 
-  case "production":
-    db_uri = process.env.DB_PROD_URL as string;
-    break;
-  default:
-    db_uri = process.env.DB_DEV_URL as string;
-    break;
+	case "production":
+		db_uri = process.env.DB_PROD_URL as string;
+		break;
+	default:
+		db_uri = process.env.DB_DEV_URL as string;
+		break;
 }
 
 DB_HOST_MODE === "local"
-  ? (dialect_option = {})
-  : (dialect_option = {
-      ssl: {
-        require: process.env.SSL,
-        rejectUnauthorized: true,
-      },
-    });
+	? (dialect_option = {})
+	: (dialect_option = {
+			ssl: {
+				require: process.env.SSL,
+				rejectUnauthorized: true,
+			},
+		});
 
 export const sequelizeConnection: Sequelize = new Sequelize(db_uri, {
-  dialect: "postgres",
-  dialectOptions: dialect_option,
-  logging: true,
-  pool: {
-    max: 10,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
+	dialect: "postgres",
+	dialectOptions: dialect_option,
+	logging: true,
+	pool: {
+		max: 10,
+		min: 0,
+		acquire: 30000,
+		idle: 10000,
+	},
 });
 
 export const connectionToDatabase = () =>
-  sequelizeConnection
-    .authenticate()
-    .then(() => {
-      console.log("Database connected successfully.", db_uri);
-    })
-    .catch((error) => {
-      console.error("Unable to connect to the database:", error);
-      process.exit(1);
-    });
+	sequelizeConnection
+		.authenticate()
+		.then(() => {
+			console.log("Database connected successfully.", db_uri);
+		})
+		.catch((error) => {
+			console.error("Unable to connect to the database:", error);
+			process.exit(1);
+		});
