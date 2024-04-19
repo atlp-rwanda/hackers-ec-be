@@ -1,8 +1,8 @@
 eslint:
   enabled: true
   file_patterns:
-    - '*.js'
-    - '*.ts'
+    - "*.js"
+    - "*.ts"
   enabled_plugins:
     - eslint-plugin-import
     - eslint-plugin-prettier
