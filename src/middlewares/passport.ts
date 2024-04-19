@@ -5,11 +5,11 @@ import { User } from "../database/models/User";
 import { isValidPassword } from "../utils/password.checks";
 import { hashPassword } from "../utils/password";
 
-passport.serializeUser(function (user: any, done) {
+passport.serializeUser(function (user:any, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function (user: any, done) {
+passport.deserializeUser(function (user:any, done) {
   done(null, user);
 });
 

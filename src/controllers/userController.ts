@@ -38,7 +38,7 @@ const registerUser = async (
   } catch (error) {
     res.status(500).json(new HttpException("SERVER ERROR", "Something went wrong!"));
   }
-};
+} 
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
