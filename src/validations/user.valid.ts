@@ -18,7 +18,7 @@ const registerValidater = Joi.object({
     })
     .required(),
 
-  confirmPassword: Joi.string().required().equal(Joi.ref("password") ).messages({
+  confirmPassword: Joi.string().required().equal(Joi.ref("password")).messages({
     "any.only": "Password don't match",
   }),
   role: Joi.string(),

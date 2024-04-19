@@ -1,10 +1,15 @@
 import express from "express";
-import { getUsers,registerUser } from "../controllers/userController";
-import { userEXist,userValid } from "../middlewares/user.middleware";
+import userController from "../controllers/userController";
+import userMiddleware from "../middlewares/user.middleware";
 
 const userRoutes = express.Router();
 
-userRoutes.get("/users", getUsers);
-userRoutes.post("/users/register",userValid,userEXist,registerUser);
+userRoutes.post(
+  "/register",
+  userMiddleware.userValid,
+  userMiddleware.userEXist,
+  userController.registerUser
+);
+userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
 
 export default userRoutes;
