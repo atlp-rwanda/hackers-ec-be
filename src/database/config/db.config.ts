@@ -32,24 +32,24 @@ DB_HOST_MODE === "local"
 		});
 
 export const sequelizeConnection: Sequelize = new Sequelize(db_uri, {
-	dialect: "postgres",
-	dialectOptions: dialect_option,
-	logging: true,
-	pool: {
-		max: 10,
-		min: 0,
-		acquire: 30000,
-		idle: 10000,
-	},
+  dialect: "postgres",
+  dialectOptions: dialect_option,
+  logging: false,
+  pool: {
+    max: 10,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
 });
 
-export const connectionToDatabase = () =>
-	sequelizeConnection
-		.authenticate()
-		.then(() => {
-			console.log("Database connected successfully.", db_uri);
-		})
-		.catch((error) => {
-			console.error("Unable to connect to the database:", error);
-			process.exit(1);
-		});
+export const connectionToDatabase = async () => {
+  try {
+    await sequelizeConnection.authenticate();
+    await sequelizeConnection.sync();
+    console.log("Database connected successfully.", db_uri);
+  } catch (error) {
+    console.log("Unable to connect to the database:", error);
+    process.exit(1);
+  }
+}
