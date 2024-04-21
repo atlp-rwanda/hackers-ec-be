@@ -8,13 +8,10 @@ import {
   login_user_invalid_email,
   login_user_wrong_credentials,
   NewUser,
-  user_bad_request,
-  User_without_email,
-  exist_user,
+  user_bad_request
 } from "../mock/static";
 
  
-import { createUser } from "../services/user.services";
 jest.setTimeout(30000);
 
 function logErrors(
@@ -32,27 +29,11 @@ const Jest_request = request(app.use(logErrors));
 describe("USER API TEST", () => {
   beforeAll(async () => {
     await connectionToDatabase();
-    await createUser(exist_user);
   });
 
   afterAll(async () => {
     await deleteTableData(User, "users");
   });
-
-  it("it should return a user not found and status 400", async () => {
-    const { body } = await Jest_request.post("/api/v1/users/register")
-      .send(user_bad_request)
-      .expect(400);
-  });
-
-  it("it should return a user exist and status 409 when Email is already used in database", async () => {
-    const { body } = await Jest_request.post("/api/v1/users/register")
-      .send(exist_user)
-      .expect(409);
-    expect(body.status).toStrictEqual("CONFLICT");
-    expect(body.message).toStrictEqual("User already exist!");
-  });
-});
   it("it should  register a user and return 201", async () => {
     const { body } = await Jest_request.post("/api/v1/users/register")
       .send(NewUser)
@@ -61,6 +42,20 @@ describe("USER API TEST", () => {
     expect(body.message).toStrictEqual("Account Created successfully!");
     expect(body.token).toBeDefined();
   });
+  it("it should return a user not found and status 400", async () => {
+    const { body } = await Jest_request.post("/api/v1/users/register")
+      .send(user_bad_request)
+      .expect(400);
+  });
+
+  it("it should return a user exist and status 409 when Email is already used in database", async () => {
+    const { body } = await Jest_request.post("/api/v1/users/register")
+      .send(NewUser)
+      .expect(409);
+    expect(body.status).toStrictEqual("CONFLICT");
+    expect(body.message).toStrictEqual("User already exist!");
+  });
+  
 
   /**
    * ---------------------------- LOGIN --------------------------------------------
@@ -100,9 +95,6 @@ describe("USER API TEST", () => {
     expect(body.status).toStrictEqual("BAD REQUEST");
     expect(body.message).toBeDefined();
   })
-  /**
-   * ----------------------------register new user --------------------------------------------
-   */
-  describe("FAILED SIGN UP", () => {
-   
+ 
+ 
 });

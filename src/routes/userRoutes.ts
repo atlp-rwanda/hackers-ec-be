@@ -8,6 +8,8 @@ userRoutes.post(
   userMiddleware.userValid,
   userController.registerUser
 );
+
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
+
 
 export default userRoutes;

@@ -1,6 +1,6 @@
 
 export const login_user = {
-  email:"travis@gmail.com",
+  email:"peter234565@gmail.com",
     password:"passwordQWE123",
 };
 

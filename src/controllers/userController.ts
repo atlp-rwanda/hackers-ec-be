@@ -36,7 +36,7 @@ const registerUser = async (
   } catch (error) {
     res
       .status(500)
-      .json(new HttpException("SERVER FAIL", "Something went wrong!"));
+      .json(new HttpException("SERVER FAILS", "Something went wrong!"));
   }
 };
 
@@ -76,6 +76,6 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 export default {
-	login,
 	registerUser,
+	login
 };
