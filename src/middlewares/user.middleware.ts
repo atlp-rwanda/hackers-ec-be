@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { userValidate } from "../validations/user.valid";
 import { NextFunction, Request, Response } from "express";
 import validateLogIn from "../validations/login.validation";
