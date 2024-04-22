@@ -4,7 +4,11 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { User } from "../database/models/User";
 import { isValidPassword } from "../utils/password.checks";
 import { hashPassword } from "../utils/password";
-
+export interface CustomVerifyOptions {
+	message: string;
+	status: string;
+	statusNumber?: number;
+}
 passport.serializeUser(function (user: any, done) {
 	done(null, user);
 });
@@ -35,12 +39,20 @@ passport.use(
 					lastName: req.body.lastName,
 					role: "BUYER",
 				};
-				const user = await User.create({ ...data });
-				if (!user) {
-					return done(null, false, {
-						message: "Something went wrong",
-					});
+				const userEXist = await User.findOne({
+					where: {
+						email: data.email,
+					},
+				});
+				if (userEXist) {
+					const options: CustomVerifyOptions = {
+						statusNumber: 409,
+						message: "User already exist!",
+						status: "CONFLICT",
+					};
+					return done(null, false, options);
 				}
+				const user = await User.create({ ...data });
 				done(null, user);
 			} catch (error) {
 				done(error);

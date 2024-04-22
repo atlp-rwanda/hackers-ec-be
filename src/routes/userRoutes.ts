@@ -6,9 +6,9 @@ const userRoutes = express.Router();
 userRoutes.post(
 	"/register",
 	userMiddleware.userValid,
-	userMiddleware.userExist,
 	userController.registerUser,
 );
+
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
 
 export default userRoutes;

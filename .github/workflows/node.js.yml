@@ -40,7 +40,7 @@ jobs:
 
       - name: Run tests
         run: npm run test
-        
+
       - name: Run tests and build test coverage
         run: npm run test:ci
 
@@ -50,20 +50,16 @@ jobs:
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           ./cc-test-reporter before-build
-
       - name: Run tests
         run: npm run test
 
       - name: Store coverage report
         if: always()
         run: mkdir -p coverage
-      
-      
+
       - name: Send coverage report to Code Climate
         if: always()
         run: ./cc-test-reporter after-build -t lcov -p coverage
 
       - name: coveralls
         run: npx coveralls < coverage/lcov.info
-      
-
