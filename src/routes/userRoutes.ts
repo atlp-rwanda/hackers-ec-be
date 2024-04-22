@@ -4,11 +4,12 @@ import userMiddleware from "../middlewares/user.middleware";
 
 const userRoutes = express.Router();
 userRoutes.post(
-	"/register",
-	userMiddleware.userValid,
-	userMiddleware.userExist,
-	userController.registerUser,
+  "/register",
+  userMiddleware.userValid,
+  userController.registerUser
 );
+
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
+
 
 export default userRoutes;

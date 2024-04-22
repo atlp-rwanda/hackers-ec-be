@@ -7,9 +7,11 @@ import {
   login_user,
   login_user_invalid_email,
   login_user_wrong_credentials,
-  register_user,
+  NewUser,
+  user_bad_request
 } from "../mock/static";
 
+ 
 jest.setTimeout(30000);
 
 function logErrors(
@@ -32,13 +34,28 @@ describe("USER API TEST", () => {
   afterAll(async () => {
     await deleteTableData(User, "users");
   });
-
-  it("should create a new user", async () => {
-    // Your test implementation goes here
+  it("it should  register a user and return 201", async () => {
     const { body } = await Jest_request.post("/api/v1/users/register")
-      .send(register_user)
+      .send(NewUser)
       .expect(201);
+    expect(body.status).toStrictEqual("SUCCESS");
+    expect(body.message).toStrictEqual("Account Created successfully!");
+    expect(body.token).toBeDefined();
   });
+  it("it should return a user not found and status 400", async () => {
+    const { body } = await Jest_request.post("/api/v1/users/register")
+      .send(user_bad_request)
+      .expect(400);
+  });
+
+  it("it should return a user exist and status 409 when Email is already used in database", async () => {
+    const { body } = await Jest_request.post("/api/v1/users/register")
+      .send(NewUser)
+      .expect(409);
+    expect(body.status).toStrictEqual("CONFLICT");
+    expect(body.message).toStrictEqual("User already exist!");
+  });
+  
 
   /**
    * ---------------------------- LOGIN --------------------------------------------
@@ -78,4 +95,6 @@ describe("USER API TEST", () => {
     expect(body.status).toStrictEqual("BAD REQUEST");
     expect(body.message).toBeDefined();
   })
+ 
+ 
 });
