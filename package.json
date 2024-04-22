@@ -40,20 +40,6 @@
 		"sequelize": "^6.37.3",
 		"uuid": "^9.0.0"
 	},
-	"transform": {
-		"^.+\\.(ts|tsx)?$": "ts-jest",
-		"^.+\\.(js|jsx)$": "babel-jest",
-		"joi": "^17.12.3",
-		"jsonwebtoken": "^9.0.2",
-		"passport": "^0.7.0",
-		"passport-local": "^1.0.0",
-		"pg": "^8.11.5",
-		"pg-hstore": "^2.3.4",
-		"sequelize": "^6.37.3",
-		"sequelize-typescript": "^2.1.6",
-		"sequelizer": "^1.1.4",
-		"uuid": "^9.0.0"
-	},
 	"jest": {
 		"preset": "ts-jest",
 		"setupFiles": [

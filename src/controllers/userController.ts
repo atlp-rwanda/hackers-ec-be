@@ -56,11 +56,10 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					.json(new HttpException("BAD REQUEST", "Bad Request!"));
 			}
 
-			if (info) {
-				return res
-					.status(409)
-					.json(new HttpException("CONFLICT", info.message));
-			}
+      if (info)
+        return res
+          .status(404)
+          .json(new HttpException("NOT FOUND", info.message));
 
 			(req as any).login(user, (err: Error) => {
 				if (err) {
@@ -71,15 +70,15 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 				const { id, role } = user;
 
-				const token = generateAccessToken({ id, role });
-				const response = new HttpException(
-					"SUCCESS",
-					"Logged in to you account successfully!",
-				).response();
-				return res.status(200).json({ ...response, token });
-			});
-		},
-	)(req, res, next);
+        const token = generateAccessToken({ id, role });
+        const response = new HttpException(
+          "SUCCESS",
+          "Logged in to your account successfully!"
+        ).response();
+        return res.status(200).json({ ...response, token });
+      });
+    }
+  )(req, res, next);
 };
 
 export default {
