@@ -161,6 +161,55 @@ const accountVerify = async (req: Request, res: Response) => {
 			.json({ status: 400, message: "Something went wrong", error: error });
 	}
 };
+const googleAuthInit = async (req: Request, res: Response) => {
+	passport.authenticate("google", { scope: ["profile", "email"] });
+	res.redirect("/api/v1/users/auth/google/callback");
+};
+
+const handleGoogleAuth = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		passport.authenticate(
+			"google",
+			async (err: Error, user: UserModelAttributes) => {
+				const userData = user;
+				const userExist = await User.findOne({
+					where: { email: userData.email },
+				});
+
+				if (userExist) {
+					const token = generateAccessToken({
+						id: userExist.dataValues.id,
+						role: userExist.dataValues.role,
+					});
+					const response = new HttpException(
+						"SUCCESS",
+						"Logged in to you account successfully!",
+					).response();
+					return res.status(200).json({ ...response, token });
+				}
+				const newUser = await User.create({ ...userData });
+				await newUser.save();
+				const token = generateAccessToken({
+					id: newUser.dataValues.id,
+					role: newUser.dataValues.role,
+				});
+				const response = new HttpException(
+					"SUCCESS",
+					"Account Created successfully!",
+				).response();
+				res.status(201).json({ ...response, token });
+			},
+		)(req, res, next);
+	} catch (error) {
+		res
+			.status(500)
+			.json(new HttpException("SERVER ERROR", "Something went wrong!"));
+	}
+};
 
 const two_factor_authentication = async (req: Request, res: Response) => {
 	try {
@@ -201,4 +250,6 @@ export default {
 	login,
 	accountVerify,
 	two_factor_authentication,
+	googleAuthInit,
+	handleGoogleAuth,
 };

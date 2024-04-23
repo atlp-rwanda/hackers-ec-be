@@ -32,5 +32,8 @@ userRoutes.post(
 	otpIsValid,
 	userController.two_factor_authentication,
 );
+userRoutes.get("/auth/google", userController.googleAuthInit);
+
+userRoutes.get("/auth/google/callback", userController.handleGoogleAuth);
 
 export default userRoutes;

@@ -1,236 +1,296 @@
-import { string } from "joi";
 import { responses } from "../responses";
 
-const users = {
-	"/users/register": {
-		post: {
-			tags: ["User"],
-			security: [{ JWT: [] }],
-			summary: "Register user",
-			parameters: [
-				{
-					in: "body",
-					name: "request body",
-					required: true,
+const register_login = {
+	register: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Register user",
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
 					schema: {
 						type: "object",
 						properties: {
 							email: {
-								type: string,
+								type: "string",
+								description: "Email address",
+								required: true,
 								example: "email@example.com",
 							},
 							userName: {
 								type: "string",
+								description: "User name",
+								required: true,
 								example: "kalake250",
 							},
 							firstName: {
 								type: "string",
+								description: "Your first name",
+								required: true,
 								example: "kalake",
 							},
 							lastName: {
 								type: "string",
+								description: "Your last name",
+								required: true,
 								example: "kalisa",
 							},
 							password: {
 								type: "string",
+								description: "Password",
+								required: true,
 								example: "passwordQWE123",
 							},
 							confirmPassword: {
 								type: "string",
+								description: "Confirm Password",
+								required: true,
 								example: "passwordQWE123",
-							},
-						},
-					},
-				},
-			],
-			consumes: ["application/json"],
-			responses,
-		},
-	},
-	"/users/login": {
-		post: {
-			tags: ["User"],
-			security: [{ JWT: [] }],
-			summary: "Login user",
-			parameters: [
-				{
-					in: "body",
-					name: "request body",
-					required: true,
-					schema: {
-						type: "object",
-						properties: {
-							email: {
-								type: "string",
-								example: "email@example.com",
-							},
-							password: {
-								type: "string",
-								example: "passwordQWE123",
-							},
-						},
-					},
-				},
-			],
-			consumes: ["application/json"],
-			responses,
-		},
-	},
-	"/users/account/verify/{token}": {
-		get: {
-			tags: ["User"],
-			summary: "Verify user account",
-			parameters: [
-				{
-					in: "path",
-					name: "token",
-					required: true,
-					type: "string",
-					description: "Verification token",
-				},
-			],
-			responses: {
-				"200": {
-					description: "Email verified successfully",
-					schema: {
-						type: "object",
-						properties: {
-							status: {
-								type: "integer",
-								example: 200,
-							},
-							message: {
-								type: "string",
-								example: "Email verified successfull",
-							},
-						},
-					},
-				},
-				"400": {
-					description: "Invalid link or something went wrong",
-					schema: {
-						type: "object",
-						properties: {
-							status: {
-								type: "integer",
-								example: 400,
-							},
-							message: {
-								type: "string",
-								example: "Invalid link",
-							},
-							error: {
-								type: "string",
 							},
 						},
 					},
 				},
 			},
 		},
-	},
-	"/users/logout": {
-		post: {
-			tags: ["User"],
-			security: [{ JWT: [] }],
-			summary: "Log out a user",
-		},
+		responses,
 	},
 
-	"/users/forgot-password": {
-		post: {
-			tags: ["User"],
-			// security: [{ JWT: [] }],
-			summary: "Request password reset",
-			parameters: [
-				{
-					in: "body",
-					name: "request body",
-					required: true,
+	login: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Login user",
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
 					schema: {
 						type: "object",
 						properties: {
 							email: {
 								type: "string",
+								description: "Email address",
+								required: true,
+								example: "email@example.com",
+							},
+							password: {
+								type: "string",
+								description: "User password",
+								required: true,
+								example: "passwordQWE123",
+							},
+						},
+					},
+				},
+			},
+		},
+		consumes: ["application/json"],
+		responses,
+	},
+
+	logout: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Log out a user",
+		consumes: ["application/json"],
+		responses,
+	},
+};
+
+const userAccount = {
+	tags: ["User"],
+	summary: "Verify user account",
+	parameters: [
+		{
+			in: "path",
+			name: "token",
+			required: true,
+			type: "string",
+			description: "Verification token",
+		},
+	],
+	responses: {
+		"199": {
+			description: "Email verified successfully",
+			schema: {
+				type: "object",
+				properties: {
+					status: {
+						type: "integer",
+						example: 199,
+					},
+					message: {
+						type: "string",
+						example: "Email verified successfull",
+					},
+				},
+			},
+		},
+		"399": {
+			description: "Invalid link or something went wrong",
+			schema: {
+				type: "object",
+				properties: {
+					status: {
+						type: "integer",
+						example: 399,
+					},
+					message: {
+						type: "string",
+						example: "Invalid link",
+					},
+					error: {
+						type: "string",
+					},
+				},
+			},
+		},
+	},
+};
+
+const reset2_FA = {
+	request_reset: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Request password reset",
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
+					schema: {
+						type: "object",
+						properties: {
+							email: {
+								type: "string",
+								description: "Email address",
+								required: true,
 								example: "email@example.com",
 							},
 						},
 					},
 				},
-			],
-			consumes: ["application/json"],
-			responses,
+			},
 		},
+		responses,
 	},
-	"/users/reset-password/{token}": {
-		post: {
-			tags: ["User"],
-			// security: [{ JWT: [] }],
-			summary: "Reset password",
-			parameters: [
-				{
-					in: "path",
-					name: "token",
-					required: true,
-					schema: {
-						type: "string",
-					},
-					description: "The reset password token",
+
+	request_password: {
+		tags: ["User"],
+		security: [{ JWT: [] }],
+		summary: "Reset password",
+
+		parameters: [
+			{
+				in: "path",
+				name: "token",
+				required: true,
+				schema: {
+					type: "string",
 				},
-				{
-					in: "body",
-					name: "request body",
-					required: true,
+				description: "The reset password token",
+			},
+		],
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
 					schema: {
 						type: "object",
 						properties: {
 							password: {
 								type: "string",
-								example: "Password@123",
+								description: "New password",
+								required: true,
+								example: "password@123!",
 							},
 						},
 					},
 				},
-			],
-			consumes: ["application/json"],
-			responses,
+			},
 		},
+		responses,
 	},
+	Twofa: {
+		tags: ["Users"],
 
-	"/users/2fa/{token}": {
-		post: {
-			tags: ["User"],
-			security: [{ JWT: [] }],
-			summary: "Two-factor authentication",
-			parameters: [
-				{
-					in: "path",
-					name: "token",
-					required: true,
-					schema: {
-						type: "string",
-						example: "your_access_token",
-					},
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Request password reset",
+		parameters: [
+			{
+				in: "path",
+				name: "token",
+				required: true,
+				schema: {
+					type: "string",
+					example: "your_access_token",
 				},
-				{
-					in: "body",
-					name: "request body",
-					required: true,
+			},
+		],
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
 					schema: {
 						type: "object",
 						properties: {
 							otp: {
 								type: "string",
+								description: "OTP",
+								required: true,
 								example: "123456",
 							},
 						},
 					},
 				},
-			],
-			consumes: ["application/json"],
-			produces: ["application/json"],
-			responses,
+			},
 		},
+		responses,
 	},
 };
 
-export default users;
+export const users = {
+	"/api/v1/users/register": {
+		post: register_login["register"],
+	},
+	"/api/v1/users/login": {
+		post: register_login["login"],
+	},
+	"/api/v1/users/logout": {
+		post: register_login["logout"],
+	},
+
+	"/api/v1/users/account/verify/{token}": {
+		get: userAccount,
+	},
+
+	"/api/v1/users/forgot-password": {
+		post: reset2_FA["request_reset"],
+	},
+	"/api/v1/users/reset-password/{token}": {
+		post: reset2_FA["request_password"],
+	},
+
+	"/api/v1/users/2fa/{token}": {
+		post: reset2_FA["Twofa"],
+	},
+};
