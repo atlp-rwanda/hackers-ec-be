@@ -22,5 +22,3 @@ export const createUser = async (data: UserInt) => {
 		isVerified: false,
 	});
 };
-
-isVerified: false;

@@ -11,6 +11,7 @@ userRoutes.post(
 );
 
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
+
 userRoutes.post("/logout", logout);
 
 export default userRoutes;

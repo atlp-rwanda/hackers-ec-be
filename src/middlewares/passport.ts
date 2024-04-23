@@ -80,8 +80,9 @@ passport.use(
 
 				const isValidPass = await isValidPassword(password, currPassword);
 
-				if (!isValidPass)
+				if (!isValidPass) {
 					return done(null, false, { message: "Wrong credentials!" });
+				}
 
 				return done(null, user);
 			} catch (error) {

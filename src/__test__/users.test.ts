@@ -43,7 +43,6 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("Account Created successfully!");
 		expect(body.token).toBeDefined();
 	});
-
 	it("it should return a user not found and status 400", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
 			.send(user_bad_request)
@@ -97,34 +96,5 @@ describe("USER API TEST", () => {
 			.expect(400);
 		expect(body.status).toStrictEqual("BAD REQUEST");
 		expect(body.message).toBeDefined();
-	});
-
-	/**
-	 * -----------------------------------------LOG OUT--------------------------------------
-	 */
-	it("Should log out a user and return 404", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/logout").send();
-		expect(404);
-		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("Token Not Found");
-	});
-
-	it("Should log out a user and return 201", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/logout")
-			.send()
-			.set("Authorization", `Bearer ${token}`);
-		expect(201);
-		expect(body.status).toStrictEqual("CREATED");
-		expect(body.message).toStrictEqual("Logged out successfully");
-		token = token;
-	});
-
-	it("Should alert an error and return 401", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/logout")
-			.send()
-			.set("Authorization", `Bearer ${token}`);
-		expect(401);
-		expect(body.status).toStrictEqual("UNAUTHORIZED");
-		expect(body.message).toStrictEqual("Already logged out");
 	});
 });

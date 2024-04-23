@@ -28,7 +28,7 @@ const registerUser = async (
 						await Token.create({ token });
 						const message = `${process.env.BASE_URL}/users/account/verify/${token}`;
 						await sendEmail({
-							email: user.email,
+							user: user.email,
 							subject: "Verify Email",
 							message: message,
 						});
@@ -58,10 +58,11 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					.json(new HttpException("BAD REQUEST", "Bad Request!"));
 			}
 
-			if (info)
+			if (info) {
 				return res
 					.status(404)
 					.json(new HttpException("NOT FOUND", info.message));
+			}
 
 			(req as any).login(user, (err: Error) => {
 				if (err) {

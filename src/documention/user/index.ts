@@ -76,15 +76,6 @@ const users = {
 			responses,
 		},
 	},
-	"/users/logout": {
-		post: {
-			tags: ["User"],
-			security: [{ JWT: [] }],
-			summary: "Log out a user",
-			consumes: ["application/json"],
-			responses,
-		},
-	},
 };
 
 export default users;
