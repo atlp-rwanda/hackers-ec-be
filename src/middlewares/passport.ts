@@ -4,6 +4,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { User } from "../database/models/User";
 import { isValidPassword } from "../utils/password.checks";
 import { hashPassword } from "../utils/password";
+
 export interface CustomVerifyOptions {
 	message: string;
 	status: string;
@@ -75,6 +76,9 @@ passport.use(
 				const user = await User.findOne({ where: { email } });
 
 				if (!user) return done(null, false, { message: "Wrong credentials!" });
+				if (!user.dataValues.isVerified) {
+					return done(null, false, { message: "Verify your Account" });
+				}
 
 				const currPassword = user.dataValues.password;
 

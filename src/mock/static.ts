@@ -19,6 +19,7 @@ export const NewUser = {
 	email: "peter234565@gmail.com",
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
+	isVerified: true,
 };
 
 export const exist_user = {

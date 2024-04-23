@@ -24,6 +24,7 @@ function logErrors(
 }
 
 const Jest_request = request(app.use(logErrors));
+let token: string;
 
 describe("USER API TEST", () => {
 	beforeAll(async () => {
@@ -38,8 +39,10 @@ describe("USER API TEST", () => {
 			.send(NewUser)
 			.expect(201);
 		expect(body.status).toStrictEqual("SUCCESS");
-		expect(body.message).toStrictEqual("Account Created successfully!");
-		expect(body.token).toBeDefined();
+		expect(body.message).toStrictEqual(
+			"Account Created successfully, Plase Verify your Account",
+		);
+		token = body.token;
 	});
 	it("it should return a user not found and status 400", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
@@ -53,6 +56,25 @@ describe("USER API TEST", () => {
 			.expect(409);
 		expect(body.status).toStrictEqual("CONFLICT");
 		expect(body.message).toStrictEqual("User already exist!");
+	});
+	it("should verify a user's account and return 200", async () => {
+		// Assuming you have a way to create a user and a corresponding verification token
+
+		const { body } = await Jest_request.get(
+			`/api/v1/users/account/verify/${token}`,
+		).expect(200);
+
+		expect(body.status).toStrictEqual(200);
+		expect(body.message).toStrictEqual("Email verified successfull");
+	});
+
+	it("should return 400 when the token is invalid", async () => {
+		const { body } = await Jest_request.get(
+			`/api/v1/users/account/verify/${token}`,
+		).expect(400);
+
+		expect(body.status).toStrictEqual(400);
+		expect(body.message).toStrictEqual("Invalid link");
 	});
 
 	/**
