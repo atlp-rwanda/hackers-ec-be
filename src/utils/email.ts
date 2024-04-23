@@ -1,10 +1,10 @@
 import nodemailer from "nodemailer";
-export interface emailData {
-	email: string;
+export interface emailAttribute {
+	user: string;
 	subject: string;
 	message: string;
 }
-const sendEmail = async (emailData: emailData) => {
+const sendEmail = async (emailData: emailAttribute) => {
 	try {
 		const transporter = nodemailer.createTransport({
 			host: process.env.HOST,
@@ -19,7 +19,7 @@ const sendEmail = async (emailData: emailData) => {
 
 		await transporter.sendMail({
 			from: process.env.EMAIL,
-			to: emailData.email,
+			to: emailData.user,
 			subject: emailData.subject,
 			text: emailData.message,
 		});

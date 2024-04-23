@@ -5,11 +5,11 @@ import request from "supertest";
 jest.setTimeout(30000);
 
 describe("PRODUCT API TEST", () => {
-  // beforeAll(async () => {
-  //   await connectionToDatabase();
-  // });
+	// beforeAll(async () => {
+	//   await connectionToDatabase();
+	// });
 
-  it("Seller should create a product", async () => {
-    // Your test implementation goes here
-  });
+	it("Seller should create a product", async () => {
+		// Your test implementation goes here
+	});
 });
