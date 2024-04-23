@@ -3,6 +3,8 @@ import { UserModelAttributes } from "../database/models/User";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { HttpException } from "../utils/http.exception";
 import passport, { CustomVerifyOptions } from "../middlewares/passport";
+import { Token } from "../database/models/token";
+import sendEmail from "../utils/email";
 
 interface InfoAttribute extends CustomVerifyOptions {}
 
@@ -23,6 +25,13 @@ const registerUser = async (
 					}
 					req.login(user, async () => {
 						const token = generateAccessToken({ id: user.id, role: user.role });
+						await Token.create({ token });
+						const message = `${process.env.BASE_URL}/users/account/verify/${token}`;
+						await sendEmail({
+							email: user.email,
+							subject: "Verify Email",
+							message: message,
+						});
 						const response = new HttpException(
 							"SUCCESS",
 							"Account Created successfully!",
@@ -49,11 +58,10 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					.json(new HttpException("BAD REQUEST", "Bad Request!"));
 			}
 
-			if (info) {
+			if (info)
 				return res
 					.status(404)
 					.json(new HttpException("NOT FOUND", info.message));
-			}
 
 			(req as any).login(user, (err: Error) => {
 				if (err) {
