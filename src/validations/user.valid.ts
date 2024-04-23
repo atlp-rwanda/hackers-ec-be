@@ -4,6 +4,7 @@ const registerValidater = Joi.object({
 	userName: Joi.string(),
 	firstName: Joi.string().required(),
 	lastName: Joi.string().required(),
+	isVerified: Joi.boolean(),
 	email: Joi.string().email().required().messages({
 		"string.empty": "Email field can't empty",
 		"string.email": "Invalid Email",

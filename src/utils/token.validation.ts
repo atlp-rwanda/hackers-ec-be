@@ -1,8 +1,9 @@
-import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 
 interface Result {
 	valid: boolean;
 	reason?: string;
+	user?: JwtPayload;
 }
 export const validateToken = (
 	token: string | undefined,
@@ -16,9 +17,9 @@ export const validateToken = (
 			};
 		}
 
-		const decodedToken = jwt.verify(token, secretKey);
+		const decodedToken = jwt.verify(token, secretKey) as JwtPayload;
 
-		if (decodedToken) return { valid: true };
+		if (decodedToken) return { valid: true, user: decodedToken };
 
 		return { valid: true };
 	} catch (error) {
