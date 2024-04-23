@@ -3,6 +3,7 @@ import userController from "../controllers/userController";
 import userMiddleware from "../middlewares/user.middleware";
 import logout from "../controllers/logoutController";
 import otpIsValid from "../middlewares/otp";
+import { resetPasswort, forgotPassword } from "../controllers/resetPasswort";
 
 const userRoutes = express.Router();
 userRoutes.post(
@@ -14,6 +15,16 @@ userRoutes.post(
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
 
 userRoutes.post("/logout", logout);
+userRoutes.post(
+	"/forgot-password",
+	userMiddleware.resetValidated,
+	forgotPassword,
+);
+userRoutes.post(
+	"/reset-password/:token",
+	userMiddleware.isPassword,
+	resetPasswort,
+);
 userRoutes.get("/account/verify/:token", userController.accountVerify);
 
 userRoutes.post(

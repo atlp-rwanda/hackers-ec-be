@@ -1,5 +1,4 @@
 name: build
-
 on:
   push:
     branches:
@@ -9,7 +8,6 @@ on:
     branches:
       - develop
       - "*"
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,16 +23,19 @@ jobs:
       DB_HOSTED_MODE: ${{ secrets.DB_HOSTED_MODE }}
       ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
       SENDER_NAME: ${{ secrets.SENDER_NAME }}
+      GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
+      GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
+      DB_PROD_URL: ${{ secrets.DB_PROD_URL }}
+      DB_DEV_URL: ${{ secrets.DB_DEV_URL }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
 
     strategy:
       matrix:
         node-version: ["20.x"]
-
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
@@ -44,7 +45,6 @@ jobs:
           cache: "npm"
       - name: Install dependencies
         run: npm install
-
       - name: Run tests
         run: npm run test
 
@@ -54,14 +54,11 @@ jobs:
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           ./cc-test-reporter before-build
-
       - name: Store coverage report
         if: always()
         run: mkdir -p coverage
-
       - name: Send coverage report to Code Climate
         if: always()
         run: ./cc-test-reporter after-build -t lcov -p coverage
-
       - name: coveralls
         run: npx coveralls < coverage/lcov.info

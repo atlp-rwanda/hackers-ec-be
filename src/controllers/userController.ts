@@ -1,18 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import { User, UserModelAttributes } from "../database/models/User";
-import { validateToken } from "../utils/token.validation";
-import { JWT_SECRET } from "../utils/keys";
 import {
 	TokenData,
 	generateAccessToken,
 	verifyAccessToken,
 } from "../helpers/security.helpers";
 import { HttpException } from "../utils/http.exception";
-import passport from "../middlewares/passport";
 import randomatic from "randomatic";
 import HTML_TEMPLATE from "../utils/mail-template";
 import { Token } from "../database/models/token";
-import { senderEmail } from "../services/mailService";
+import passport from "../middlewares/passport";
+// import sendEmail from "../utils/email";
+import { validateToken } from "../utils/token.validation";
+import { ACCESS_TOKEN_SECRET } from "../utils/keys";
+import { sendEmail } from "../helpers/nodemailer";
 
 interface InfoAttribute {
 	message: string;
@@ -36,8 +37,9 @@ const registerUser = async (
 					req.login(user, async () => {
 						const token = generateAccessToken({ id: user.id, role: user.role });
 						await Token.create({ token });
+
 						const message = `${process.env.BASE_URL}/users/account/verify/${token}`;
-						await senderEmail({
+						await sendEmail({
 							to: user.email,
 							subject: "Verify Email",
 							html: message,
@@ -112,7 +114,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					};
 					Token.create({ token: authenticationtoken });
 
-					senderEmail(options);
+					sendEmail(options);
 
 					const response = new HttpException(
 						"ACCEPTED",
@@ -136,11 +138,15 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 const accountVerify = async (req: Request, res: Response) => {
 	try {
 		const token = await Token.findOne({ where: { token: req.params.token } });
+
 		if (!token) {
 			return res.status(400).json({ status: 400, message: "Invalid link" });
 		}
 
-		const { user } = validateToken(token.dataValues.token, JWT_SECRET || "");
+		const { user } = validateToken(
+			token.dataValues.token,
+			ACCESS_TOKEN_SECRET as string,
+		);
 		if (!user) {
 			return res.status(400).json({ status: 400, message: "Invalid link" });
 		}

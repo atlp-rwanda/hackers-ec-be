@@ -63,7 +63,10 @@
 			"/src/utils/token.validation.ts",
 			"/src/services/mailService.ts",
 			"/src/middlewares/passport.ts",
-			"/src/database/config/db.config.ts"
+			"/src/database/config/db.config.ts",
+			"/src/utils",
+			"src/helpers",
+			"src/documention/index.ts"
 		]
 	},
 	"devDependencies": {

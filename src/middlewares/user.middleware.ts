@@ -2,7 +2,9 @@
 import { userValidate } from "../validations/user.valid";
 import { NextFunction, Request, Response } from "express";
 import validateLogIn from "../validations/login.validation";
+import validateReset from "../validations/reset.validation";
 import { HttpException } from "../utils/http.exception";
+import validateNewPassword from "../validations/newPassword.validations";
 const userValid = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		if (req.body) {
@@ -45,7 +47,42 @@ const logInValidated = (req: Request, res: Response, next: NextFunction) => {
 	next();
 };
 
+const resetValidated = (req: Request, res: Response, next: NextFunction) => {
+	const error = validateReset(req.body);
+
+	if (error) {
+		return res
+			.status(400)
+			.json(
+				new HttpException(
+					"BAD REQUEST",
+					error.details[0].message.replace(/\"/g, ""),
+				),
+			);
+	}
+
+	next();
+};
+const isPassword = (req: Request, res: Response, next: NextFunction) => {
+	const error = validateNewPassword(req.body);
+
+	if (error) {
+		return res
+			.status(400)
+			.json(
+				new HttpException(
+					"BAD REQUEST",
+					error.details[0].message.replace(/\"/g, ""),
+				),
+			);
+	}
+
+	next();
+};
+
 export default {
 	logInValidated,
 	userValid,
+	resetValidated,
+	isPassword,
 };

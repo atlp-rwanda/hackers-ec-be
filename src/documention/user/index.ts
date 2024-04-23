@@ -133,7 +133,66 @@ const users = {
 			tags: ["User"],
 			security: [{ JWT: [] }],
 			summary: "Log out a user",
+		},
+	},
+
+	"/users/forgot-password": {
+		post: {
+			tags: ["User"],
+			// security: [{ JWT: [] }],
+			summary: "Request password reset",
+			parameters: [
+				{
+					in: "body",
+					name: "request body",
+					required: true,
+					schema: {
+						type: "object",
+						properties: {
+							email: {
+								type: "string",
+								example: "email@example.com",
+							},
+						},
+					},
+				},
+			],
 			consumes: ["application/json"],
+			responses,
+		},
+	},
+	"/users/reset-password/{token}": {
+		post: {
+			tags: ["User"],
+			// security: [{ JWT: [] }],
+			summary: "Reset password",
+			parameters: [
+				{
+					in: "path",
+					name: "token",
+					required: true,
+					schema: {
+						type: "string",
+					},
+					description: "The reset password token",
+				},
+				{
+					in: "body",
+					name: "request body",
+					required: true,
+					schema: {
+						type: "object",
+						properties: {
+							password: {
+								type: "string",
+								example: "Password@123",
+							},
+						},
+					},
+				},
+			],
+			consumes: ["application/json"],
+			responses,
 		},
 	},
 
