@@ -20,6 +20,13 @@ import {
 import { InfoAttribute } from "../types/passport";
 import { insert_function, read_function } from "../utils/db_methods";
 
+import { User } from "../database/models/User";
+import bcrypt from "bcrypt";
+import { HttpException } from "../utils/http.exception";
+import { PassThrough } from "stream";
+
+
+
 const registerUser = async (
 	req: Request,
 	res: Response,
@@ -290,6 +297,67 @@ const logout = async (req: Request, res: Response) => {
 	}
 };
 
+const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    //if new pass matches confirm pass
+
+    if (newPassword !== confirmPassword) {
+      throw new HttpException(
+        "BAD REQUEST", "New password and confirm password do not match"
+      );
+    }
+
+    //authenticate user
+
+    passport.authenticate(
+      "login",
+      async (error: Error, user: UserModelAttributes, info: InfoAttribute) => {
+        if (error || !user) {
+          throw new HttpException(
+            "UNAUTHORIZED", "Invalid credentials. Please try again."
+          )
+      }
+
+      //if old pass matches
+
+      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!passwordMatch) {
+        throw new HttpException(
+          "UNAUTHORIZED", "Invalid credentials. Please try again."
+        )
+      }
+
+      //hash new password
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // update password
+
+      await User.update({ password: hashedPassword }, { where: { id: user.id } });
+
+      // Generate new access token
+      const token = generateAccessToken({ id: user.id, role: user.role });
+
+      // Send response
+      const response = new HttpException(
+        "SUCCESS",
+        "Password updated successfully."
+      ).response();
+      res.status(200).json({ ...response, token });
+    }
+  )(req, res, next);
+  } catch (error) {
+    res.status(500).json(new HttpException("SERVER ERROR", "Something went wrong!"));
+  }
+};
+
+ 
 export default {
 	registerUser,
 	login,
@@ -298,4 +366,5 @@ export default {
 	googleAuthInit,
 	handleGoogleAuth,
 	logout,
+  updatePassword,
 };
