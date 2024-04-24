@@ -37,9 +37,9 @@ module.exports = {
 				allowNull: false,
 			},
 			role: {
-				type: Sequelize.ENUM("ADMIN", "BUYER", "SELLER"),
+				type: Sequelize.UUID,
+				defaultValue: Sequelize.UUIDV4,
 				allowNull: false,
-				defaultValue: "BUYER",
 			},
 			isVerified: {
 				type: Sequelize.BOOLEAN,

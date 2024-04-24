@@ -16,7 +16,9 @@ type UserCreationAttributes = Optional<UserModelAttributes, "id"> & {
 	role?: string;
 };
 
-export class User extends Model<UserModelAttributes, UserCreationAttributes> {}
+export class User extends Model<UserModelAttributes, UserCreationAttributes> {
+    role: any;
+}
 
 User.init(
 	{
@@ -52,9 +54,8 @@ User.init(
 			allowNull: false,
 		},
 		role: {
-			type: DataTypes.ENUM("ADMIN", "BUYER", "SELLER"),
-			allowNull: false,
-			defaultValue: "BUYER",
+			type: DataTypes.UUIDV4,
+			allowNull: false			
 		},
 		isVerified: {
 			type: DataTypes.BOOLEAN,

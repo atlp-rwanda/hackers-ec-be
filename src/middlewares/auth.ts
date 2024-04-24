@@ -2,7 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import { Blacklist } from "../database/models/blacklist";
-
+import { userRole } from "../database/models/userroles";
+import { userRoleModelAttributes } from "../database/models/userroles";
+import { Role } from "../database/models/roles";
+import { User } from "../database/models/User";
 interface ExpandedRequest extends Request {
 	UserId?: JwtPayload;
 }
@@ -112,28 +115,42 @@ export const isVendor = async (
 };
 
 //only admins
+
 export const isAdmin = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
 ) => {
-	const token = req.headers.authorization?.split(" ")[1];
+	const token = req.headers.authorization;
 	if (!token) {
-		return res.status(401).json({ message: "Unauthorized" });
+		return res.status(401).json({ message: "please login again" });
 	}
-	try {
-		const decoded = jwt.verify(
-			token,
-			ACCESS_TOKEN_SECRET as string,
-		) as JwtPayload;
-
+	try {		
+		const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as JwtPayload;
 		if (!decoded) {
-			return res.status(401).json({ message: "please login to continue!" });
+			return res.status(401).json({ message: "inavlid token , please login to continue!" });
 		}
+	
+		const userrole= await userRole.findOne({where:{
+			userId:decoded.id
+		}})
+ 		if(!userrole){
+			const buyerRoleid=await User.findOne({where:{
+				id:decoded.id
+			}})
+			const roleName= await Role.findOne({where:{
+				id:buyerRoleid?.role
+			}})
+			if(roleName?.dataValues.roleName==="BUYER"){
 
-		if (decoded.role !== "admin") {
+				return res.status(403).json({ message: "BUYER can not create Role" });
+
+			}
+			
+		  }
+	  		if (userrole?.dataValues.roleName!=="ADMIN") {
 			return res.status(403).json({ message: "forbidden" });
-		}
+		    }
 		next();
 	} catch (error) {
 		return res.status(500).json({ message: "Internal server error" });

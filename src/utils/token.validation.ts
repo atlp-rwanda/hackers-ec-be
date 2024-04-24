@@ -2,6 +2,7 @@ import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 
 interface Result {
 	valid: boolean;
+	id?:string;
 	reason?: string;
 	user?: JwtPayload;
 }
@@ -13,7 +14,7 @@ export const validateToken = (
 		if (!token) {
 			return {
 				valid: false,
-				reason: "Unauthorized, Please login to continue!",
+				reason: "Unauthorized, Please login to Continue!",
 			};
 		}
 
@@ -26,7 +27,7 @@ export const validateToken = (
 		if (error instanceof JsonWebTokenError) {
 			return {
 				valid: false,
-				reason: "Unauthorized, Please login to continue!",
+				reason: "Unauthorized, Invalid Token",
 			};
 		} else {
 			return {
