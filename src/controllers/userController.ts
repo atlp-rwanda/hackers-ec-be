@@ -63,8 +63,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 			if (info) {
 				return res
-					.status(404)
-					.json(new HttpException("NOT FOUND", info.message));
+					.status(403)
+					.json(new HttpException("FORBIDDEN", info.message));
 			}
 
 			(req as any).login(user, (err: Error) => {
