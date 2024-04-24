@@ -31,12 +31,12 @@ const swaggerSpec = swaggerJsdoc(options);
 app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/v1", router);
 app.get("/api/v1", (_req, res) => {
-  res.status(200).json({
-    message: "Welcome to Hacker's e-commerce backend!",
-  });
+	res.status(200).json({
+		message: "Welcome to Hacker's e-commerce backend!",
+	});
 });
 app.get("/", (_req, res) => {
-  res.send(root_home_page);
+	res.send(root_home_page);
 });
 
 export default app;
