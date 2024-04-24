@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      BASE_URL: ${{ secrets.BASE_URL}}
+      HOST: ${{ secrets.HOST}}
+      SERVICE: ${{ secrets.SERVICE}}
+      EMAIL: ${{ secrets.EMAIL}}
+      PASSWORD: ${{ secrets.PASSWORD}}
       DB_TEST_URL: ${{ secrets.DB_TEST_URL }}
       DEV_MODE: ${{ secrets.DEV_MODE }}
       DB_HOSTED_MODE: ${{ secrets.DB_HOSTED_MODE }}

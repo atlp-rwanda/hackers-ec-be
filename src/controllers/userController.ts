@@ -38,7 +38,8 @@ const registerUser = async (
 							"SUCCESS",
 							"Account Created successfully, Plase Verify your Account",
 						).response();
-						res.status(201).json({ ...response, token });
+
+						res.status(201).json({ ...response });
 					});
 				},
 			)(req, res, next);
@@ -62,8 +63,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 			if (info) {
 				return res
-					.status(404)
-					.json(new HttpException("NOT FOUND", info.message));
+					.status(401)
+					.json(new HttpException("UNAUTHORIZED", info.message));
 			}
 
 			(req as any).login(user, (err: Error) => {
