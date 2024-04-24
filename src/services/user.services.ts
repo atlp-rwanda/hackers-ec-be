@@ -1,6 +1,5 @@
 import { hashPassword } from "../utils/password";
 import { User } from "../database/models/User";
-import { UserModelAttributes } from "../database/models/User";
 interface UserInt {
 	userName: string;
 	firstName: string;

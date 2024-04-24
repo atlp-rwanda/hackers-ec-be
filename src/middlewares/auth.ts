@@ -30,13 +30,13 @@ export const authenticateUser = async (
 	try {
 		const verifiedToken = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
 		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
-		
+
 		if (!verifiedToken) {
 			return res.status(401).json({ message: "please login to continue!" });
 		}
 
-		if (isInBlcaklist){
-			return res.status(401).json({message: "Token arleady invalidated"});
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		req.UserId = verifiedToken;
@@ -72,8 +72,8 @@ export const isBuyer = async (
 			return res.status(401).json({ message: "please login to continue!" });
 		}
 
-		if (isInBlcaklist){
-			return res.status(401).json({message: "Token arleady invalidated"});
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "buyer") {
@@ -86,7 +86,7 @@ export const isBuyer = async (
 };
 
 //only vendors
-export const isVendor = async(
+export const isVendor = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
@@ -103,8 +103,8 @@ export const isVendor = async(
 			return res.status(401).json({ message: "please login to continue!" });
 		}
 
-		if (isInBlcaklist){
-			return res.status(401).json({message: "Token arleady invalidated"});
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "vendor") {
@@ -134,8 +134,8 @@ export const isAdmin = async (
 			return res.status(401).json({ message: "please login to continue!" });
 		}
 
-		if (isInBlcaklist){
-			return res.status(401).json({message: "Token arleady invalidated"});
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "admin") {

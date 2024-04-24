@@ -49,7 +49,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					.json(new HttpException("BAD REQUEST", "Bad Request!"));
 			}
 
-			if (info){
+			if (info) {
 				return res
 					.status(404)
 					.json(new HttpException("NOT FOUND", info.message));
