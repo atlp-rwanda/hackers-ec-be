@@ -27,6 +27,7 @@ userRoutes.post(
 userRoutes.patch(
 	"/password-update",
 	authentication.is_authenticated_when_password_expired,
+	authentication.authenticateUser,
 	userMiddleware.isUpdatePassValid,
 	userController.updatePassword,
 );

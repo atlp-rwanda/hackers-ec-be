@@ -22,8 +22,8 @@ import { insert_function, read_function } from "../utils/db_methods";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { User } from "../database/models/User";
 import cloudinary from "../helpers/cloudinary";
-
 import bcrypt from "bcrypt";
+import { HttpException } from "../utils/http.exception";
 
 const registerUser = async (
 	req: Request,
@@ -321,28 +321,37 @@ export const updatePassword = async (req: Request, res: Response) => {
 
 		const isPasswordValid = await bcrypt.compare(
 			oldPassword,
+
 			userPassword as string,
 		);
+
+		console.log("****************user", isPasswordValid);
 		if (!isPasswordValid) {
-			return sendResponse(res, 400, "BAD REQUEST", "Old password is incorrect");
+			return res
+				.status(400)
+				.json(new HttpException("BAD REQUEST", "Old password is incorrect"));
 		}
 
 		if (newPassword === oldPassword) {
-			return sendResponse(
-				res,
-				400,
-				"BAD REQUEST",
-				"New password cannot be the same as old password",
-			);
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password cannot be the same as old password",
+					),
+				);
 		}
 
 		if (newPassword !== confirmPassword) {
-			return sendResponse(
-				res,
-				400,
-				"BAD REQUEST",
-				"New password and confirm password do not match",
-			);
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password and confirm password do not match",
+					),
+				);
 		}
 
 		const hashedPassword = await bcrypt.hash(newPassword, 10);
