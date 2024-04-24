@@ -1,24 +1,31 @@
-import { DataTypes, Model, Optional, Sequelize, UUIDV4 } from "sequelize";
+import { DataTypes, Model, Sequelize, UUIDV4 } from "sequelize";
+import { UserCreationAttributes, UserModelAttributes } from "../../types/model";
+import { Product } from "./product";
 import database_models from "../config/db.config";
-export interface UserModelAttributes {
-	id: string;
-	userName: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	password: string;
-	confirmPassword: string;
-	role: string;
-	isVerified: boolean;
-}
-type UserCreationAttributes = Optional<UserModelAttributes, "id"> & {
-	role?: string;
-};
+
 export class User extends Model<UserModelAttributes, UserCreationAttributes> {
-	public static associate(models: { role: typeof database_models.role }) {
+	public id!: string;
+	public userName!: string;
+	public firstName!: string;
+	public lastName!: string;
+	public email!: string;
+	public password!: string;
+	public confirmPassword!: string;
+	public role!: string;
+	public isVerified!: boolean;
+
+	public static associate(models: {
+		Product: typeof Product;
+		role: typeof database_models.role;
+	}) {
+		this.hasOne(models.Product, {
+			foreignKey: "sellerId",
+			as: "products",
+		});
 		User.belongsTo(models.role, { as: "Roles", foreignKey: "role" });
 	}
 }
+
 const user_model = (sequelize: Sequelize) => {
 	User.init(
 		{
@@ -73,6 +80,7 @@ const user_model = (sequelize: Sequelize) => {
 			tableName: "users",
 		},
 	);
+
 	return User;
 };
 export default user_model;

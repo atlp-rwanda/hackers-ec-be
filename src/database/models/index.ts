@@ -1,10 +1,22 @@
 import { Sequelize } from "sequelize";
-import Role_model from "./role";
+import product_model from "./product";
+import category_model from "./category";
 import user_model from "./User";
+import blacklist_model from "./blacklist";
+import token_model from "./token";
+import Role_model from "./role";
+import reset_model from "./resetPassword";
 
 const Models = (sequelize: Sequelize) => {
+	const Product = product_model(sequelize);
+	const Category = category_model(sequelize);
 	const User = user_model(sequelize);
+	const Blacklist = blacklist_model(sequelize);
+	const Token = token_model(sequelize);
 	const role = Role_model(sequelize);
-	return { role, User };
+	const resetPassword = reset_model(sequelize);
+
+	return { Product, Category, User, Blacklist, Token, role, resetPassword };
 };
+
 export default Models;

@@ -1,31 +1,37 @@
-import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
-import { sequelizeConnection } from "../config/db.config";
-// token interface
-export interface TokenModelAttributes {
-	id: string;
-	token: string;
-}
-type TokenCreationAttributes = Optional<TokenModelAttributes, "id">;
+import { DataTypes, Model, Sequelize, UUIDV4 } from "sequelize";
+import {
+	TokenModelAttributes,
+	TokenCreationAttributes,
+} from "../../types/model";
+
 export class Token extends Model<
 	TokenModelAttributes,
 	TokenCreationAttributes
-> {}
-Token.init(
-	{
-		id: {
-			type: DataTypes.UUID,
-			defaultValue: UUIDV4,
-			primaryKey: true,
-			allowNull: false,
+> {
+	public id!: string;
+	public token!: string;
+}
+const token_model = (sequelize: Sequelize) => {
+	Token.init(
+		{
+			id: {
+				type: DataTypes.UUID,
+				defaultValue: UUIDV4,
+				primaryKey: true,
+				allowNull: false,
+			},
+			token: {
+				type: DataTypes.STRING(10000),
+				allowNull: false,
+				unique: true,
+			},
 		},
-		token: {
-			type: DataTypes.STRING(1000),
-			allowNull: false,
-			unique: true,
+		{
+			sequelize,
+			tableName: "tokens",
 		},
-	},
-	{
-		sequelize: sequelizeConnection,
-		tableName: "tokens",
-	},
-);
+	);
+	return Token;
+};
+
+export default token_model;

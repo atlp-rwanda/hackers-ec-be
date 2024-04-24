@@ -1,9 +1,6 @@
 import nodemailer from "nodemailer";
-export interface emailAttribute {
-	user: string;
-	subject: string;
-	message: string;
-}
+import { emailAttribute } from "../types/email";
+
 const sendEmail = async (emailData: emailAttribute) => {
 	try {
 		const transporter = nodemailer.createTransport({

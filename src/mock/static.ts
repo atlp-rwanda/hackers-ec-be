@@ -1,5 +1,24 @@
+import path from "path";
+
+export const image_one_path: string = path.resolve(
+	__dirname,
+	"images/BMW1.jpeg",
+);
+export const image_two_path: string = path.resolve(
+	__dirname,
+	"images/BMW2.jpeg",
+);
+export const image_three_path: string = path.resolve(
+	__dirname,
+	"images/BMW3.webp",
+);
+export const image_four_path: string = path.resolve(
+	__dirname,
+	"images/BMW4.webp",
+);
+
 export const login_user = {
-	email: "peter234565@gmail.com",
+	email: "peter23456545@gmail.com",
 	password: "passwordQWE123",
 };
 export const login_user_br = {
@@ -20,11 +39,25 @@ export const login_user_invalid_email = {
 export const NewUser = {
 	firstName: "peter",
 	lastName: "paul",
+	email: "peter23456545@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+
+export const new_buyer_user = {
+	firstName: "mark",
+	lastName: "mark",
+	email: "mark234565@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+export const new_seller_user = {
+	userName: "peter",
+	firstName: "peter",
+	lastName: "paul",
 	email: "peter234565@gmail.com",
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
-	role: "SELLER",
-	isVerified: true,
 };
 
 export const exist_user = {
@@ -91,4 +124,32 @@ export const mockRole = {
 };
 export const mockRoleBuyer = {
 	roleName: "BUYER",
+};
+export const token =
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjMjUyYWY3LWJhYjYtNGY4MC05YzQ5LTIzZTQ0MWRmMDJjYiIsInJvbGUiOiJTRUxMRVIiLCJpYXQiOjE3MTM5Njg5MDgsImV4cCI6MTc0NTUyNjUwOH0.22hDHx9vHSPw_fQ_yfr-29mUme1LpqFQG-ZIsFjhlH4";
+
+export const new_product = {
+	name: "BMW",
+	price: 49900,
+	images: [image_one_path, image_two_path, image_three_path, image_four_path],
+	discount: 100,
+	quantity: 356,
+	expiryDate: "2324-04-30T00:00:00.000Z",
+};
+export const new_update_product = {
+	name: "Ferrari",
+	price: 49900,
+	discount: 100,
+	quantity: 356,
+	images: [image_one_path],
+};
+
+export const new_category = {
+	name: "Cars",
+	description: "Cars are amazing!",
+};
+
+export const new_updated_category = {
+	name: "Fancy Cars",
+	description: "This cars are highly amazing!",
 };

@@ -1,13 +1,13 @@
 import app from "../app";
 import request from "supertest";
-import { connectionToDatabase } from "../database/config/db.config";
 import { deleteTableData } from "../utils/database.utils";
 import { User } from "../database/models/User";
-import { Token } from "../database/models/token";
 import { forgotPassword } from "../controllers/resetPasswort";
 import { resetPasswort } from "../controllers/resetPasswort";
-import { Request } from "express";
 
+import database_models, {
+	connectionToDatabase,
+} from "../database/config/db.config";
 import {
 	bad_two_factor_authentication_data,
 	login_user,
@@ -18,7 +18,6 @@ import {
 	partial_two_factor_authentication_data,
 	two_factor_authentication_data,
 	user_bad_request,
-	requestResetBody,
 	newPasswordBody,
 	NotUserrequestBody,
 	sameAsOldPassword,
@@ -28,9 +27,6 @@ import { resetPassword } from "../database/models/resetPassword";
 
 jest.setTimeout(30000);
 
-let authenticatetoken: string;
-let otp: string;
-import database_models from "../database/config/db.config";
 const role = database_models["role"];
 jest.setTimeout(30000);
 function logErrors(
@@ -59,9 +55,8 @@ describe("USER API TEST", () => {
 	});
 
 	afterAll(async () => {
-		await deleteTableData(User, "users");
-		await deleteTableData(Token, "tokens");
-		//	await deleteTableData(database_models.role, "roles");
+		await deleteTableData(database_models.Token, "tokens");
+		await deleteTableData(database_models.User, "users");
 	});
 	it("Welcome to Hacker's e-commerce backend and return 200", async () => {
 		const { body } = await Jest_request.get("/").expect(200);
@@ -78,10 +73,9 @@ describe("USER API TEST", () => {
 			.expect(201);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual(
-			"Account Created successfully, Plase Verify your Account",
+			"Account Created successfully, Please Verify your Account",
 		);
-
-		const tokenRecord = await Token.findOne();
+		const tokenRecord = await database_models.Token.findOne();
 		token = tokenRecord?.dataValues.token ?? "";
 	});
 	it("it should return a user not found and status 400", async () => {
@@ -97,14 +91,11 @@ describe("USER API TEST", () => {
 	});
 
 	it("should verify a user's account and return 200", async () => {
-		// Assuming you have a way to create a user and a corresponding verification token
-		console.log(token);
-
 		const { body } = await Jest_request.get(
 			`/api/v1/users/account/verify/${token}`,
 		);
-		expect(body.status).toStrictEqual(200);
-		expect(body.message).toStrictEqual("Email verified successfull");
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Email verified successfully!");
 	});
 
 	it("should return 400 when the token is invalid", async () => {
@@ -112,21 +103,18 @@ describe("USER API TEST", () => {
 			`/api/v1/users/account/verify/${token}`,
 		).expect(400);
 
-		expect(body.status).toStrictEqual(400);
+		expect(body.status).toStrictEqual("BAD REQUEST");
 		expect(body.message).toStrictEqual("Invalid link");
 	});
 
-	/**
-	 * ---------------------------- LOGIN --------------------------------------------
-	 */
-
 	it("should successfully login a user and return 200", async () => {
-		await User.update(
+		await database_models.User.update(
 			{ isVerified: true },
 			{
 				where: { email: login_user.email },
 			},
 		);
+
 		const { body } = await Jest_request.post("/api/v1/users/login")
 			.send(login_user)
 			.expect(200);
@@ -146,13 +134,9 @@ describe("USER API TEST", () => {
 		const { body } = await Jest_request.post("/api/v1/users/login")
 			.send(login_user)
 			.expect(202);
-		console.log(
-			body,
-			"msbdjbsd sbdjhankjsjdbkjsdja;skjd'laskjd'alsmd'lkasnm;knad'/lkmf/aldksnf'/laskdd",
-		);
 
-		expect(body.response.status).toStrictEqual("ACCEPTED");
-		expect(body.response.message).toStrictEqual(
+		expect(body.status).toStrictEqual("ACCEPTED");
+		expect(body.message).toStrictEqual(
 			"Email sent for verification. Please check your inbox and enter the OTP to complete the authentication process.",
 		);
 	});
@@ -335,7 +319,7 @@ describe("USER API TEST", () => {
 		)
 			.send(bad_two_factor_authentication_data)
 			.expect(401);
-		expect(body.response.message).toStrictEqual("Invalid One Time Password!!");
+		expect(body.message).toStrictEqual("Invalid One Time Password!!");
 	});
 
 	it("should return 400 if user add with character < 6 invalid otp", async () => {
@@ -372,13 +356,6 @@ describe("USER API TEST", () => {
 	 * -----------------------------------------LOG OUT--------------------------------------
 	 */
 
-	it("Should log out a user and return 401", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/logout").send();
-
-		expect(401);
-		expect(body.message).toStrictEqual("Unauthorized");
-	});
-
 	it("Should log out a user and return 201", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/logout")
 			.send()
@@ -386,6 +363,11 @@ describe("USER API TEST", () => {
 		expect(201);
 		expect(body.status).toStrictEqual("CREATED");
 		expect(body.message).toStrictEqual("Logged out successfully");
-		token = token;
+	});
+
+	it("Should alert an error and return 401", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/logout").send();
+		expect(401);
+		expect(body.status).toStrictEqual("UNAUTHORIZED");
 	});
 });

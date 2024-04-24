@@ -3,16 +3,26 @@ import {
 	assignRole,
 	updateRole,
 	allRole,
-} from "../controllers/roleConroller";
+} from "../controllers/roleController";
 import express from "express";
 import {
 	roleNameValid,
 	roleIdValidations,
 } from "../middlewares/role.middleware";
-import { isAdmin } from "../middlewares/auth";
+import authentication from "../middlewares/auth";
 export const roleRoutes = express.Router();
 
-roleRoutes.get("/roles/", isAdmin, allRole);
-roleRoutes.post("/roles/", isAdmin, roleNameValid, createRole);
-roleRoutes.post("/users/:userId/roles", isAdmin, roleIdValidations, assignRole);
-roleRoutes.patch("/roles/:id", isAdmin, roleNameValid, updateRole);
+roleRoutes.get("/roles/", authentication.isAdmin, allRole);
+roleRoutes.post("/roles/", authentication.isAdmin, roleNameValid, createRole);
+roleRoutes.post(
+	"/users/:userId/roles",
+	authentication.isAdmin,
+	roleIdValidations,
+	assignRole,
+);
+roleRoutes.patch(
+	"/roles/:id",
+	authentication.isAdmin,
+	roleNameValid,
+	updateRole,
+);

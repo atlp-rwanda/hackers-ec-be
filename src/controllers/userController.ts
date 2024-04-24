@@ -1,25 +1,25 @@
 import { NextFunction, Request, Response } from "express";
-import { User, UserModelAttributes } from "../database/models/User";
 import {
 	TokenData,
 	generateAccessToken,
 	verifyAccessToken,
 } from "../helpers/security.helpers";
-import { HttpException } from "../utils/http.exception";
+import { sendResponse } from "../utils/http.exception";
 import randomatic from "randomatic";
 import HTML_TEMPLATE from "../utils/mail-template";
-import { Token } from "../database/models/token";
 import passport from "../middlewares/passport";
-// import sendEmail from "../utils/email";
 import { validateToken } from "../utils/token.validation";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import { sendEmail } from "../helpers/nodemailer";
-import { Blacklist } from "../database/models/blacklist";
-import database_models from "../database/config/db.config";
+import {
+	BlacklistModelAtributes,
+	TokenModelAttributes,
+	UserModelAttributes,
+	UserModelInclude,
+} from "../types/model";
+import { InfoAttribute } from "../types/passport";
+import { insert_function, read_function } from "../utils/db_methods";
 
-interface InfoAttribute {
-	message: string;
-}
 const registerUser = async (
 	req: Request,
 	res: Response,
@@ -30,35 +30,38 @@ const registerUser = async (
 			passport.authenticate(
 				"signup",
 				(err: Error, user: UserModelAttributes, info: InfoAttribute) => {
-					if (!user) {
-						return res
-							.status(409)
-							.json(new HttpException("CONFLICT", info.message));
+					if (info) {
+						return sendResponse(res, 409, "CONFLICT", info.message);
 					}
 					req.login(user, async () => {
 						const token = generateAccessToken({ id: user.id, role: user.role });
-						await Token.create({ token });
-
+						await insert_function<TokenModelAttributes>("Token", "create", {
+							token,
+						});
 						const message = `${process.env.BASE_URL}/users/account/verify/${token}`;
 						await sendEmail({
 							to: user.email,
 							subject: "Verify Email",
 							html: message,
 						});
-						const response = new HttpException(
+						return sendResponse(
+							res,
+							201,
 							"SUCCESS",
-							"Account Created successfully, Plase Verify your Account",
-						).response();
-
-						res.status(201).json({ ...response });
+							"Account Created successfully, Please Verify your Account",
+						);
 					});
 				},
 			)(req, res, next);
 		}
 	} catch (error) {
-		return res
-			.status(500)
-			.json(new HttpException("SERVER FAILS", "Something went wrong!"));
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 
@@ -67,35 +70,24 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 		"login",
 		(error: Error, user: UserModelAttributes, info: InfoAttribute) => {
 			if (error) {
-				return res
-					.status(400)
-					.json(new HttpException("BAD REQUEST", "Bad Request!"));
+				return sendResponse(res, 400, "BAD REQUEST", "Bad Request!");
 			}
 
 			if (info) {
-				return res
-					.status(401)
-					.json(new HttpException("UNAUTHORIZED", info.message));
+				return sendResponse(res, 401, "UNAUTHORIZED", info.message);
 			}
 
 			(req as any).login(user, async (err: Error) => {
 				if (err) {
-					return res
-						.status(400)
-						.json(new HttpException("BAD REQUEST", "Bad Request!"));
+					return sendResponse(res, 400, "BAD REQUEST", "Bad Request!");
 				}
 
-				const { id, role, email, firstName, lastName } = user;
+				const { id, email, firstName, lastName } = user;
+				const role = (user as UserModelInclude).Roles?.roleName;
 
 				let authenticationtoken: string;
 
-				authenticationtoken = generateAccessToken({ id, role });
-
-				const myRole = await database_models.role.findOne({
-					where: { id: role },
-				});
-
-				if (myRole?.dataValues.roleName === "SELLER") {
+				if (role === "SELLER") {
 					const otp = randomatic("0", 6);
 
 					authenticationtoken = generateAccessToken({ id, role, otp });
@@ -117,23 +109,26 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 						subject: "Your Login Verification Code",
 						html: HTML_TEMPLATE(message),
 					};
-					Token.create({ token: authenticationtoken });
+					await insert_function<TokenModelAttributes>("Token", "create", {
+						token: authenticationtoken,
+					});
 
 					sendEmail(options);
-
-					const response = new HttpException(
+					return sendResponse(
+						res,
+						202,
 						"ACCEPTED",
 						"Email sent for verification. Please check your inbox and enter the OTP to complete the authentication process.",
-					).response();
-					return res.status(202).json({ response });
+					);
 				} else {
-					const response = new HttpException(
+					authenticationtoken = generateAccessToken({ id, role });
+					return sendResponse(
+						res,
+						200,
 						"SUCCESS",
 						"Login successfully!",
-					).response();
-					return res
-						.status(200)
-						.json({ ...response, token: authenticationtoken });
+						authenticationtoken,
+					);
 				}
 			});
 		},
@@ -142,28 +137,37 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 const accountVerify = async (req: Request, res: Response) => {
 	try {
-		const token = await Token.findOne({ where: { token: req.params.token } });
-
-		if (!token) {
-			return res.status(400).json({ status: 400, message: "Invalid link" });
-		}
-
-		const { user } = validateToken(
-			token.dataValues.token,
-			ACCESS_TOKEN_SECRET as string,
+		const token = await read_function<TokenModelAttributes>(
+			"Token",
+			"findOne",
+			{ where: { token: req.params.token } },
 		);
-		if (!user) {
-			return res.status(400).json({ status: 400, message: "Invalid link" });
+		if (!token) {
+			return sendResponse(res, 400, "BAD REQUEST", "Invalid link");
 		}
-		await User.update({ isVerified: true }, { where: { id: user.id } });
-		await Token.destroy({ where: { id: token.dataValues.id } });
-		res
-			.status(200)
-			.json({ status: 200, message: "Email verified successfull" });
+
+		const { user } = validateToken(token.token, ACCESS_TOKEN_SECRET as string);
+		if (!user) {
+			return sendResponse(res, 400, "BAD REQUEST", "Invalid link");
+		}
+		await insert_function<UserModelAttributes>(
+			"User",
+			"update",
+			{ isVerified: true },
+			{ where: { id: user.id } },
+		);
+		await read_function<TokenModelAttributes>("Token", "destroy", {
+			where: { id: token.id },
+		});
+		return sendResponse(res, 200, "SUCCESS", "Email verified successfully!");
 	} catch (error) {
-		res
-			.status(400)
-			.json({ status: 400, message: "Something went wrong", error: error });
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 
@@ -182,39 +186,52 @@ export const handleGoogleAuth = async (
 			"google",
 			async (err: Error, user: UserModelAttributes) => {
 				const userData = user;
-				const userExist = await User.findOne({
-					where: { email: userData.email },
-				});
+				const userExist = await read_function<UserModelAttributes>(
+					"User",
+					"findOne",
+					{ where: { email: userData.email } },
+				);
 
 				if (userExist) {
 					const token = generateAccessToken({
-						id: userExist.dataValues.id,
-						role: userExist.dataValues.role,
+						id: userExist.id,
+						role: userExist.role,
 					});
-					const response = new HttpException(
+					return sendResponse(
+						res,
+						200,
 						"SUCCESS",
 						"Logged in to you account successfully!",
-					).response();
-					return res.status(200).json({ ...response, token });
+						token,
+					);
 				}
 
-				const newUser = await User.create({ ...userData });
-				await newUser.save();
+				const newUser = await insert_function<UserModelAttributes>(
+					"User",
+					"create",
+					{ ...userData },
+				);
 				const token = generateAccessToken({
-					id: newUser.dataValues.id,
-					role: newUser.dataValues.role,
+					id: newUser.id,
+					role: newUser.role,
 				});
-				const response = new HttpException(
+				return sendResponse(
+					res,
+					201,
 					"SUCCESS",
 					"Account Created successfully!",
-				).response();
-				res.status(201).json({ ...response, token });
+					token,
+				);
 			},
 		)(req, res, next);
 	} catch (error) {
-		res
-			.status(500)
-			.json(new HttpException("SERVER ERROR", "Something went wrong!"));
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 
@@ -224,46 +241,52 @@ const two_factor_authentication = async (req: Request, res: Response) => {
 		const { token } = req.params;
 		const decodedToken = verifyAccessToken(token, res) as TokenData;
 		if (decodedToken && decodedToken.otp && otp === decodedToken.otp) {
-			Token.destroy({ where: { token: token } });
-			const response = new HttpException(
+			await read_function<TokenModelAttributes>("Token", "destroy", {
+				where: { token: token },
+			});
+			return sendResponse(
+				res,
+				200,
 				"SUCCESS",
 				"Account authentication successfully!",
-			).response();
-			return res.status(200).json({ ...response, token });
+				token,
+			);
 		} else {
-			const response = new HttpException(
+			return sendResponse(
+				res,
+				401,
 				"Unauthorized",
 				"Invalid One Time Password!!",
-			).response();
-			return res.status(401).json({ response });
+			);
 		}
 	} catch (error: any) {
-		return res.status(500).json({
-			status: 500,
-			error: error.message,
-		});
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 
 const logout = async (req: Request, res: Response) => {
 	try {
-		const token = req.header("Authorization")?.split(" ")[1];
-
+		const token = req.headers["authorization"]?.split(" ")[1];
 		if (token) {
-			await Blacklist.create({ token });
-			return res
-				.status(201)
-				.json(new HttpException("CREATED", "Logged out successfully"));
+			await insert_function<BlacklistModelAtributes>("Blacklist", "create", {
+				token,
+			});
+			return sendResponse(res, 201, "CREATED", "Logged out successfully");
 		}
 	} catch (error) {
-		return res
-			.status(500)
-			.json(
-				new HttpException(
-					"INTERNAL_SERVER_ERROR",
-					"An internal server error occurred",
-				),
-			);
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 

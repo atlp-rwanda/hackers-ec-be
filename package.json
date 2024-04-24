@@ -7,6 +7,7 @@
 		"dev": "ts-node-dev --require dotenv/config src/index.ts",
 		"build": "tsc",
 		"start": "node --require dotenv/config dist/index.js",
+		"drop-all-tables": "psql -U your_username -d your_database_name -c \"SELECT 'DROP TABLE IF EXISTS \"' || tablename || '\" CASCADE;' FROM pg_tables WHERE schemaname = 'public'\" | psql -U your_username -d your_database_name",
 		"migrate": "npx sequelize-cli db:migrate",
 		"migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed",
 		"migrate:down": "sequelize cli db:migrate:undo:all",
@@ -31,11 +32,13 @@
 		"bcrypt": "^5.1.1",
 		"cross-env": "^7.0.3",
 		"cors": "^2.8.5",
+		"cloudinary": "^2.2.0",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"express-session": "^1.18.0",
 		"joi": "^17.12.3",
 		"jsonwebtoken": "^9.0.2",
+		"multer": "^1.4.5-lts.1",
 		"nodemailer": "^6.9.13",
 		"npm-run-all": "^4.1.5",
 		"passport": "^0.7.0",
@@ -66,7 +69,8 @@
 			"/src/database/config",
 			"src/helpers",
 			"src/documention/index.ts",
-			"/src/utils"
+			"/src/utils",
+			"src/middlewares/multer.ts"
 		]
 	},
 	"devDependencies": {
@@ -77,6 +81,7 @@
 		"@types/express-session": "^1.18.0",
 		"@types/jest": "^29.5.12",
 		"@types/jsonwebtoken": "^9.0.6",
+		"@types/multer": "^1.4.11",
 		"@types/node": "^20.12.7",
 		"@types/nodemailer": "^6.4.14",
 		"@types/passport": "^1.0.16",

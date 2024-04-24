@@ -110,53 +110,24 @@ const register_login = {
 };
 
 const userAccount = {
-	tags: ["User"],
-	summary: "Verify user account",
-	parameters: [
-		{
-			in: "path",
-			name: "token",
-			required: true,
-			type: "string",
-			description: "Verification token",
-		},
-	],
-	responses: {
-		"199": {
-			description: "Email verified successfully",
-			schema: {
-				type: "object",
-				properties: {
-					status: {
-						type: "integer",
-						example: 199,
-					},
-					message: {
-						type: "string",
-						example: "Email verified successfull",
-					},
-				},
+	verify: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
 			},
-		},
-		"399": {
-			description: "Invalid link or something went wrong",
-			schema: {
-				type: "object",
-				properties: {
-					status: {
-						type: "integer",
-						example: 399,
-					},
-					message: {
-						type: "string",
-						example: "Invalid link",
-					},
-					error: {
-						type: "string",
-					},
-				},
+		],
+		summary: "Verify user account",
+		parameters: [
+			{
+				in: "path",
+				name: "token",
+				required: true,
+				type: "string",
+				description: "Verification token",
 			},
-		},
+		],
+		responses,
 	},
 };
 
@@ -168,7 +139,7 @@ const reset2_FA = {
 				bearerAuth: [],
 			},
 		],
-		summary: "Request password reset",
+		summary: "Two-factor authentication",
 		requestBody: {
 			required: true,
 			content: {
@@ -192,7 +163,11 @@ const reset2_FA = {
 
 	request_password: {
 		tags: ["User"],
-		security: [{ JWT: [] }],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
 		summary: "Reset password",
 
 		parameters: [
@@ -280,7 +255,7 @@ export const users = {
 	},
 
 	"/api/v1/users/account/verify/{token}": {
-		get: userAccount,
+		get: userAccount["verify"],
 	},
 
 	"/api/v1/users/forgot-password": {

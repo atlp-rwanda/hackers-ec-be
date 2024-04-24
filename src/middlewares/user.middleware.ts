@@ -3,21 +3,19 @@ import { userValidate } from "../validations/user.valid";
 import { NextFunction, Request, Response } from "express";
 import validateLogIn from "../validations/login.validation";
 import validateReset from "../validations/reset.validation";
-import { HttpException } from "../utils/http.exception";
+import { sendResponse } from "../utils/http.exception";
 import validateNewPassword from "../validations/newPassword.validations";
 const userValid = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		if (req.body) {
 			const { error } = userValidate(req.body);
 			if (error) {
-				return res
-					.status(400)
-					.json(
-						new HttpException(
-							"BAD REQUEST",
-							error.details[0].message.replace(/\"/g, ""),
-						),
-					);
+				return sendResponse(
+					res,
+					400,
+					"BAD REQUEST",
+					error.details[0].message.replace(/"/g, ""),
+				);
 			}
 		}
 		next();
@@ -34,14 +32,12 @@ const logInValidated = (req: Request, res: Response, next: NextFunction) => {
 	const error = validateLogIn(req.body);
 
 	if (error) {
-		return res
-			.status(400)
-			.json(
-				new HttpException(
-					"BAD REQUEST",
-					error.details[0].message.replace(/\"/g, ""),
-				),
-			);
+		return sendResponse(
+			res,
+			400,
+			"BAD REQUEST",
+			error.details[0].message.replace(/"/g, ""),
+		);
 	}
 
 	next();
@@ -51,14 +47,12 @@ const resetValidated = (req: Request, res: Response, next: NextFunction) => {
 	const error = validateReset(req.body);
 
 	if (error) {
-		return res
-			.status(400)
-			.json(
-				new HttpException(
-					"BAD REQUEST",
-					error.details[0].message.replace(/\"/g, ""),
-				),
-			);
+		return sendResponse(
+			res,
+			400,
+			"BAD REQUEST",
+			error.details[0].message.replace(/"/g, ""),
+		);
 	}
 
 	next();
@@ -67,14 +61,12 @@ const isPassword = (req: Request, res: Response, next: NextFunction) => {
 	const error = validateNewPassword(req.body);
 
 	if (error) {
-		return res
-			.status(400)
-			.json(
-				new HttpException(
-					"BAD REQUEST",
-					error.details[0].message.replace(/\"/g, ""),
-				),
-			);
+		return sendResponse(
+			res,
+			400,
+			"BAD REQUEST",
+			error.details[0].message.replace(/"/g, ""),
+		);
 	}
 
 	next();

@@ -6,9 +6,9 @@ const createRoleValidation = Joi.object({
 }).options({ allowUnknown: false });
 
 const ValidateRoleID = Joi.object({
-	roleId: Joi.string().guid({ version: "uuidv4" }).required().messages({
-		"string.empty": "roleId field can't be empty!",
-		"string.guid": "roleId must be a valid UUIDv4 string!",
+	role: Joi.string().required().messages({
+		"string.empty": "role field can't be empty!",
+		// "string.guid": "roleId must be a valid UUIDv4 string!",
 	}),
 }).options({ allowUnknown: false });
 
