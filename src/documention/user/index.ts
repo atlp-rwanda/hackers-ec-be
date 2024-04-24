@@ -131,6 +131,50 @@ const userAccount = {
 	},
 };
 
+const updatePassword = {
+	update_password: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Update user's password",
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
+					schema: {
+						type: "object",
+						properties: {
+							oldPassword: {
+								type: "string",
+								description: "User old password",
+								required: true,
+								example: "passwordQWE123",
+							},
+							newPassword: {
+								type: "string",
+								description: "User new password",
+								required: true,
+								example: "passworddQWE123",
+							},
+							confirmPassword: {
+								type: "string",
+								description: "User confirm new password",
+								required: true,
+								example: "passworddQWE123",
+							},
+						},
+					},
+				},
+			},
+		},
+		consumes: ["application/json"],
+		responses,
+	},
+};
+
 const reset2_FA = {
 	request_reset: {
 		tags: ["User"],
@@ -256,6 +300,10 @@ export const users = {
 
 	"/api/v1/users/account/verify/{token}": {
 		get: userAccount["verify"],
+	},
+
+	"/api/v1/users/password-update": {
+		patch: updatePassword["update_password"],
 	},
 
 	"/api/v1/users/forgot-password": {
