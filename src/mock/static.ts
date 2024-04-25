@@ -1,6 +1,6 @@
 export const login_user = {
-	email: "peter234565@gmail.com",
-	password: "passwordQWE123",
+	email: "classmate2k20@gmail.com",
+	password: "PasswordQWE123",
 };
 
 export const login_user_wrong_credentials = {
@@ -16,9 +16,9 @@ export const login_user_invalid_email = {
 export const NewUser = {
 	firstName: "peter",
 	lastName: "paul",
-	email: "peter234565@gmail.com",
-	password: "passwordQWE123",
-	confirmPassword: "passwordQWE123",
+	email: "classmate2k20@gmail.com",
+	password: "PasswordQWE123",
+	confirmPassword: "PasswordQWE123",
 };
 
 export const exist_user = {
