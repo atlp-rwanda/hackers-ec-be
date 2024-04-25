@@ -1,6 +1,6 @@
 export const login_user = {
-	email: "classmate2k20@gmail.com",
-	password: "PasswordQWE123",
+	email: "izanyibukayvette105@gmail.com",
+	password: "passwordQWE123",
 };
 
 export const login_user_wrong_credentials = {
@@ -16,9 +16,9 @@ export const login_user_invalid_email = {
 export const NewUser = {
 	firstName: "peter",
 	lastName: "paul",
-	email: "classmate2k20@gmail.com",
-	password: "PasswordQWE123",
-	confirmPassword: "PasswordQWE123",
+	email: "izanyibukayvette105@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
 };
 
 export const exist_user = {
@@ -44,4 +44,12 @@ export const User_without_email = {
 	lastName: "paul",
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
+};
+
+export const requestResetBody = {
+	email: "izanyibukayvette105@gmail.com",
+	forTesting: true,
+};
+export const newPasswordBody = {
+	password: "Yvette@123New",
 };
