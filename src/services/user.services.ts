@@ -19,6 +19,6 @@ export const createUser = async (data: UserInt) => {
 		firstName: data.firstName,
 		lastName: data.lastName,
 		role: "BUYER",
-		isVerified: false,
+		isVerified: false
 	});
 };

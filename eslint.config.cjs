@@ -3,7 +3,7 @@ const tseslint = require("typescript-eslint");
 
 module.exports = tseslint.config(
 	{
-		ignores: ["**/__test__", "**/*.json"],
+		ignores: ["**/__test__", "**/*.json"]
 	},
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
@@ -11,13 +11,13 @@ module.exports = tseslint.config(
 		languageOptions: {
 			parserOptions: {
 				project: true,
-				ecmaVersion: 2020,
-			},
-		},
+				ecmaVersion: 2020
+			}
+		}
 	},
 	{
 		files: ["*.ts", "*.js"],
-		...tseslint.configs.disableTypeChecked,
+		...tseslint.configs.disableTypeChecked
 	},
 	{
 		files: ["*.test *.js"],
@@ -27,10 +27,10 @@ module.exports = tseslint.config(
 			languageOptions: {
 				globals: {
 					it: "readonly",
-					describe: "readonly",
-				},
-			},
-		},
+					describe: "readonly"
+				}
+			}
+		}
 	},
 	{
 		rules: {
@@ -45,7 +45,7 @@ module.exports = tseslint.config(
 			"no-param-reassign": 0,
 			"comma-dangle": 0,
 			"no-undef": 0,
-			curly: ["error", "multi-line"],
-		},
-	},
+			curly: ["error", "multi-line"]
+		}
+	}
 );

@@ -10,7 +10,7 @@ interface ExpandedRequest extends Request {
 export const authenticateUser = (
 	req: ExpandedRequest,
 	res: Response,
-	next: NextFunction,
+	next: NextFunction
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
@@ -51,7 +51,7 @@ export const authenticateUser = (
 export const isBuyer = (
 	req: ExpandedRequest,
 	res: Response,
-	next: NextFunction,
+	next: NextFunction
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
@@ -76,7 +76,7 @@ export const isBuyer = (
 export const isVendor = (
 	req: ExpandedRequest,
 	res: Response,
-	next: NextFunction,
+	next: NextFunction
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
@@ -101,7 +101,7 @@ export const isVendor = (
 export const isAdmin = (
 	req: ExpandedRequest,
 	res: Response,
-	next: NextFunction,
+	next: NextFunction
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {

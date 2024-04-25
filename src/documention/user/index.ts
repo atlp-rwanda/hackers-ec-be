@@ -17,35 +17,35 @@ const users = {
 						properties: {
 							email: {
 								type: string,
-								example: "email@example.com",
+								example: "email@example.com"
 							},
 							userName: {
 								type: "string",
-								example: "kalake250",
+								example: "kalake250"
 							},
 							firstName: {
 								type: "string",
-								example: "kalake",
+								example: "kalake"
 							},
 							lastName: {
 								type: "string",
-								example: "kalisa",
+								example: "kalisa"
 							},
 							password: {
 								type: "string",
-								example: "passwordQWE123",
+								example: "passwordQWE123"
 							},
 							confirmPassword: {
 								type: "string",
-								example: "passwordQWE123",
-							},
-						},
-					},
-				},
+								example: "passwordQWE123"
+							}
+						}
+					}
+				}
 			],
 			consumes: ["application/json"],
-			responses,
-		},
+			responses
+		}
 	},
 	"/users/login": {
 		post: {
@@ -62,19 +62,19 @@ const users = {
 						properties: {
 							email: {
 								type: "string",
-								example: "email@example.com",
+								example: "email@example.com"
 							},
 							password: {
 								type: "string",
-								example: "passwordQWE123",
-							},
-						},
-					},
-				},
+								example: "passwordQWE123"
+							}
+						}
+					}
+				}
 			],
 			consumes: ["application/json"],
-			responses,
-		},
+			responses
+		}
 	},
 	"/users/account/verify/{token}": {
 		get: {
@@ -86,8 +86,8 @@ const users = {
 					name: "token",
 					required: true,
 					type: "string",
-					description: "Verification token",
-				},
+					description: "Verification token"
+				}
 			],
 			responses: {
 				"200": {
@@ -97,14 +97,14 @@ const users = {
 						properties: {
 							status: {
 								type: "integer",
-								example: 200,
+								example: 200
 							},
 							message: {
 								type: "string",
-								example: "Email verified successfull",
-							},
-						},
-					},
+								example: "Email verified successfull"
+							}
+						}
+					}
 				},
 				"400": {
 					description: "Invalid link or something went wrong",
@@ -113,21 +113,21 @@ const users = {
 						properties: {
 							status: {
 								type: "integer",
-								example: 400,
+								example: 400
 							},
 							message: {
 								type: "string",
-								example: "Invalid link",
+								example: "Invalid link"
 							},
 							error: {
-								type: "string",
-							},
-						},
-					},
-				},
-			},
-		},
-	},
+								type: "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 };
 
 export default users;

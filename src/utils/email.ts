@@ -13,15 +13,15 @@ const sendEmail = async (emailData: emailAttribute) => {
 			secure: true,
 			auth: {
 				user: process.env.EMAIL,
-				pass: process.env.PASSWORD,
-			},
+				pass: process.env.PASSWORD
+			}
 		});
 
 		await transporter.sendMail({
 			from: process.env.EMAIL,
 			to: emailData.user,
 			subject: emailData.subject,
-			text: emailData.message,
+			text: emailData.message
 		});
 		console.log("email sent sucessfully");
 	} catch (error) {

@@ -6,7 +6,7 @@ const userRoutes = express.Router();
 userRoutes.post(
 	"/register",
 	userMiddleware.userValid,
-	userController.registerUser,
+	userController.registerUser
 );
 
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);

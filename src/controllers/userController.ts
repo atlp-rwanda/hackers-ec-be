@@ -14,7 +14,7 @@ interface InfoAttribute extends CustomVerifyOptions {}
 const registerUser = async (
 	req: Request,
 	res: Response,
-	next: NextFunction,
+	next: NextFunction
 ) => {
 	try {
 		if (req.body) {
@@ -41,15 +41,15 @@ const registerUser = async (
 						await sendEmail({
 							user: user.email,
 							subject: "Verify Email",
-							message: message,
+							message: message
 						});
 						const response = new HttpException(
 							"SUCCESS",
-							"Account Created successfully, Plase Verify your Account",
+							"Account Created successfully, Plase Verify your Account"
 						).response();
 						res.status(201).json({ ...response, token });
 					});
-				},
+				}
 			)(req, res, next);
 		}
 	} catch (error) {
@@ -87,11 +87,11 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 				const token = generateAccessToken({ id, role });
 				const response = new HttpException(
 					"SUCCESS",
-					"Logged in to your account successfully!",
+					"Logged in to your account successfully!"
 				).response();
 				return res.status(200).json({ ...response, token });
 			});
-		},
+		}
 	)(req, res, next);
 };
 
@@ -121,5 +121,5 @@ const accountVerify = async (req: Request, res: Response) => {
 export default {
 	registerUser,
 	login,
-	accountVerify,
+	accountVerify
 };

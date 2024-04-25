@@ -24,46 +24,46 @@ User.init(
 			type: DataTypes.UUID,
 			defaultValue: UUIDV4,
 			primaryKey: true,
-			allowNull: false,
+			allowNull: false
 		},
 		userName: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		firstName: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		lastName: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		email: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: true,
+			unique: true
 		},
 		password: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		confirmPassword: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		role: {
 			type: DataTypes.ENUM("ADMIN", "BUYER", "SELLER"),
 			allowNull: false,
-			defaultValue: "BUYER",
+			defaultValue: "BUYER"
 		},
 		isVerified: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
-			defaultValue: false,
-		},
+			defaultValue: false
+		}
 	},
 	{
 		sequelize: sequelizeConnection,
-		tableName: "users",
-	},
+		tableName: "users"
+	}
 );

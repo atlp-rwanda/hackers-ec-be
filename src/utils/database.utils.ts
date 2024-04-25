@@ -3,7 +3,7 @@ export const deleteTableData = async (Model: any, tableName: string) => {
 		const deletedRows = await Model.destroy({
 			where: {},
 			truncate: true,
-			cascade: true,
+			cascade: true
 		});
 		if (deletedRows) {
 			console.log(`${deletedRows} rows have been deleted from ${tableName}.`);

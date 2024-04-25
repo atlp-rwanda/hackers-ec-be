@@ -24,7 +24,7 @@ passport.use(
 		{
 			usernameField: "email",
 			passwordField: "password",
-			passReqToCallback: true,
+			passReqToCallback: true
 		},
 		async (req, email, password, done) => {
 			try {
@@ -39,18 +39,18 @@ passport.use(
 					firstName: req.body.firstName,
 					lastName: req.body.lastName,
 					role: "BUYER",
-					isVerified: false,
+					isVerified: false
 				};
 				const userEXist = await User.findOne({
 					where: {
-						email: data.email,
-					},
+						email: data.email
+					}
 				});
 				if (userEXist) {
 					const options: CustomVerifyOptions = {
 						statusNumber: 409,
 						message: "User already exist!",
-						status: "CONFLICT",
+						status: "CONFLICT"
 					};
 					return done(null, false, options);
 				}
@@ -59,8 +59,8 @@ passport.use(
 			} catch (error) {
 				done(error);
 			}
-		},
-	),
+		}
+	)
 );
 
 passport.use(
@@ -69,7 +69,7 @@ passport.use(
 		{
 			usernameField: "email",
 			passwordField: "password",
-			passReqToCallback: true,
+			passReqToCallback: true
 		},
 		async (_req: Request, email, password, done) => {
 			try {
@@ -92,8 +92,8 @@ passport.use(
 			} catch (error) {
 				done(error);
 			}
-		},
-	),
+		}
+	)
 );
 
 export default passport;

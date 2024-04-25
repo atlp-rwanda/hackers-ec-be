@@ -7,7 +7,7 @@ const registerValidater = Joi.object({
 	isVerified: Joi.boolean(),
 	email: Joi.string().email().required().messages({
 		"string.empty": "Email field can't empty",
-		"string.email": "Invalid Email",
+		"string.email": "Invalid Email"
 	}),
 	password: Joi.string()
 		.required()
@@ -15,14 +15,14 @@ const registerValidater = Joi.object({
 		.messages({
 			"string.empty": "Password field can't be empty",
 			"string.pattern.base":
-				"Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number",
+				"Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number"
 		})
 		.required(),
 
 	confirmPassword: Joi.string().required().equal(Joi.ref("password")).messages({
-		"any.only": "Password don't match",
+		"any.only": "Password don't match"
 	}),
-	role: Joi.string(),
+	role: Joi.string()
 }).options({ allowUnknown: false });
 
 export const userValidate = (user: any) => {

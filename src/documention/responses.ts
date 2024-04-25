@@ -6,5 +6,5 @@ export const responses = {
 	500: { description: "Server Error" },
 	401: { description: "Unauthorized" },
 	403: { description: "Forbidden" },
-	404: { description: "Not Found" },
+	404: { description: "Not Found" }
 };

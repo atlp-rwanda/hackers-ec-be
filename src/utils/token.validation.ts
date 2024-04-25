@@ -7,13 +7,13 @@ interface Result {
 }
 export const validateToken = (
 	token: string | undefined,
-	secretKey: string,
+	secretKey: string
 ): Result => {
 	try {
 		if (!token) {
 			return {
 				valid: false,
-				reason: "Unauthorized, Please login to continue!",
+				reason: "Unauthorized, Please login to continue!"
 			};
 		}
 
@@ -26,12 +26,12 @@ export const validateToken = (
 		if (error instanceof JsonWebTokenError) {
 			return {
 				valid: false,
-				reason: "Unauthorized, Please login to continue!",
+				reason: "Unauthorized, Please login to continue!"
 			};
 		} else {
 			return {
 				valid: false,
-				reason: "Unexpected error, Please login to continue!",
+				reason: "Unexpected error, Please login to continue!"
 			};
 		}
 	}

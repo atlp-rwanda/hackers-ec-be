@@ -9,50 +9,50 @@ module.exports = {
 				type: Sequelize.UUID,
 				defaultValue: Sequelize.UUIDV4,
 				primaryKey: true,
-				allowNull: false,
+				allowNull: false
 			},
 			userName: {
 				type: Sequelize.STRING,
-				allowNull: false,
+				allowNull: false
 			},
 			firstName: {
 				type: Sequelize.STRING,
-				allowNull: false,
+				allowNull: false
 			},
 			lastName: {
 				type: Sequelize.STRING,
-				allowNull: false,
+				allowNull: false
 			},
 			email: {
 				type: Sequelize.STRING,
 				allowNull: false,
-				unique: true,
+				unique: true
 			},
 			password: {
 				type: Sequelize.STRING,
-				allowNull: false,
+				allowNull: false
 			},
 			confirmPassword: {
 				type: Sequelize.STRING,
-				allowNull: false,
+				allowNull: false
 			},
 			role: {
 				type: Sequelize.ENUM("ADMIN", "BUYER", "SELLER"),
 				allowNull: false,
-				defaultValue: "BUYER",
+				defaultValue: "BUYER"
 			},
 			createdAt: {
 				allowNull: false,
-				type: Sequelize.DATE,
+				type: Sequelize.DATE
 			},
 			updatedAt: {
 				allowNull: false,
-				type: Sequelize.DATE,
-			},
+				type: Sequelize.DATE
+			}
 		});
 	},
 
 	async down(queryInterface, Sequelize) {
 		await queryInterface.dropTable("users");
-	},
+	}
 };

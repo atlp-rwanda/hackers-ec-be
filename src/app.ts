@@ -12,8 +12,8 @@ app.use(
 	session({
 		secret: SESSION_SECRET,
 		resave: false,
-		saveUninitialized: true,
-	}),
+		saveUninitialized: true
+	})
 );
 app.use(passport.initialize());
 app.use(passport.session());
@@ -21,9 +21,9 @@ app.use(express.json());
 
 const options = {
 	swaggerDefinition: {
-		...config,
+		...config
 	},
-	apis: ["./src/documentation/*.ts"],
+	apis: ["./src/documentation/*.ts"]
 };
 
 const swaggerSpec = swaggerJsdoc(options);
@@ -32,7 +32,7 @@ app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/v1", router);
 app.get("/api/v1", (_req, res) => {
 	res.status(200).json({
-		message: "Welcome to Hacker's e-commerce backend!",
+		message: "Welcome to Hacker's e-commerce backend!"
 	});
 });
 app.get("/", (_req, res) => {

@@ -16,7 +16,7 @@ const host =
 
 const paths = {
 	...defaults,
-	...users,
+	...users
 };
 
 const config = {
@@ -24,7 +24,7 @@ const config = {
 	info: {
 		title: "Hacker's E-commerce API",
 		version: "1.0.0",
-		description: "cAPI endpoints for hacker's e-commerce documented on swagger",
+		description: "cAPI endpoints for hacker's e-commerce documented on swagger"
 	},
 	host,
 	basePath: `/api/${process.env.API_VERSION || "v1"}`,
@@ -34,16 +34,16 @@ const config = {
 			type: "apiKey",
 			name: "Authorization",
 			in: "header",
-			description: "Enter your JWT token in the format 'Bearer token'.",
-		},
+			description: "Enter your JWT token in the format 'Bearer token'."
+		}
 	},
 	tags: [
 		{
-			name: "Hacker's E-commerce API Documentation",
-		},
+			name: "Hacker's E-commerce API Documentation"
+		}
 	],
 	consumes: ["application/json"],
 	produces: ["application/json"],
-	paths,
+	paths
 };
 export default config;

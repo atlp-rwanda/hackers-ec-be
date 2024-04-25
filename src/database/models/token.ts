@@ -17,16 +17,16 @@ Token.init(
 			type: DataTypes.UUID,
 			defaultValue: UUIDV4,
 			primaryKey: true,
-			allowNull: false,
+			allowNull: false
 		},
 		token: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: true,
-		},
+			unique: true
+		}
 	},
 	{
 		sequelize: sequelizeConnection,
-		tableName: "tokens",
-	},
+		tableName: "tokens"
+	}
 );

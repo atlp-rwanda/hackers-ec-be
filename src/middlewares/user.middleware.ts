@@ -13,8 +13,8 @@ const userValid = async (req: Request, res: Response, next: NextFunction) => {
 					.json(
 						new HttpException(
 							"BAD REQUEST",
-							error.details[0].message.replace(/\"/g, ""),
-						),
+							error.details[0].message.replace(/\"/g, "")
+						)
 					);
 			}
 		}
@@ -23,7 +23,7 @@ const userValid = async (req: Request, res: Response, next: NextFunction) => {
 		res.status(500).json({
 			status: "SERVER FAIL",
 			message: "Something went wrong!!",
-			error: error,
+			error: error
 		});
 	}
 };
@@ -37,8 +37,8 @@ const logInValidated = (req: Request, res: Response, next: NextFunction) => {
 			.json(
 				new HttpException(
 					"BAD REQUEST",
-					error.details[0].message.replace(/\"/g, ""),
-				),
+					error.details[0].message.replace(/\"/g, "")
+				)
 			);
 	}
 
@@ -47,5 +47,5 @@ const logInValidated = (req: Request, res: Response, next: NextFunction) => {
 
 export default {
 	logInValidated,
-	userValid,
+	userValid
 };

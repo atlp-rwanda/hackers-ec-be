@@ -9,7 +9,7 @@ export class HttpException {
 	response(): { status: string; message: string } {
 		return {
 			status: this.status,
-			message: this.message,
+			message: this.message
 		};
 	}
 }

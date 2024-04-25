@@ -8,7 +8,7 @@ import {
 	login_user_invalid_email,
 	login_user_wrong_credentials,
 	NewUser,
-	user_bad_request,
+	user_bad_request
 } from "../mock/static";
 
 jest.setTimeout(30000);
@@ -17,7 +17,7 @@ function logErrors(
 	err: { stack: any },
 	_req: any,
 	_res: any,
-	next: (arg0: any) => void,
+	next: (arg0: any) => void
 ) {
 	console.log(err.stack);
 	next(err);
@@ -40,7 +40,7 @@ describe("USER API TEST", () => {
 			.expect(201);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual(
-			"Account Created successfully, Plase Verify your Account",
+			"Account Created successfully, Plase Verify your Account"
 		);
 		token = body.token;
 	});
@@ -61,7 +61,7 @@ describe("USER API TEST", () => {
 		// Assuming you have a way to create a user and a corresponding verification token
 
 		const { body } = await Jest_request.get(
-			`/api/v1/users/account/verify/${token}`,
+			`/api/v1/users/account/verify/${token}`
 		).expect(200);
 
 		expect(body.status).toStrictEqual(200);
@@ -70,7 +70,7 @@ describe("USER API TEST", () => {
 
 	it("should return 400 when the token is invalid", async () => {
 		const { body } = await Jest_request.get(
-			`/api/v1/users/account/verify/${token}`,
+			`/api/v1/users/account/verify/${token}`
 		).expect(400);
 
 		expect(body.status).toStrictEqual(400);
@@ -87,7 +87,7 @@ describe("USER API TEST", () => {
 			.expect(200);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual(
-			"Logged in to your account successfully!",
+			"Logged in to your account successfully!"
 		);
 		expect(body.token).toBeDefined();
 	});

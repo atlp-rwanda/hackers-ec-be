@@ -15,13 +15,13 @@ module.exports = {
 					confirmPassword: "passwordQWE123",
 					role: "BUYER",
 					createdAt: new Date(),
-					updatedAt: new Date(),
-				},
+					updatedAt: new Date()
+				}
 			],
-			{},
+			{}
 		);
 	},
 	async down(queryInterface, Sequelize) {
 		await queryInterface.bulkDelete("users", null, {});
-	},
+	}
 };
