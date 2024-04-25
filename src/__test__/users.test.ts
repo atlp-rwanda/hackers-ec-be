@@ -23,7 +23,7 @@ function logErrors(
 	next(err);
 }
 
-let token: string
+let token: string;
 
 const Jest_request = request(app.use(logErrors));
 
@@ -97,26 +97,25 @@ describe("USER API TEST", () => {
 		expect(body.message).toBeDefined();
 	});
 
-
 	/**
 	 * -----------------------------------------LOG OUT--------------------------------------
 	 */
 
-	it("Should log out a user and return 201", async () =>{
-		const {body} = await Jest_request.post("/api/v1/users/logout")
+	it("Should log out a user and return 201", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/logout")
 			.send()
-			.set("Authorization", `Bearer ${token}`)			
-			expect(201)
+			.set("Authorization", `Bearer ${token}`);
+		expect(201);
 		expect(body.status).toStrictEqual("CREATED");
 		expect(body.message).toStrictEqual("Logged out successfully");
-	})
-	
-	it("Should log out a user and return 401", async () =>{
-		const {body} = await Jest_request.post("/api/v1/users/logout")
+	});
+
+	it("Should log out a user and return 401", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/logout")
 			.send()
-			.set("Authorization", `Bearer ${token}`)			
-			expect(401)
+			.set("Authorization", `Bearer ${token}`);
+		expect(401);
 		expect(body.status).toStrictEqual("UNAUTHORIZED");
 		expect(body.message).toStrictEqual("Already logged out");
-	})
+	});
 });
