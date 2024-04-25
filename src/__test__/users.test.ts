@@ -29,11 +29,10 @@ let token: string;
 describe("USER API TEST", () => {
 	beforeAll(async () => {
 		await connectionToDatabase();
-		await User.drop();
 	});
 
 	afterAll(async () => {
-		await User.drop();
+		await deleteTableData(User, "users");
 	});
 	it("it should  register a user and return 201", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
