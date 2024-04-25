@@ -21,20 +21,10 @@ const registerUser = async (
 			passport.authenticate(
 				"signup",
 				(err: Error, user: UserModelAttributes, info: InfoAttribute) => {
-					if (err || !user) {
-						let statusNumber = 400;
-						let status = "BAD REQUEST";
-						let message = "Bad Request!";
-
-						if (info) {
-							statusNumber = info.statusNumber || 400;
-							status = info.status;
-							message = info.message;
-						}
-
+					if (!user) {
 						return res
-							.status(statusNumber)
-							.json(new HttpException(status, message));
+							.status(info.statusNumber || 400)
+							.json(new HttpException(info.status, info.message));
 					}
 					req.login(user, async () => {
 						const token = generateAccessToken({ id: user.id, role: user.role });
