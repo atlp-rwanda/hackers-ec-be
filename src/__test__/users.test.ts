@@ -29,6 +29,7 @@ let token: string;
 describe("USER API TEST", () => {
 	beforeAll(async () => {
 		await connectionToDatabase();
+		await User.drop();
 	});
 
 	afterAll(async () => {
