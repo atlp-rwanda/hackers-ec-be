@@ -92,11 +92,11 @@ describe("USER API TEST", () => {
 		expect(body.token).toBeDefined();
 	});
 
-	it("should return 404 when a user login with wrong credentials", async () => {
+	it("should return 403 when a user login with wrong credentials", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/login")
 			.send(login_user_wrong_credentials)
-			.expect(404);
-		expect(body.status).toStrictEqual("NOT FOUND");
+			.expect(403);
+		expect(body.status).toStrictEqual("FORBIDDEN");
 		expect(body.message).toStrictEqual("Wrong credentials!");
 	});
 
