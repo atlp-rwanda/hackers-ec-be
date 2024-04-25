@@ -21,6 +21,8 @@ const registerUser = async (
 			passport.authenticate(
 				"signup",
 				(err: Error, user: UserModelAttributes, info: InfoAttribute) => {
+					console.log(err);
+					console.log(info);
 					if (!user) {
 						if (info) {
 							return res
