@@ -8,7 +8,7 @@ module.exports = {
 				{
 					id: "11afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
 					userName: "DevBonheur",
-					firstName: "Kwizera",
+					firstName: "kwizera",
 					lastName: "Bonheur",
 					email: "kwizera.bonheur@example.com",
 					password: "passwordQWE123",
