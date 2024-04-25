@@ -43,7 +43,7 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("Account Created successfully!");
 		expect(body.token).toBeDefined();
 	});
-	
+
 	it("it should return a user not found and status 400", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
 			.send(user_bad_request)
