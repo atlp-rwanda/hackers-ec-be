@@ -23,6 +23,8 @@ function logErrors(
 	next(err);
 }
 
+let token: string
+
 const Jest_request = request(app.use(logErrors));
 
 describe("USER API TEST", () => {
@@ -68,6 +70,7 @@ describe("USER API TEST", () => {
 			"Logged in to your account successfully!",
 		);
 		expect(body.token).toBeDefined();
+		token = body.token;
 	});
 
 	it("should return 404 when a user login with wrong credentials", async () => {
@@ -93,4 +96,27 @@ describe("USER API TEST", () => {
 		expect(body.status).toStrictEqual("BAD REQUEST");
 		expect(body.message).toBeDefined();
 	});
+
+
+	/**
+	 * -----------------------------------------LOG OUT--------------------------------------
+	 */
+
+	it("Should log out a user and return 201", async () =>{
+		const {body} = await Jest_request.post("/api/v1/users/logout")
+			.send()
+			.set("Authorization", `Bearer ${token}`)			
+			expect(201)
+		expect(body.status).toStrictEqual("CREATED");
+		expect(body.message).toStrictEqual("Logged out successfully");
+	})
+	
+	it("Should log out a user and return 401", async () =>{
+		const {body} = await Jest_request.post("/api/v1/users/logout")
+			.send()
+			.set("Authorization", `Bearer ${token}`)			
+			expect(401)
+		expect(body.status).toStrictEqual("UNAUTHORIZED");
+		expect(body.message).toStrictEqual("Already logged out");
+	})
 });

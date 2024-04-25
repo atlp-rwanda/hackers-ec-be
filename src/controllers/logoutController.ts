@@ -5,8 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 
 const logout = async (req: Request, res: Response) => {
 	try {
-		const token = req.params.token;
-		console.log(token);
+		
+		const authorization = req.header("Authorization")?.split(" ")[1];
+		const token = authorization;
 
 		if (!token) {
 			return res
