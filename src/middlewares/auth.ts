@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from "../utils/keys";
+import { Blacklist } from "../database/models/blacklist";
 
 interface ExpandedRequest extends Request {
 	UserId?: JwtPayload;
 }
 
 // only logged in users
-export const authenticateUser = (
+export const authenticateUser = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
@@ -28,8 +29,14 @@ export const authenticateUser = (
 
 	try {
 		const verifiedToken = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
+
 		if (!verifiedToken) {
 			return res.status(401).json({ message: "please login to continue!" });
+		}
+
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		req.UserId = verifiedToken;
@@ -48,7 +55,7 @@ export const authenticateUser = (
 };
 
 // only buyers
-export const isBuyer = (
+export const isBuyer = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
@@ -59,8 +66,14 @@ export const isBuyer = (
 	}
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
+
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
+		}
+
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "buyer") {
@@ -73,7 +86,7 @@ export const isBuyer = (
 };
 
 //only vendors
-export const isVendor = (
+export const isVendor = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
@@ -84,8 +97,14 @@ export const isVendor = (
 	}
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
+
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
+		}
+
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "vendor") {
@@ -98,7 +117,7 @@ export const isVendor = (
 };
 
 //only admins
-export const isAdmin = (
+export const isAdmin = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
@@ -109,8 +128,14 @@ export const isAdmin = (
 	}
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
+
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
+		}
+
+		if (isInBlcaklist) {
+			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "admin") {

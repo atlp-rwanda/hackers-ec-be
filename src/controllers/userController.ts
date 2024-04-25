@@ -17,22 +17,15 @@ const registerUser = async (
 				"signup",
 				(err: Error, user: UserModelAttributes, info: InfoAttribute) => {
 					if (!user) {
-						if (info) {
-							return res
-								.status(info.statusNumber || 400)
-								.json(new HttpException(info.status, info.message));
-						} else {
-							return res
-								.status(400)
-								.json(new HttpException("Not Found", "An error occurred"));
-						}
+						return res
+							.status(info.statusNumber || 400)
+							.json(new HttpException(info.status, info.message));
 					}
 					req.login(user, async () => {
 						const token = generateAccessToken({ id: user.id, role: user.role });
-
 						const response = new HttpException(
 							"SUCCESS",
-							"Account Created successfully, Plase Verify your Account",
+							"Account Created successfully!",
 						).response();
 						res.status(201).json({ ...response, token });
 					});
@@ -58,8 +51,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 			if (info) {
 				return res
-					.status(403)
-					.json(new HttpException("FORBIDDEN", info.message));
+					.status(404)
+					.json(new HttpException("NOT FOUND", info.message));
 			}
 
 			(req as any).login(user, (err: Error) => {
