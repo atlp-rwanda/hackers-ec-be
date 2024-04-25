@@ -22,9 +22,15 @@ const registerUser = async (
 				"signup",
 				(err: Error, user: UserModelAttributes, info: InfoAttribute) => {
 					if (!user) {
-						return res
-							.status(info.statusNumber || 400)
-							.json(new HttpException(info.status, info.message));
+						if (info) {
+							return res
+								.status(info.statusNumber || 400)
+								.json(new HttpException(info.status, info.message));
+						} else {
+							return res
+								.status(400)
+								.json(new HttpException("Not Found", "An error occurred"));
+						}
 					}
 					req.login(user, async () => {
 						const token = generateAccessToken({ id: user.id, role: user.role });
