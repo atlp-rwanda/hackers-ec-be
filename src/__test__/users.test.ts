@@ -32,7 +32,7 @@ describe("USER API TEST", () => {
 	});
 
 	afterAll(async () => {
-		await deleteTableData(User, "users");
+		await User.drop();
 	});
 	it("it should  register a user and return 201", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
