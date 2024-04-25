@@ -14,7 +14,7 @@ const logout = async (req: Request, res: Response) => {
 		}
 
 		const blacklistedToken = await Blacklist.findOne({ where: { token } });
-		
+
 		if (!blacklistedToken) {
 			await Blacklist.create({ id: uuidv4(), token: token });
 			return res
