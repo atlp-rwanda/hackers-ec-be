@@ -5,8 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const logout = async (req: Request, res: Response) => {
 	try {
-		const authorization = req.header("Authorization")?.split(" ")[1];
-		const token = authorization;
+		const token = req.header("Authorization")?.split(" ")[1];
 
 		if (!token) {
 			return res
@@ -15,7 +14,7 @@ const logout = async (req: Request, res: Response) => {
 		}
 
 		const blacklistedToken = await Blacklist.findOne({ where: { token } });
-
+		
 		if (!blacklistedToken) {
 			await Blacklist.create({ id: uuidv4(), token: token });
 			return res
@@ -27,7 +26,6 @@ const logout = async (req: Request, res: Response) => {
 			.status(401)
 			.json(new HttpException("UNAUTHORIZED", "Already logged out"));
 	} catch (error) {
-		console.error("Error during logout:", error);
 		return res
 			.status(500)
 			.json(
