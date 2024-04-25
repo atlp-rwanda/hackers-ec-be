@@ -1,6 +1,6 @@
 export const login_user = {
-	email: "izanyibukayvette105@gmail.com",
-	password: "passwordQWE123",
+	email: "peter234565@gmail.com",
+	password: "Password@123",
 };
 
 export const login_user_wrong_credentials = {
@@ -16,9 +16,9 @@ export const login_user_invalid_email = {
 export const NewUser = {
 	firstName: "peter",
 	lastName: "paul",
-	email: "izanyibukayvette105@gmail.com",
-	password: "passwordQWE123",
-	confirmPassword: "passwordQWE123",
+	email: "peter234565@gmail.com",
+	password: "Password@123",
+	confirmPassword: "Password@123",
 };
 
 export const exist_user = {
@@ -26,30 +26,22 @@ export const exist_user = {
 	firstName: "travis",
 	lastName: "paul",
 	email: "travis@gmail.com",
-	password: "passwordQWE123",
-	confirmPassword: "passwordQWE123",
+	password: "Password@123",
+	confirmPassword: "Password@123",
 	role: "BUYER",
 };
 export const user_bad_request = {
 	firstName: "unknow",
 	lastName: "paul",
 	email: "unknown@gmail.com",
-	password: "passwordQWE123",
-	confirmPassword: "passwordQWE123",
+	password: "Password@123",
+	confirmPassword: "Password@123",
 	age: 12,
 };
 
 export const User_without_email = {
 	firstName: "peter",
 	lastName: "paul",
-	password: "passwordQWE123",
-	confirmPassword: "passwordQWE123",
-};
-
-export const requestResetBody = {
-	email: "izanyibukayvette105@gmail.com",
-	forTesting: true,
-};
-export const newPasswordBody = {
-	password: "Yvette@123New",
+	password: "Password@123",
+	confirmPassword: "Password@123",
 };
