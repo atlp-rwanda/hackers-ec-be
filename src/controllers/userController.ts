@@ -305,59 +305,64 @@ const updatePassword = async (
   try {
     const { oldPassword, newPassword, confirmPassword } = req.body;
 
-    //if new pass matches confirm pass
-
-    if (newPassword !== confirmPassword) {
-      throw new HttpException(
-        "BAD REQUEST", "New password and confirm password do not match"
-      );
-    }
-
     //authenticate user
 
     passport.authenticate(
       "login",
       async (error: Error, user: UserModelAttributes, info: InfoAttribute) => {
         if (error || !user) {
-          throw new HttpException(
-            "UNAUTHORIZED", "Invalid credentials. Please try again."
-          )
+          return res
+            .status(400)
+            .json(new HttpException("UNAUTHORIZED", "Invalid credentials. Please try again."));
+        }
+      
+
+      // if old password matches
+
+      const isOldPassMatch = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isOldPassMatch) {
+        return res
+          .status(400)
+          .json(new HttpException("UNAUTHORIZED", "Invalid credentials. Please try again."));
+      }
+      // if new pass matches confirm pass
+
+      if (newPassword !== confirmPassword) {
+        return res
+          .status(400)
+          .json(new HttpException("BAD REQUEST", "password do not match"));
       }
 
-      //if old pass matches
-
-      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!passwordMatch) {
-        throw new HttpException(
-          "UNAUTHORIZED", "Invalid credentials. Please try again."
-        )
-      }
-
-      //hash new password
+      // else hash new password
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       // update password
 
-      await User.update({ password: hashedPassword }, { where: { id: user.id } });
+      await User.update(
+        { password: hashedPassword },
+        { where: { id: user.id } }
+      );
 
-      // Generate new access token
+      // generate new token
+
       const token = generateAccessToken({ id: user.id, role: user.role });
 
-      // Send response
       const response = new HttpException(
         "SUCCESS",
-        "Password updated successfully."
+        "Password updated successfully!"
       ).response();
       res.status(200).json({ ...response, token });
-    }
-  )(req, res, next);
-  } catch (error) {
-    res.status(500).json(new HttpException("SERVER ERROR", "Something went wrong!"));
+    } 
+    )(req, res, next);
   }
+    catch (error) {
+      res
+        .status(500)
+        .json(new HttpException("SERVER FAILS", "Something went wrong!"));
+    }
 };
-
- 
 export default {
 	registerUser,
 	login,
