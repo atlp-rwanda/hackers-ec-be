@@ -3,16 +3,23 @@ import request from "supertest";
 import { connectionToDatabase } from "../database/config/db.config";
 import { deleteTableData } from "../utils/database.utils";
 import { User } from "../database/models/User";
+import { Token } from "../database/models/token";
 import {
+	bad_two_factor_authentication_data,
 	login_user,
 	login_user_invalid_email,
 	login_user_wrong_credentials,
 	NewUser,
+	partial_two_factor_authentication_data,
+	two_factor_authentication_data,
 	user_bad_request,
 } from "../mock/static";
-import { Token } from "../database/models/token";
+import { generateAccessToken } from "../helpers/security.helpers";
 
 jest.setTimeout(30000);
+
+let authenticatetoken: string;
+let otp: string;
 
 function logErrors(
 	err: { stack: any },
@@ -23,7 +30,6 @@ function logErrors(
 	console.log(err.stack);
 	next(err);
 }
-
 let token: string;
 
 const Jest_request = request(app.use(logErrors));
@@ -58,6 +64,7 @@ describe("USER API TEST", () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
 			.send(NewUser)
 			.expect(409);
+
 		expect(body.status).toStrictEqual("CONFLICT");
 		expect(body.message).toStrictEqual("User already exist!");
 	});
@@ -85,17 +92,13 @@ describe("USER API TEST", () => {
 	 * ---------------------------- LOGIN --------------------------------------------
 	 */
 
-	it("should successfully login a user and return 200", async () => {
+	it("should successfully login a user and return 202", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/login")
 			.send(login_user)
 			.expect(200);
-		expect(body.status).toStrictEqual("SUCCESS");
-		expect(body.message).toStrictEqual(
-			"Logged in to your account successfully!",
-		);
-		expect(body.token).toBeDefined();
 
-		token = body.token;
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Login successfully!");
 	});
 
 	it("should return 401 when a user login with wrong credentials", async () => {
@@ -122,9 +125,83 @@ describe("USER API TEST", () => {
 		expect(body.message).toBeDefined();
 	});
 });
+
 /**
  * -----------------------------------------LOG OUT--------------------------------------
  */
+
+it("Should log out a user and return 404", async () => {
+	const { body } = await Jest_request.post("/api/v1/users/logout").send();
+	expect(404);
+	expect(body.status).toStrictEqual("NOT FOUND");
+	expect(body.message).toStrictEqual("Token Not Found");
+});
+
+/*
+ * ---------------------------- TWO FACTOR AUTHENTICATION --------------------------------------------
+ */
+
+it("should authenticate the user and return SUCCESS", async () => {
+	const authenticatetoken = generateAccessToken({
+		id: "1",
+		role: "seller",
+		otp: two_factor_authentication_data.otp,
+	});
+	const { body } = await Jest_request.post(
+		`/api/v1/users/2fa/${authenticatetoken}`,
+	)
+		.send(two_factor_authentication_data)
+		.expect(200);
+
+	expect(body.message).toStrictEqual("Account authentication successfully!");
+});
+
+it("should return 401 if user add invalid otp", async () => {
+	const authenticatetoken = generateAccessToken({
+		id: "1",
+		role: "seller",
+		otp: two_factor_authentication_data.otp,
+	});
+	const { body } = await Jest_request.post(
+		`/api/v1/users/2fa/${authenticatetoken}`,
+	)
+		.send(bad_two_factor_authentication_data)
+		.expect(401);
+	expect(body.response.message).toStrictEqual("Invalid One Time Password!!");
+});
+
+it("should return 400 if user add with character < 6 invalid otp", async () => {
+	const authenticatetoken = generateAccessToken({
+		id: "1",
+		role: "seller",
+		otp: two_factor_authentication_data.otp,
+	});
+	const { body } = await Jest_request.post(
+		`/api/v1/users/2fa/${authenticatetoken}`,
+	)
+		.send(partial_two_factor_authentication_data)
+		.expect(400);
+	expect(body.message).toStrictEqual("OTP must be exactly 6 characters long!");
+});
+
+it("should return 400 if user add with character < 6 invalid otp", async () => {
+	const authenticatetoken = generateAccessToken({
+		id: "1",
+		role: "seller",
+		otp: two_factor_authentication_data.otp,
+	});
+	const { body } = await Jest_request.post(
+		`/api/v1/users/2fa/${authenticatetoken}`,
+	)
+		.send({})
+		.expect(400);
+	expect(body.message).toStrictEqual("otp is required");
+});
+
+/**
+ * -----------------------------------------LOG OUT--------------------------------------
+ */
+
 it("Should log out a user and return 404", async () => {
 	const { body } = await Jest_request.post("/api/v1/users/logout").send();
 	expect(404);

@@ -5,11 +5,6 @@ import { User } from "../database/models/User";
 import { isValidPassword } from "../utils/password.checks";
 import { hashPassword } from "../utils/password";
 
-export interface CustomVerifyOptions {
-	message: string;
-	status: string;
-	statusNumber?: number;
-}
 passport.serializeUser(function (user: any, done) {
 	done(null, user);
 });
@@ -47,16 +42,12 @@ passport.use(
 					},
 				});
 				if (userEXist) {
-					const options: CustomVerifyOptions = {
-						statusNumber: 409,
-						message: "User already exist!",
-						status: "CONFLICT",
-					};
-					return done(null, false, options);
+					return done(null, false, { message: "User already exist!" });
 				}
 				const user = await User.create({ ...data });
 				done(null, user);
 			} catch (error) {
+				console.log("error***********", error);
 				done(error);
 			}
 		},

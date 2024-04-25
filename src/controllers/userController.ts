@@ -1,14 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { User, UserModelAttributes } from "../database/models/User";
-import { generateAccessToken } from "../helpers/security.helpers";
-import { HttpException } from "../utils/http.exception";
-import passport, { CustomVerifyOptions } from "../middlewares/passport";
-import { Token } from "../database/models/token";
-import sendEmail from "../utils/email";
 import { validateToken } from "../utils/token.validation";
 import { JWT_SECRET } from "../utils/keys";
+import {
+	TokenData,
+	generateAccessToken,
+	verifyAccessToken,
+} from "../helpers/security.helpers";
+import { HttpException } from "../utils/http.exception";
+import passport from "../middlewares/passport";
+import randomatic from "randomatic";
+import HTML_TEMPLATE from "../utils/mail-template";
+import { Token } from "../database/models/token";
+import { senderEmail } from "../services/mailService";
 
-interface InfoAttribute extends CustomVerifyOptions {}
+interface InfoAttribute {
+	message: string;
+}
 
 const registerUser = async (
 	req: Request,
@@ -22,17 +30,17 @@ const registerUser = async (
 				(err: Error, user: UserModelAttributes, info: InfoAttribute) => {
 					if (!user) {
 						return res
-							.status(info.statusNumber || 400)
-							.json(new HttpException(info.status, info.message));
+							.status(409)
+							.json(new HttpException("CONFLICT", info.message));
 					}
 					req.login(user, async () => {
 						const token = generateAccessToken({ id: user.id, role: user.role });
 						await Token.create({ token });
 						const message = `${process.env.BASE_URL}/users/account/verify/${token}`;
-						await sendEmail({
-							user: user.email,
+						await senderEmail({
+							to: user.email,
 							subject: "Verify Email",
-							message: message,
+							html: message,
 						});
 						const response = new HttpException(
 							"SUCCESS",
@@ -74,14 +82,52 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 						.json(new HttpException("BAD REQUEST", "Bad Request!"));
 				}
 
-				const { id, role } = user;
+				const { id, role, email, firstName, lastName } = user;
 
-				const token = generateAccessToken({ id, role });
-				const response = new HttpException(
-					"SUCCESS",
-					"Logged in to your account successfully!",
-				).response();
-				return res.status(200).json({ ...response, token });
+				let authenticationtoken: string;
+
+				authenticationtoken = generateAccessToken({ id, role });
+
+				if (role === "SELLER") {
+					const otp = randomatic("0", 6);
+
+					authenticationtoken = generateAccessToken({ id, role, otp });
+
+					const host =
+						process.env.HOST || `http://localhost:${process.env.port}`;
+
+					const authenticationlink = `${host}host/api/v1/users/2fa?token=${authenticationtoken}`;
+
+					const message = `Hello ${firstName + " " + lastName},<br><br>
+
+        You recently requested to log in to ShopTrove E-Commerce app. To complete the login process,Please enter the following verification code <br><br> OTP:${otp} <br><br> You can also use the following link along with the provided OTP to complete your login:<br><br> <a href ='${authenticationlink}'>${authenticationlink}</a> <br><br> If you didn't request this, you can safely ignore this email. Your account is secure.
+
+        Thank you,<br><br>
+        The ShopTrove E-Commerce app Team`;
+
+					const options = {
+						to: email,
+						subject: "Your Login Verification Code",
+						html: HTML_TEMPLATE(message),
+					};
+					Token.create({ token: authenticationtoken });
+
+					senderEmail(options);
+
+					const response = new HttpException(
+						"ACCEPTED",
+						"Email sent for verification. Please check your inbox and enter the OTP to complete the authentication process.",
+					).response();
+					return res.status(202).json({ response });
+				} else {
+					const response = new HttpException(
+						"SUCCESS",
+						"Login successfully!",
+					).response();
+					return res
+						.status(200)
+						.json({ ...response, token: authenticationtoken });
+				}
 			});
 		},
 	)(req, res, next);
@@ -110,8 +156,43 @@ const accountVerify = async (req: Request, res: Response) => {
 	}
 };
 
+const two_factor_authentication = async (req: Request, res: Response) => {
+	try {
+		const { otp } = req.body;
+		const { token } = req.params;
+		const decodedToken = verifyAccessToken(token, res) as TokenData;
+		if (decodedToken && decodedToken.otp && otp === decodedToken.otp) {
+			Token.destroy({ where: { token: token } });
+			if (process.env.DEV_MODE) {
+				const response = new HttpException(
+					"SUCCESS",
+					"Account authentication successfully!",
+				).response();
+				return res.status(200).json({ ...response, token, otp });
+			}
+			const response = new HttpException(
+				"SUCCESS",
+				"Account authentication successfully!",
+			).response();
+			return res.status(200).json({ response });
+		} else {
+			const response = new HttpException(
+				"Unauthorized",
+				"Invalid One Time Password!!",
+			).response();
+			return res.status(401).json({ response });
+		}
+	} catch (error: any) {
+		return res.status(500).json({
+			status: 500,
+			error: error.message,
+		});
+	}
+};
+
 export default {
 	registerUser,
 	login,
 	accountVerify,
+	two_factor_authentication,
 };
