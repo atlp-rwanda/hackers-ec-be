@@ -13,13 +13,21 @@
 Welcome to <b>ShopTrove</b>, an Excellent E-commerce destination! Browse thousands of products from top brands, enjoy exclusive deals, and personalized recommendations. With secure payments and fast delivery, ShopTrove makes shopping a breeze. <br><br> This READMe file explains in detail how our app works and how to run it in your local development environment.
 
 ## Stack development
-[![Development stacks](https://skillicons.dev/icons?i=typescript,express,nodejs,jest&theme=light)](https://skillicons.dev)
-## Database, ORM and data storage
-[![Database, ORM and data storage](https://skillicons.dev/icons?i=postgres,sequelize&theme=light)](https://skillicons.dev)
-## Continuous integration
-[![Continuous integration](https://skillicons.dev/icons?i=githubactions&theme=light)](https://skillicons.dev)
-## Version control
-[![Version control](https://skillicons.dev/icons?i=github,git&theme=light)](https://skillicons.dev)
-## API documentation
-<a href="https://hackers-ec-be.onrender.com/api/v1/docs/">![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)</a>
 
+[![Development stacks](https://skillicons.dev/icons?i=typescript,express,nodejs,jest&theme=light)](https://skillicons.dev)
+
+## Database, ORM and data storage
+
+[![Database, ORM and data storage](https://skillicons.dev/icons?i=postgres,sequelize&theme=light)](https://skillicons.dev)
+
+## Continuous integration
+
+[![Continuous integration](https://skillicons.dev/icons?i=githubactions&theme=light)](https://skillicons.dev)
+
+## Version control
+
+[![Version control](https://skillicons.dev/icons?i=github,git&theme=light)](https://skillicons.dev)
+
+## API documentation
+
+<a href="https://hackers-ec-be.onrender.com/api/v1/docs/">![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)</a>
