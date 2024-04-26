@@ -2,7 +2,7 @@ import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 
 interface Result {
 	valid: boolean;
-	id?:string;
+	id?: string;
 	reason?: string;
 	user?: JwtPayload;
 }

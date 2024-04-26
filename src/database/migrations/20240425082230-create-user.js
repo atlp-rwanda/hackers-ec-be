@@ -40,6 +40,11 @@ module.exports = {
 				type: Sequelize.UUID,
 				defaultValue: Sequelize.UUIDV4,
 				allowNull: false,
+				references: {
+					model: "roles",
+					key: "id",
+					onDelete: "CASCASE",
+				},
 			},
 			isVerified: {
 				type: Sequelize.BOOLEAN,
@@ -56,7 +61,7 @@ module.exports = {
 			},
 		});
 	},
-
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async down(queryInterface, Sequelize) {
 		await queryInterface.dropTable("users");
 	},

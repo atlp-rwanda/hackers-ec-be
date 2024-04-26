@@ -5,8 +5,6 @@ import { roleRoutes } from "./roleRoutes";
 const router = express.Router();
 
 router.use("/users", userRoutes);
-router.use("/users/", roleRoutes);
-router.use("/roles", roleRoutes);
-
+router.use("/", roleRoutes);
 
 export default router;

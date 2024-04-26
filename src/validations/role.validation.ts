@@ -1,26 +1,19 @@
-
 import Joi from "joi";
 const createRoleValidation = Joi.object({
 	roleName: Joi.string().required().messages({
 		"string.empty": "roleName field can't be empty!",
 	}),
-	permission: Joi.string().required().messages({
-		"string.empty": "Permission field can't be empty!",
-	}),
 }).options({ allowUnknown: false });
 
 const ValidateRoleID = Joi.object({
-	roleId: Joi.string().guid({ version: 'uuidv4' }).required().messages({
-        "string.empty": "roleId field can't be empty!",
-        "string.guid": "roleId must be a valid UUIDv4 string!"
-    }),
-	roleName: Joi.string().required().messages({
-		"string.empty": "roleName field can't be empty!",
+	roleId: Joi.string().guid({ version: "uuidv4" }).required().messages({
+		"string.empty": "roleId field can't be empty!",
+		"string.guid": "roleId must be a valid UUIDv4 string!",
 	}),
 }).options({ allowUnknown: false });
 
 const validateRoleID = (body: any) => {
-	const { error }=ValidateRoleID.validate(body);
+	const { error } = ValidateRoleID.validate(body);
 	return error;
 };
 
@@ -29,7 +22,4 @@ const validateNewRole = (body: any) => {
 	return error;
 };
 
-export { validateNewRole
-	,validateRoleID
-            
-};
+export { validateNewRole, validateRoleID };

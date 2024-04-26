@@ -37,7 +37,7 @@ jobs:
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       CLOUDINARY_FOLDER_NAME: ${{ secrets.CLOUDINARY_FOLDER_NAME }}
-
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     strategy:
       matrix:
         node-version: ["20.x"]

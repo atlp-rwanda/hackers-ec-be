@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import { Sequelize } from "sequelize";
+import Models from "../models";
 
 config();
 
@@ -51,3 +52,15 @@ export const connectionToDatabase = async () => {
 		process.exit(1);
 	}
 };
+
+const db_models = Models(sequelizeConnection);
+
+Object.keys(db_models).forEach((key) => {
+	// @ts-expect-error ignore expected errors
+	if (db_models[key].associate) {
+		// @ts-expect-error ignore expected errors
+		db_models[key].associate(db_models);
+	}
+});
+const database_models = { ...db_models };
+export default database_models;

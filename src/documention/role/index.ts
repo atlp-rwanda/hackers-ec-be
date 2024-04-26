@@ -1,113 +1,125 @@
-import { string } from "joi";
 import { responses } from "../responses";
 
-const roles = {
-  "/roles": {
-    post: {
-      tags: ["Role"],
-      security: [{ JWT: [] }],
-      summary: "Create Role",
-      parameters: [
-        {
-          in: "body",
-          name: "request body",
-          required: true,
-          schema: {
-            type: "object",
-            properties: {
-             
-              roleName: {
-                type: "string",
-                example: "SELLER",
-              },
-              permission: {
-                type: "string",
-                example: "Add product to  stock",
-              },
-            },
-          },
-        },
-      ],
-      consumes: ["application/json"],
-      responses,
-    },
-  },
-  "/users/:userId/role": {
-    post: {
-      tags: ["Role"],
-      security: [{ JWT: [] }],
-      summary: "Assign role user",
-      parameters: [
-        {
-          in: "body",
-          name: "request body",
-          required: true,
-          schema: {
-            type: "object",
-            properties: {
-              roleId: {
-                type: "string",
-                example: "083a197e-ac11-4c62-b190-dad7b05954e",
-              },
-           
-            },
-          },
-        },
-      ],
-      consumes: ["application/json"],
-      responses,
-    },
-  },
-  "/roles/:id": {
-    patch: {
-      tags: ["Role"],
-      security: [{ JWT: [] }],
-      summary: "Edit Role",
-      parameters: [
-      
-        {
-          in: "body",          
-          name: "request body",
-          required: true,
-          schema: {
-            type: "object",
-            properties: {
-             
-              roleName: {
-                type: "string",
-                example: "SELLER",
-              },
-              permission: {
-                type: "string",
-                example: "Add product to  stock",
-              },
-            },
-          },
-        },
-      ],
-      
-      consumes: ["application/json"],
-      responses,
-    },
-    delete: {
-        tags: ["Role"],
-        security: [{ JWT: [] }],
-        summary: "delete Role",
-        parameters: [
-          {
-            name:"id",
-            in:"path",
-            schema:{
-                type:"string"
-            },
-            required:true
-          },
-        ],
-        consumes: ["application/json"],
-        responses,
-      },
-  },
-  
+const role_routes = {
+	read_all: {
+		tags: ["Role"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Get Roles",
+		consumes: ["application/json"],
+		responses,
+	},
+	create_role: {
+		tags: ["Role"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Create Role",
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
+					schema: {
+						type: "object",
+						properties: {
+							roleName: {
+								type: "string",
+								example: "SELLER",
+							},
+						},
+					},
+				},
+			},
+		},
+		responses,
+	},
+	Assign_role: {
+		tags: ["Role"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Assign role user",
+		parameters: [
+			{
+				in: "path",
+				name: "userId",
+				required: true,
+			},
+		],
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
+					schema: {
+						type: "object",
+						properties: {
+							roleId: {
+								type: "string",
+								required: true,
+								//format:"uuid",
+								example: "083a197e-ac11-4c62-b190-dad7b05954e",
+							},
+						},
+					},
+				},
+			},
+		},
+		responses,
+	},
+	Edit_role: {
+		tags: ["Role"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "Edit Role",
+		parameters: [
+			{
+				in: "path",
+				name: "id",
+				required: true,
+			},
+		],
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
+					schema: {
+						type: "object",
+						properties: {
+							roleName: {
+								type: "string",
+								required: true,
+								example: "SELLER",
+							},
+						},
+					},
+				},
+			},
+		},
+		responses,
+	},
 };
 
-export default roles;
+export const roles = {
+	"/api/v1/roles": {
+		get: role_routes["read_all"],
+	},
+	"/api/v1/roles/": {
+		post: role_routes["create_role"],
+	},
+	"/api/v1/users/{userId}/roles": {
+		post: role_routes["Assign_role"],
+	},
+	"/api/v1/roles/{id}": {
+		patch: role_routes["Edit_role"],
+	},
+};

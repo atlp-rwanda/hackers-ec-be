@@ -1,7 +1,7 @@
 import { Request } from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { User, UserModelAttributes } from "../database/models/User";
+import { UserModelAttributes } from "../database/models/User";
 import { hashPassword } from "../utils/password";
 import { isValidPassword } from "../utils/password.checks";
 import GooglePassport, { VerifyCallback } from "passport-google-oauth20";
@@ -13,6 +13,13 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const GoogleStrategy = GooglePassport.Strategy;
+import database_models from "../database/config/db.config";
+const User = database_models["User"];
+export interface CustomVerifyOptions {
+	message: string;
+	status: string;
+	statusNumber?: number;
+}
 
 passport.serializeUser(function (user: any, done) {
 	done(null, user);
@@ -32,6 +39,12 @@ passport.use(
 		},
 		async (req, email, password, done) => {
 			try {
+				const role = await database_models.role.findOne({
+					where: { roleName: "BUYER" },
+				});
+				if (!role) {
+					return done(null, false, { message: "you are assigned to no role" });
+				}
 				const data = {
 					email: email.trim(),
 					password: await hashPassword(password),
@@ -42,7 +55,7 @@ passport.use(
 							: req.body.userName,
 					firstName: req.body.firstName,
 					lastName: req.body.lastName,
-					role: "BUYER",
+					role: role?.dataValues.id as string,
 					isVerified: false,
 				};
 				const userEXist = await User.findOne({
