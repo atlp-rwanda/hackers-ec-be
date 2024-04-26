@@ -10,6 +10,7 @@ export interface UserModelAttributes {
 	password: string;
 	confirmPassword: string;
 	role: string;
+	isVerified: boolean;
 }
 type UserCreationAttributes = Optional<UserModelAttributes, "id"> & {
 	role?: string;
@@ -54,6 +55,11 @@ User.init(
 			type: DataTypes.ENUM("ADMIN", "BUYER", "SELLER"),
 			allowNull: false,
 			defaultValue: "BUYER",
+		},
+		isVerified: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false,
 		},
 	},
 	{

@@ -76,6 +76,58 @@ const users = {
 			responses,
 		},
 	},
+	"/users/account/verify/{token}": {
+		get: {
+			tags: ["User"],
+			summary: "Verify user account",
+			parameters: [
+				{
+					in: "path",
+					name: "token",
+					required: true,
+					type: "string",
+					description: "Verification token",
+				},
+			],
+			responses: {
+				"200": {
+					description: "Email verified successfully",
+					schema: {
+						type: "object",
+						properties: {
+							status: {
+								type: "integer",
+								example: 200,
+							},
+							message: {
+								type: "string",
+								example: "Email verified successfull",
+							},
+						},
+					},
+				},
+				"400": {
+					description: "Invalid link or something went wrong",
+					schema: {
+						type: "object",
+						properties: {
+							status: {
+								type: "integer",
+								example: 400,
+							},
+							message: {
+								type: "string",
+								example: "Invalid link",
+							},
+							error: {
+								type: "string",
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 	"/users/logout": {
 		post: {
 			tags: ["User"],

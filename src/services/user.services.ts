@@ -8,6 +8,7 @@ interface UserInt {
 	password: string;
 	confirmPassword: string;
 	role: string;
+	isVerified: boolean;
 }
 export const createUser = async (data: UserInt) => {
 	return User.create({
@@ -18,5 +19,6 @@ export const createUser = async (data: UserInt) => {
 		firstName: data.firstName,
 		lastName: data.lastName,
 		role: "BUYER",
+		isVerified: false,
 	});
 };

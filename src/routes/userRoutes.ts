@@ -11,6 +11,8 @@ userRoutes.post(
 );
 
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
+
 userRoutes.post("/logout", logout);
+userRoutes.get("/account/verify/:token", userController.accountVerify);
 
 export default userRoutes;
