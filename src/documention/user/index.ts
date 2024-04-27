@@ -227,7 +227,7 @@ const reset2_FA = {
 		responses,
 	},
 	Twofa: {
-		tags: ["Users"],
+		tags: ["User"],
 
 		security: [
 			{

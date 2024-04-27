@@ -54,12 +54,6 @@ module.exports = {
 				allowNull: false,
 				type: Sequelize.DATE,
 			},
-
-			isVerified: {
-				type: Sequelize.BOOLEAN,
-				allowNull: false,
-				defaultValue: false,
-			},
 		});
 	},
 

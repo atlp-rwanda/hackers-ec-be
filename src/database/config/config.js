@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-//add ssl in this config
 process.env.DB_HOSTED_MODE == "local"
 	? (dialect_option = {})
 	: (dialect_option = {

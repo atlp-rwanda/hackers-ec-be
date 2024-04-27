@@ -39,10 +39,6 @@ jobs:
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       CLOUDINARY_FOLDER_NAME: ${{ secrets.CLOUDINARY_FOLDER_NAME }}
 
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
-      GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
-
     strategy:
       matrix:
         node-version: ["20.x"]

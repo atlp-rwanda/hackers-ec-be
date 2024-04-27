@@ -17,13 +17,12 @@
 		"check": "prettier . --check",
 		"prepare": "husky",
 		"precommit": "prettier . --write && eslint --fix .",
-		"run-tests": "cross-env NODE_ENV=test jest --coverage --verbose --testTimeout=10000",
+		"run-tests": "cross-env NODE_ENV=test jest --detectOpenHandles --coverage --verbose --testTimeout=10000",
 		"pretest": "cross-env NODE_ENV=test npm run migrate:reset",
 		"run-after-tests": "cross-env NODE_ENV=test sequelize db:migrate:undo:all",
 		"test": "npm-run-all run-tests run-after-tests --continue-on-error"
 	},
 	"keywords": [],
-	"author": "",
 	"license": "ISC",
 	"dependencies": {
 		"@sendgrid/mail": "^8.1.3",
@@ -64,10 +63,13 @@
 		"coveragePathIgnorePatterns": [
 			"/src/services/mailService.ts",
 			"/src/middlewares/passport.ts",
+			"/src/middlewares/auth.ts",
+			"/src/database/config/config.js",
 			"/src/database/config/db.config.ts",
 			"/src/utils",
 			"src/helpers",
-			"src/documention/index.ts"
+			"src/documention/index.ts",
+			"/src/helpers/security.helpers.ts"
 		]
 	},
 	"devDependencies": {

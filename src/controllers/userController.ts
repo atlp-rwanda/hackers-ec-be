@@ -161,12 +161,13 @@ const accountVerify = async (req: Request, res: Response) => {
 			.json({ status: 400, message: "Something went wrong", error: error });
 	}
 };
-const googleAuthInit = async (req: Request, res: Response) => {
+
+export const googleAuthInit = async (req: Request, res: Response) => {
 	passport.authenticate("google", { scope: ["profile", "email"] });
 	res.redirect("/api/v1/users/auth/google/callback");
 };
 
-const handleGoogleAuth = async (
+export const handleGoogleAuth = async (
 	req: Request,
 	res: Response,
 	next: NextFunction,
@@ -191,6 +192,7 @@ const handleGoogleAuth = async (
 					).response();
 					return res.status(200).json({ ...response, token });
 				}
+
 				const newUser = await User.create({ ...userData });
 				await newUser.save();
 				const token = generateAccessToken({

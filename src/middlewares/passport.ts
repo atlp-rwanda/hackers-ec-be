@@ -75,9 +75,6 @@ passport.use(
 				const user = await User.findOne({ where: { email } });
 
 				if (!user) return done(null, false, { message: "Wrong credentials!" });
-				if (!user.dataValues.isVerified) {
-					return done(null, false, { message: "Verify your Account" });
-				}
 
 				const currPassword = user.dataValues.password;
 
@@ -87,6 +84,9 @@ passport.use(
 					return done(null, false, { message: "Wrong credentials!" });
 				}
 
+				if (!user.dataValues.isVerified) {
+					return done(null, false, { message: "Verify your Account" });
+				}
 				return done(null, user);
 			} catch (error) {
 				done(error);
@@ -101,7 +101,6 @@ interface GoogleProfileData {
 		familyName: string;
 	};
 	emails: Array<{ value: string }>;
-	photos: Array<{ value: string }>;
 }
 const userProfile = (profile: GoogleProfileData): UserModelAttributes => {
 	const { name, emails } = profile;
