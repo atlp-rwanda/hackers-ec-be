@@ -309,7 +309,7 @@ export const updatePassword = async (req: Request, res: Response) => {
 		}
 
 		const token = req.headers.authorization.split(" ")[1];
-		console.log("token**",token);
+		console.log("token**", token);
 
 		const decoded = jwt.verify(
 			token,
@@ -359,7 +359,12 @@ export const updatePassword = async (req: Request, res: Response) => {
 		console.error(error);
 		res
 			.status(500)
-			.json(new HttpException("INTERNAL SERVER ERROR", "Something really went wrong"));
+			.json(
+				new HttpException(
+					"INTERNAL SERVER ERROR",
+					"Something really went wrong",
+				),
+			);
 	}
 };
 export default {
