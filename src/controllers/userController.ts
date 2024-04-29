@@ -14,6 +14,7 @@ import passport from "../middlewares/passport";
 import { validateToken } from "../utils/token.validation";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import { sendEmail } from "../helpers/nodemailer";
+import { Blacklist } from "../database/models/blacklist";
 
 interface InfoAttribute {
 	message: string;
@@ -220,18 +221,11 @@ const two_factor_authentication = async (req: Request, res: Response) => {
 		const decodedToken = verifyAccessToken(token, res) as TokenData;
 		if (decodedToken && decodedToken.otp && otp === decodedToken.otp) {
 			Token.destroy({ where: { token: token } });
-			if (process.env.DEV_MODE) {
-				const response = new HttpException(
-					"SUCCESS",
-					"Account authentication successfully!",
-				).response();
-				return res.status(200).json({ ...response, token, otp });
-			}
 			const response = new HttpException(
 				"SUCCESS",
 				"Account authentication successfully!",
 			).response();
-			return res.status(200).json({ response });
+			return res.status(200).json({ ...response });
 		} else {
 			const response = new HttpException(
 				"Unauthorized",
@@ -247,6 +241,28 @@ const two_factor_authentication = async (req: Request, res: Response) => {
 	}
 };
 
+const logout = async (req: Request, res: Response) => {
+	try {
+		const token = req.header("Authorization")?.split(" ")[1];
+
+		if (token) {
+			await Blacklist.create({ token });
+			return res
+				.status(201)
+				.json(new HttpException("CREATED", "Logged out successfully"));
+		}
+	} catch (error) {
+		return res
+			.status(500)
+			.json(
+				new HttpException(
+					"INTERNAL_SERVER_ERROR",
+					"An internal server error occurred",
+				),
+			);
+	}
+};
+
 export default {
 	registerUser,
 	login,
@@ -254,4 +270,5 @@ export default {
 	two_factor_authentication,
 	googleAuthInit,
 	handleGoogleAuth,
+	logout,
 };

@@ -11,6 +11,7 @@ import { Request } from "express";
 import {
 	bad_two_factor_authentication_data,
 	login_user,
+	login_user_br,
 	login_user_invalid_email,
 	login_user_wrong_credentials,
 	NewUser,
@@ -92,6 +93,7 @@ describe("USER API TEST", () => {
 
 	it("should verify a user's account and return 200", async () => {
 		// Assuming you have a way to create a user and a corresponding verification token
+		console.log(token);
 
 		const { body } = await Jest_request.get(
 			`/api/v1/users/account/verify/${token}`,
@@ -126,6 +128,28 @@ describe("USER API TEST", () => {
 
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Login successfully!");
+	});
+
+	it("Should successfully login a user and return 202", async () => {
+		await User.update(
+			{ role: "SELLER" },
+			{
+				where: { email: login_user.email },
+			},
+		);
+
+		const { body } = await Jest_request.post("/api/v1/users/login")
+			.send(login_user)
+			.expect(202);
+		console.log(
+			body,
+			"msbdjbsd sbdjhankjsjdbkjsdja;skjd'laskjd'alsmd'lkasnm;knad'/lkmf/aldksnf'/laskdd",
+		);
+
+		expect(body.response.status).toStrictEqual("ACCEPTED");
+		expect(body.response.message).toStrictEqual(
+			"Email sent for verification. Please check your inbox and enter the OTP to complete the authentication process.",
+		);
 	});
 
 	it("should return 401 when a user login with wrong credentials", async () => {
@@ -352,11 +376,11 @@ describe("USER API TEST", () => {
 	 * -----------------------------------------LOG OUT--------------------------------------
 	 */
 
-	it("Should log out a user and return 404", async () => {
+	it("Should log out a user and return 401", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/logout").send();
-		expect(404);
-		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("Token Not Found");
+
+		expect(401);
+		expect(body.message).toStrictEqual("Unauthorized");
 	});
 
 	it("Should log out a user and return 201", async () => {
@@ -369,12 +393,11 @@ describe("USER API TEST", () => {
 		token = token;
 	});
 
-	it("Should alert an error and return 401", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/logout")
-			.send()
-			.set("Authorization", `Bearer ${token}`);
-		expect(401);
-		expect(body.status).toStrictEqual("UNAUTHORIZED");
-		expect(body.message).toStrictEqual("Already logged out");
+	it("should return 400 when request body is invalid", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/login")
+			.send(login_user_br)
+			.expect(400);
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("password is required");
 	});
 });

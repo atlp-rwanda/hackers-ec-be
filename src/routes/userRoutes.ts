@@ -1,7 +1,6 @@
 import express from "express";
 import userController from "../controllers/userController";
 import userMiddleware from "../middlewares/user.middleware";
-import logout from "../controllers/logoutController";
 import otpIsValid from "../middlewares/otp";
 import { resetPasswort, forgotPassword } from "../controllers/resetPasswort";
 import { authenticateUser } from "../middlewares/auth";
@@ -26,7 +25,8 @@ userRoutes.post(
 	resetPasswort,
 );
 userRoutes.get("/account/verify/:token", userController.accountVerify);
-userRoutes.post("/logout", authenticateUser, logout);
+userRoutes.post("/logout", authenticateUser, userController.logout);
+userRoutes.get("/account/verify/:token", userController.accountVerify);
 
 userRoutes.post(
 	"/2fa/:token",

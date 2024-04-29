@@ -28,13 +28,16 @@ export const authenticateUser = async (
 	}
 
 	try {
-		const verifiedToken = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as JwtPayload;
+		const verifiedToken = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!verifiedToken && isInBlcaklist) {
 			return res.status(401).json({ message: "please login to continue!" });
 		}
-		
+
 		req.UserId = verifiedToken;
 		next();
 	} catch (error) {
@@ -43,7 +46,7 @@ export const authenticateUser = async (
 				.status(401)
 				.json({ message: "Token has expired, please login again!" });
 		} else if (error instanceof jwt.JsonWebTokenError) {
-			return res.status(401).json({ message: "Invalid token!"});
+			return res.status(401).json({ message: "Invalid token!" });
 		} else {
 			return res.status(500).json({ message: "Internal server error" });
 		}
@@ -61,7 +64,10 @@ export const isBuyer = async (
 		return res.status(401).json({ message: "Unauthorized" });
 	}
 	try {
-		const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as JwtPayload;
+		const decoded = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
@@ -87,7 +93,10 @@ export const isVendor = async (
 		return res.status(401).json({ message: "Unauthorized" });
 	}
 	try {
-		const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as JwtPayload;
+		const decoded = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
@@ -113,7 +122,10 @@ export const isAdmin = async (
 		return res.status(401).json({ message: "Unauthorized" });
 	}
 	try {
-		const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET as string) as JwtPayload;
+		const decoded = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });

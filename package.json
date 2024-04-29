@@ -22,7 +22,7 @@
 		"test": "npm-run-all run-tests run-after-tests --continue-on-error",
 		"test-test": "jest --watchAll --no-cache --detectOpenHandles",
 		"test:ci": "jest --detectOpenHandles --coverage  --verbose",
-        "migrate:down": "sequelize db:migrate:undo:all"
+		"migrate:down": "sequelize db:migrate:undo:all"
 	},
 	"keywords": [],
 	"license": "ISC",
@@ -63,15 +63,14 @@
 			"lcov"
 		],
 		"coveragePathIgnorePatterns": [
-			"/src/services/mailService.ts",
 			"/src/middlewares/passport.ts",
 			"/src/middlewares/auth.ts",
 			"/src/database/config/config.js",
 			"/src/database/config/db.config.ts",
-			"/src/utils",
 			"src/helpers",
 			"src/documention/index.ts",
-			"/src/helpers/security.helpers.ts"
+			"/src/helpers/security.helpers.ts",
+			"/src/utils"
 		]
 	},
 	"devDependencies": {
