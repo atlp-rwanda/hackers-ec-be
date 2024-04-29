@@ -45,6 +45,7 @@ const authenticateUser = async (
 		next();
 	} catch (error) {
 		if (error instanceof jwt.TokenExpiredError) {
+			console.log("Token expired error");
 			return res
 				.status(401)
 				.json({ message: "Token has expired, please login again!" });

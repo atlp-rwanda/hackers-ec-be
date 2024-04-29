@@ -24,6 +24,7 @@ import { User } from "../database/models/User";
 import bcrypt from "bcrypt";
 import { HttpException } from "../utils/http.exception";
 import { PassThrough } from "stream";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 
 
@@ -297,71 +298,69 @@ const logout = async (req: Request, res: Response) => {
 	}
 };
 
-const updatePassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { oldPassword, newPassword, confirmPassword } = req.body;
+export const updatePassword = async (req: Request, res: Response) => {
+	try {
+		const { oldPassword, newPassword, confirmPassword } = req.body;
 
-    //authenticate user
+		if (!req.headers.authorization) {
+			return res
+				.status(401)
+				.json(new HttpException("UNAUTHORIZED", "Token is missing"));
+		}
 
-    passport.authenticate(
-      "login",
-      async (error: Error, user: UserModelAttributes, info: InfoAttribute) => {
-        if (error || !user) {
-          return res
-            .status(400)
-            .json(new HttpException("UNAUTHORIZED", "Invalid credentials. Please try again."));
-        }
-      
+		const token = req.headers.authorization.split(" ")[1];
+		console.log("token**",token);
 
-      // if old password matches
+		const decoded = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 
-      const isOldPassMatch = await bcrypt.compare(oldPassword, user.password);
+		const user = await User.findOne({ where: { id: decoded.id } });
 
-      if (!isOldPassMatch) {
-        return res
-          .status(400)
-          .json(new HttpException("UNAUTHORIZED", "Invalid credentials. Please try again."));
-      }
-      // if new pass matches confirm pass
+		const userPassword = user?.dataValues.password;
 
-      if (newPassword !== confirmPassword) {
-        return res
-          .status(400)
-          .json(new HttpException("BAD REQUEST", "password do not match"));
-      }
+		const isPasswordValid = await bcrypt.compare(
+			oldPassword,
+			userPassword as string,
+		);
 
-      // else hash new password
+		console.log("****************user", isPasswordValid);
+		if (!isPasswordValid) {
+			return res
+				.status(400)
+				.json(new HttpException("BAD REQUEST", "Old password is incorrect"));
+		}
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+		if (newPassword !== confirmPassword) {
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password and confirm password do not match",
+					),
+				);
+		}
 
-      // update password
+		const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      await User.update(
-        { password: hashedPassword },
-        { where: { id: user.id } }
-      );
+		await User.update(
+			{ password: hashedPassword },
+			{ where: { id: decoded.id } },
+		);
 
-      // generate new token
-
-      const token = generateAccessToken({ id: user.id, role: user.role });
-
-      const response = new HttpException(
-        "SUCCESS",
-        "Password updated successfully!"
-      ).response();
-      res.status(200).json({ ...response, token });
-    } 
-    )(req, res, next);
-  }
-    catch (error) {
-      res
-        .status(500)
-        .json(new HttpException("SERVER FAILS", "Something went wrong!"));
-    }
+		const response = new HttpException(
+			"SUCCESS",
+			"Password updated successfully",
+		).response();
+		res.status(200).json(response);
+	} catch (error) {
+		console.error(error);
+		res
+			.status(500)
+			.json(new HttpException("INTERNAL SERVER ERROR", "Something really went wrong"));
+	}
 };
 export default {
 	registerUser,

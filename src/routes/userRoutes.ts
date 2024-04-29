@@ -1,5 +1,6 @@
 import express from "express";
 import userController from "../controllers/userController";
+import { updatePassword } from "../controllers/userController";
 import userMiddleware from "../middlewares/user.middleware";
 import otpIsValid from "../middlewares/otp";
 import { resetPasswort, forgotPassword } from "../controllers/resetPasswort";
@@ -43,5 +44,6 @@ userRoutes.post(
 userRoutes.get("/auth/google", userController.googleAuthInit);
 
 userRoutes.get("/auth/google/callback", userController.handleGoogleAuth);
+userRoutes.patch("/password-update", updatePassword);
 
 export default userRoutes;
