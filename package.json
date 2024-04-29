@@ -8,7 +8,7 @@
 		"build": "tsc",
 		"start": "node --require dotenv/config dist/index.js",
 		"migrate": "npx sequelize-cli db:migrate",
-		"migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate",
+		"migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed",
 		"migrate:down": "sequelize db:migrate:undo:all",
 		"seed": "npx sequelize-cli db:seed:all",
 		"seed:undo": "npx sequelize-cli db:seed:undo:all",
@@ -23,7 +23,6 @@
 		"test": "npm-run-all run-tests run-after-tests --continue-on-error"
 	},
 	"keywords": [],
-	"author": "",
 	"license": "ISC",
 	"dependencies": {
 		"@sendgrid/mail": "^8.1.3",
@@ -31,6 +30,7 @@
 		"@types/nodemailer": "^6.4.14",
 		"bcrypt": "^5.1.1",
 		"cross-env": "^7.0.3",
+		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"express-session": "^1.18.0",
@@ -39,6 +39,7 @@
 		"nodemailer": "^6.9.13",
 		"npm-run-all": "^4.1.5",
 		"passport": "^0.7.0",
+		"passport-google-oauth20": "^2.0.0",
 		"passport-local": "^1.0.0",
 		"passport-stub": "^1.1.1",
 		"pg": "^8.11.5",
@@ -46,7 +47,7 @@
 		"randomatic": "^3.1.1",
 		"reflect-metadata": "^0.2.2",
 		"sequelize": "^6.37.3",
-		"uuid": "^9.0.0"
+		"uuid": "^9.0.1"
 	},
 	"jest": {
 		"preset": "ts-jest",
@@ -60,13 +61,15 @@
 			"lcov"
 		],
 		"coveragePathIgnorePatterns": [
-			"/src/utils/token.validation.ts",
 			"/src/services/mailService.ts",
 			"/src/middlewares/passport.ts",
+			"/src/middlewares/auth.ts",
+			"/src/database/config/config.js",
 			"/src/database/config/db.config.ts",
 			"/src/utils",
 			"src/helpers",
-			"src/documention/index.ts"
+			"src/documention/index.ts",
+			"/src/helpers/security.helpers.ts"
 		]
 	},
 	"devDependencies": {
@@ -80,6 +83,7 @@
 		"@types/node": "^20.12.7",
 		"@types/nodemailer": "^6.4.14",
 		"@types/passport": "^1.0.16",
+		"@types/passport-google-oauth20": "^2.0.14",
 		"@types/passport-local": "^1.0.38",
 		"@types/pg": "^8.11.5",
 		"@types/randomatic": "^3.1.5",
@@ -89,6 +93,7 @@
 		"@types/uuid": "^9.0.8",
 		"@typescript-eslint/eslint-plugin": "^7.7.0",
 		"@typescript-eslint/parser": "^7.7.0",
+		"cross-env": "^7.0.3",
 		"dotenv": "^16.4.5",
 		"eslint": "^8.57.0",
 		"eslint-config-airbnb-base": "^15.0.0",
@@ -96,6 +101,7 @@
 		"husky": "^9.0.11",
 		"jest": "^29.7.0",
 		"lint-staged": "^15.2.2",
+		"npm-run-all": "^4.1.5",
 		"passport-stub": "^1.1.1",
 		"prettier": "3.2.5",
 		"sequelize-cli": "^6.6.2",

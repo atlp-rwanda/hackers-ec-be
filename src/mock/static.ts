@@ -58,6 +58,10 @@ export const bad_two_factor_authentication_data = {
 export const partial_two_factor_authentication_data = {
 	otp: "20420",
 };
+export const google_profile = {
+	email: "karimu@gmail.com",
+	password: "karimu@gmail.com",
+};
 export const sameAsOldPassword = {
 	password: "passwordQWE123",
 };

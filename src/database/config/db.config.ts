@@ -24,7 +24,7 @@ const dialect_option = isLocal
 	? {}
 	: {
 			ssl: {
-				require: true, // Adjust based on your needs
+				require: process.env.SSL,
 				rejectUnauthorized: true,
 			},
 		};
