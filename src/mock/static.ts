@@ -19,6 +19,7 @@ export const NewUser = {
 	email: "peter234565@gmail.com",
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
+	role: "SELLER",
 	isVerified: true,
 };
 
@@ -29,7 +30,6 @@ export const exist_user = {
 	email: "travis@gmail.com",
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
-	role: "BUYER",
 };
 export const user_bad_request = {
 	firstName: "unknow",
@@ -45,4 +45,16 @@ export const User_without_email = {
 	lastName: "paul",
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
+};
+
+export const two_factor_authentication_data = {
+	otp: "204207",
+};
+
+export const bad_two_factor_authentication_data = {
+	otp: "204208",
+};
+
+export const partial_two_factor_authentication_data = {
+	otp: "20420",
 };

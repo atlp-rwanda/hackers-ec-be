@@ -6,3 +6,6 @@ export const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const DB_NAME_TEST = process.env.DB_NAME_TEST;
+export const EMAIL = process.env.EMAIL;
+export const SENDER_NAME = process.env.SENDER_NAME;
+export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;

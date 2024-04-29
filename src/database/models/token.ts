@@ -1,6 +1,5 @@
 import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
 import { sequelizeConnection } from "../config/db.config";
-
 // token interface
 export interface TokenModelAttributes {
 	id: string;

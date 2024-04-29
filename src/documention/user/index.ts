@@ -134,6 +134,41 @@ const users = {
 			security: [{ JWT: [] }],
 			summary: "Log out a user",
 			consumes: ["application/json"],
+		},
+	},
+
+	"/users/2fa/{token}": {
+		post: {
+			tags: ["User"],
+			security: [{ JWT: [] }],
+			summary: "Two-factor authentication",
+			parameters: [
+				{
+					in: "path",
+					name: "token",
+					required: true,
+					schema: {
+						type: "string",
+						example: "your_access_token",
+					},
+				},
+				{
+					in: "body",
+					name: "request body",
+					required: true,
+					schema: {
+						type: "object",
+						properties: {
+							otp: {
+								type: "string",
+								example: "123456",
+							},
+						},
+					},
+				},
+			],
+			consumes: ["application/json"],
+			produces: ["application/json"],
 			responses,
 		},
 	},

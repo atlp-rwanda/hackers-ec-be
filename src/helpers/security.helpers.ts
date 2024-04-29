@@ -3,9 +3,10 @@ import jwt from "jsonwebtoken";
 import { validateToken } from "../utils/token.validation";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 
-interface TokenData {
+export interface TokenData {
 	id: string | number;
 	role: string;
+	otp?: string;
 }
 
 export const generateAccessToken = (userData: TokenData) => {
