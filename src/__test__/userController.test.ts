@@ -26,32 +26,13 @@ function logErrors(
 
 const Jest_request = request(app.use(logErrors));
 
-describe("USER API TEST", () => {
+describe("UPDATE password API TEST", () => {
 	beforeAll(async () => {
 		await connectionToDatabase();
 	});
 
 	afterAll(async () => {
 		await deleteTableData(User, "users");
-	});
-	it("it should  register a user and return 201", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/register")
-			.send(NewUser)
-			.expect(201);
-		expect(body.status).toStrictEqual("SUCCESS");
-		expect(body.message).toStrictEqual("Account Created successfully!");
-		expect(body.token).toBeDefined();
-	});
-
-	it("should successfully login a user and return 200", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/login")
-			.send(login_user)
-			.expect(200);
-		expect(body.status).toStrictEqual("SUCCESS");
-		expect(body.message).toStrictEqual(
-			"Logged in to your account successfully!",
-		);
-		expect(body.token).toBeDefined();
 	});
 
 	it("should update user password and return 200", async () => {
