@@ -58,3 +58,17 @@ export const bad_two_factor_authentication_data = {
 export const partial_two_factor_authentication_data = {
 	otp: "20420",
 };
+export const sameAsOldPassword = {
+	password: "passwordQWE123",
+};
+export const requestResetBody = {
+	email: "peter234565@gmail.com",
+};
+export const NotUserrequestBody = {
+	email: "peter2345@gmail.com",
+	forTesting: true,
+};
+
+export const newPasswordBody = {
+	password: "New@password",
+};

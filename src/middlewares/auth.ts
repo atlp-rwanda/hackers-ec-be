@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { JWT_SECRET } from "../utils/keys";
+import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import { Blacklist } from "../database/models/blacklist";
 
 interface ExpandedRequest extends Request {
@@ -28,7 +28,10 @@ export const authenticateUser = async (
 	}
 
 	try {
-		const verifiedToken = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const verifiedToken = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!verifiedToken) {
@@ -65,7 +68,10 @@ export const isBuyer = async (
 		return res.status(401).json({ message: "Unauthorized" });
 	}
 	try {
-		const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const decoded = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!decoded) {
@@ -96,7 +102,10 @@ export const isVendor = async (
 		return res.status(401).json({ message: "Unauthorized" });
 	}
 	try {
-		const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const decoded = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!decoded) {
@@ -127,7 +136,10 @@ export const isAdmin = async (
 		return res.status(401).json({ message: "Unauthorized" });
 	}
 	try {
-		const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+		const decoded = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
 		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!decoded) {

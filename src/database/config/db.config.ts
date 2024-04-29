@@ -4,32 +4,30 @@ import { Sequelize } from "sequelize";
 config();
 
 let db_uri: string = "";
-const APP_MODE: string = (process.env.DEV_MODE as string) || "development";
-const DB_HOST_MODE: string = process.env.DB_HOSTED_MODE as string;
-
-let dialect_option: any;
+const APP_MODE: string = process.env.DEV_MODE || "development";
+const DB_HOST_MODE: string = process.env.DB_HOSTED_MODE || "local";
 
 switch (APP_MODE) {
 	case "test":
-		db_uri = process.env.DB_TEST_URL as string;
+		db_uri = process.env.DB_TEST_URL || "";
 		break;
-
 	case "production":
-		db_uri = process.env.DB_PROD_URL as string;
+		db_uri = process.env.DB_PROD_URL || "";
 		break;
 	default:
-		db_uri = process.env.DB_DEV_URL as string;
+		db_uri = process.env.DB_DEV_URL || "";
 		break;
 }
 
-DB_HOST_MODE === "local"
-	? (dialect_option = {})
-	: (dialect_option = {
+const isLocal = DB_HOST_MODE === "local";
+const dialect_option = isLocal
+	? {}
+	: {
 			ssl: {
-				require: process.env.SSL,
+				require: true, // Adjust based on your needs
 				rejectUnauthorized: true,
 			},
-		});
+		};
 
 export const sequelizeConnection: Sequelize = new Sequelize(db_uri, {
 	dialect: "postgres",

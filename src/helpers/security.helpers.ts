@@ -7,6 +7,11 @@ export interface TokenData {
 	id: string | number;
 	role: string;
 	otp?: string;
+	email?: string;
+}
+export interface resetTokenData {
+	id: string | number;
+	email: string;
 }
 
 export const generateAccessToken = (userData: TokenData) => {
