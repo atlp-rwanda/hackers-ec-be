@@ -82,13 +82,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			}
 
 			if (info) {
-<<<<<<< HEAD
 				return sendResponse(res, 401, "UNAUTHORIZED", info.message);
-=======
-				return res
-					.status(401)
-					.json(new HttpException("UNAUTHORIZED", info.message));
->>>>>>> 1bffdc3 (ft(update-password): new commit)
 			}
 
 			(req as any).login(user, async (err: Error) => {
@@ -149,7 +143,6 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 	)(req, res, next);
 };
 
-<<<<<<< HEAD
 const accountVerify = async (req: Request, res: Response) => {
 	try {
 		const token = await read_function<TokenModelAttributes>(
@@ -305,8 +298,6 @@ const logout = async (req: Request, res: Response) => {
 	}
 };
 
-=======
->>>>>>> 1bffdc3 (ft(update-password): new commit)
 export const updatePassword = async (req: Request, res: Response) => {
 	try {
 		const { oldPassword, newPassword, confirmPassword } = req.body;
