@@ -1,4 +1,4 @@
-import { Blacklist } from "../database/models/blacklist";
+import { Blacklist } from "../database/models/Blacklist";
 import { HttpException } from "../utils/http.exception";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
@@ -7,19 +7,15 @@ const logout = async (req: Request, res: Response) => {
 	try {
 		const token = req.header("Authorization")?.split(" ")[1];
 
-		if (!token) {
-			return res
-				.status(404)
-				.json(new HttpException("NOT FOUND", "Token Not Found"));
-		}
+		if (token) {
+			const blacklistedToken = await Blacklist.findOne({ where: { token } });
 
-		const blacklistedToken = await Blacklist.findOne({ where: { token } });
-
-		if (!blacklistedToken) {
-			await Blacklist.create({ id: uuidv4(), token: token });
-			return res
-				.status(201)
-				.json(new HttpException("CREATED", "Logged out successfully"));
+			if (!blacklistedToken) {
+				await Blacklist.create({ id: uuidv4(), token: token });
+				return res
+					.status(201)
+					.json(new HttpException("CREATED", "Logged out successfully"));
+			}
 		}
 
 		return res

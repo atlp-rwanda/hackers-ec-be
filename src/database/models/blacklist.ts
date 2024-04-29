@@ -1,4 +1,5 @@
 import { DataTypes, Model } from "sequelize";
+
 import { sequelizeConnection } from "../config/db.config";
 
 export interface BlacklistModelAtributes {
@@ -23,6 +24,6 @@ Blacklist.init(
 	},
 	{
 		sequelize: sequelizeConnection,
-		tableName: "Blacklisted_tokens",
+		tableName: "blacklisted_tokens",
 	},
 );
