@@ -1,4 +1,5 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
+
 import { sequelizeConnection } from "../config/db.config";
 
 export interface BlacklistModelAtributes {
@@ -6,7 +7,12 @@ export interface BlacklistModelAtributes {
 	token: string;
 }
 
-export class Blacklist extends Model<BlacklistModelAtributes> {}
+type BlacklistCreationAttributes = Optional<BlacklistModelAtributes, "id">;
+
+export class Blacklist extends Model<
+	BlacklistModelAtributes,
+	BlacklistCreationAttributes
+> {}
 
 Blacklist.init(
 	{
@@ -14,7 +20,7 @@ Blacklist.init(
 			type: DataTypes.UUID,
 			defaultValue: DataTypes.UUIDV4,
 			primaryKey: true,
-			allowNull: false,
+			allowNull: true,
 		},
 		token: {
 			type: DataTypes.STRING,
@@ -23,6 +29,6 @@ Blacklist.init(
 	},
 	{
 		sequelize: sequelizeConnection,
-		tableName: "Blacklisted_tokens",
+		tableName: "blacklisted_tokens",
 	},
 );

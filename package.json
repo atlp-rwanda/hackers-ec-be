@@ -9,7 +9,6 @@
 		"start": "node --require dotenv/config dist/index.js",
 		"migrate": "npx sequelize-cli db:migrate",
 		"migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed",
-		"migrate:down": "sequelize db:migrate:undo:all",
 		"seed": "npx sequelize-cli db:seed:all",
 		"seed:undo": "npx sequelize-cli db:seed:undo:all",
 		"lint": "eslint .",
@@ -20,7 +19,10 @@
 		"run-tests": "cross-env NODE_ENV=test jest --detectOpenHandles --coverage --verbose --testTimeout=10000",
 		"pretest": "cross-env NODE_ENV=test npm run migrate:reset",
 		"run-after-tests": "cross-env NODE_ENV=test sequelize db:migrate:undo:all",
-		"test": "npm-run-all run-tests run-after-tests --continue-on-error"
+		"test": "npm-run-all run-tests run-after-tests --continue-on-error",
+		"test-test": "jest --watchAll --no-cache --detectOpenHandles",
+		"test:ci": "jest --detectOpenHandles --coverage  --verbose",
+		"migrate:down": "sequelize db:migrate:undo:all"
 	},
 	"keywords": [],
 	"license": "ISC",
@@ -61,15 +63,14 @@
 			"lcov"
 		],
 		"coveragePathIgnorePatterns": [
-			"/src/services/mailService.ts",
 			"/src/middlewares/passport.ts",
 			"/src/middlewares/auth.ts",
 			"/src/database/config/config.js",
 			"/src/database/config/db.config.ts",
-			"/src/utils",
 			"src/helpers",
 			"src/documention/index.ts",
-			"/src/helpers/security.helpers.ts"
+			"/src/helpers/security.helpers.ts",
+			"/src/utils"
 		]
 	},
 	"devDependencies": {

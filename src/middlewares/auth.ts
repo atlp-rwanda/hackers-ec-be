@@ -34,12 +34,8 @@ export const authenticateUser = async (
 		) as JwtPayload;
 		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
-		if (!verifiedToken) {
+		if (!verifiedToken && isInBlcaklist) {
 			return res.status(401).json({ message: "please login to continue!" });
-		}
-
-		if (isInBlcaklist) {
-			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		req.UserId = verifiedToken;
@@ -72,14 +68,9 @@ export const isBuyer = async (
 			token,
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
-		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
-		}
-
-		if (isInBlcaklist) {
-			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "buyer") {
@@ -106,14 +97,9 @@ export const isVendor = async (
 			token,
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
-		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
-		}
-
-		if (isInBlcaklist) {
-			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "vendor") {
@@ -140,14 +126,9 @@ export const isAdmin = async (
 			token,
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
-		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
 
 		if (!decoded) {
 			return res.status(401).json({ message: "please login to continue!" });
-		}
-
-		if (isInBlcaklist) {
-			return res.status(401).json({ message: "Token arleady invalidated" });
 		}
 
 		if (decoded.role !== "admin") {

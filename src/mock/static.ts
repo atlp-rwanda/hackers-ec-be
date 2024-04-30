@@ -2,6 +2,10 @@ export const login_user = {
 	email: "peter234565@gmail.com",
 	password: "passwordQWE123",
 };
+export const login_user_br = {
+	email: "peter234565@gmail.com",
+	passworr: "passwordQWE123",
+};
 
 export const login_user_wrong_credentials = {
 	email: "john@example.com",

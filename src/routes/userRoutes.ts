@@ -1,9 +1,9 @@
 import express from "express";
 import userController from "../controllers/userController";
 import userMiddleware from "../middlewares/user.middleware";
-import logout from "../controllers/logoutController";
 import otpIsValid from "../middlewares/otp";
 import { resetPasswort, forgotPassword } from "../controllers/resetPasswort";
+import { authenticateUser } from "../middlewares/auth";
 
 const userRoutes = express.Router();
 userRoutes.post(
@@ -14,7 +14,6 @@ userRoutes.post(
 
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
 
-userRoutes.post("/logout", logout);
 userRoutes.post(
 	"/forgot-password",
 	userMiddleware.resetValidated,
@@ -25,6 +24,8 @@ userRoutes.post(
 	userMiddleware.isPassword,
 	resetPasswort,
 );
+userRoutes.get("/account/verify/:token", userController.accountVerify);
+userRoutes.post("/logout", authenticateUser, userController.logout);
 userRoutes.get("/account/verify/:token", userController.accountVerify);
 
 userRoutes.post(
