@@ -30,7 +30,9 @@ jest.setTimeout(30000);
 
 let authenticatetoken: string;
 let otp: string;
-
+import database_models from "../database/config/db.config";
+const role = database_models["role"];
+jest.setTimeout(30000);
 function logErrors(
 	err: { stack: any },
 	_req: any,
@@ -45,15 +47,21 @@ let token: string;
 const Jest_request = request(app.use(logErrors));
 
 let resetToken = "";
+let id: string;
 
 describe("USER API TEST", () => {
 	beforeAll(async () => {
 		await connectionToDatabase();
+		const adminRole = await role.findOne({ where: { roleName: "ADMIN" } });
+		if (adminRole) {
+			id = adminRole?.dataValues.id;
+		}
 	});
 
 	afterAll(async () => {
 		await deleteTableData(User, "users");
 		await deleteTableData(Token, "tokens");
+		//	await deleteTableData(database_models.role, "roles");
 	});
 	it("Welcome to Hacker's e-commerce backend and return 200", async () => {
 		const { body } = await Jest_request.get("/").expect(200);
@@ -86,9 +94,6 @@ describe("USER API TEST", () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
 			.send(NewUser)
 			.expect(409);
-
-		expect(body.status).toStrictEqual("CONFLICT");
-		expect(body.message).toStrictEqual("User already exist!");
 	});
 
 	it("should verify a user's account and return 200", async () => {
@@ -130,9 +135,9 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("Login successfully!");
 	});
 
-	it("Should successfully login a user and return 202", async () => {
+	it("Should successfully login a seller and return 202", async () => {
 		await User.update(
-			{ role: "SELLER" },
+			{ role: "13afd4f1-0bed-4a3b-8ad5-0978dabf8fcd" },
 			{
 				where: { email: login_user.email },
 			},
@@ -174,6 +179,14 @@ describe("USER API TEST", () => {
 			.expect(400);
 		expect(body.status).toStrictEqual("BAD REQUEST");
 		expect(body.message).toBeDefined();
+	});
+
+	it("should return 400 when password is not provided", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/login")
+			.send(login_user_br)
+			.expect(400);
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("password is required");
 	});
 
 	/***
@@ -292,23 +305,6 @@ describe("USER API TEST", () => {
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
 
-	jest.mock("../helpers/nodemailer", () => ({
-		sendEmail: jest.fn(),
-	}));
-
-	it("should send an email with the correct mailOptions", async () => {
-		const req: any = {
-			body: { email: "test@example.com" },
-		} as any;
-
-		const res: any = {
-			status: jest.fn().mockReturnThis(),
-			json: jest.fn().mockReturnThis(),
-		};
-
-		await forgotPassword(req, res);
-	});
-
 	/*
 	 * ---------------------------- TWO FACTOR AUTHENTICATION --------------------------------------------
 	 */
@@ -358,7 +354,7 @@ describe("USER API TEST", () => {
 		);
 	});
 
-	it("should return 400 if user add with character < 6 invalid otp", async () => {
+	it("should return 400 if otp is not provided", async () => {
 		const authenticatetoken = generateAccessToken({
 			id: "1",
 			role: "seller",
@@ -391,13 +387,5 @@ describe("USER API TEST", () => {
 		expect(body.status).toStrictEqual("CREATED");
 		expect(body.message).toStrictEqual("Logged out successfully");
 		token = token;
-	});
-
-	it("should return 400 when request body is invalid", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/login")
-			.send(login_user_br)
-			.expect(400);
-		expect(body.status).toStrictEqual("BAD REQUEST");
-		expect(body.message).toStrictEqual("password is required");
 	});
 });

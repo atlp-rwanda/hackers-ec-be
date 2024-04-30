@@ -15,11 +15,11 @@ import { validateToken } from "../utils/token.validation";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import { sendEmail } from "../helpers/nodemailer";
 import { Blacklist } from "../database/models/blacklist";
+import database_models from "../database/config/db.config";
 
 interface InfoAttribute {
 	message: string;
 }
-
 const registerUser = async (
 	req: Request,
 	res: Response,
@@ -56,7 +56,7 @@ const registerUser = async (
 			)(req, res, next);
 		}
 	} catch (error) {
-		res
+		return res
 			.status(500)
 			.json(new HttpException("SERVER FAILS", "Something went wrong!"));
 	}
@@ -78,7 +78,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					.json(new HttpException("UNAUTHORIZED", info.message));
 			}
 
-			(req as any).login(user, (err: Error) => {
+			(req as any).login(user, async (err: Error) => {
 				if (err) {
 					return res
 						.status(400)
@@ -91,7 +91,11 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 				authenticationtoken = generateAccessToken({ id, role });
 
-				if (role === "SELLER") {
+				const myRole = await database_models.role.findOne({
+					where: { id: role },
+				});
+
+				if (myRole?.dataValues.roleName === "SELLER") {
 					const otp = randomatic("0", 6);
 
 					authenticationtoken = generateAccessToken({ id, role, otp });
@@ -225,7 +229,7 @@ const two_factor_authentication = async (req: Request, res: Response) => {
 				"SUCCESS",
 				"Account authentication successfully!",
 			).response();
-			return res.status(200).json({ ...response });
+			return res.status(200).json({ ...response, token });
 		} else {
 			const response = new HttpException(
 				"Unauthorized",

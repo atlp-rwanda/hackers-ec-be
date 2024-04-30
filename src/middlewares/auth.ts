@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import { Blacklist } from "../database/models/blacklist";
+// import { userRole } from "../database/models/userroles";
+// import { userRoleModelAttributes } from "../database/models/userroles";
+import { ACCESS_TOKEN_SECRET } from "../utils/keys";
+import database_models from "../database/config/db.config";
+const Role = database_models["role"];
+const User = database_models["User"];
 
 interface ExpandedRequest extends Request {
 	UserId?: JwtPayload;
@@ -17,9 +22,7 @@ export const authenticateUser = async (
 	if (!token) {
 		return res.status(401).json({ message: "Unauthorized" });
 	}
-
 	//checking token expiration
-
 	const decoded = jwt.decode(token) as JwtPayload;
 	if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
 		return res
@@ -111,7 +114,7 @@ export const isVendor = async (
 	}
 };
 
-//only admins
+//only admins auth
 export const isAdmin = async (
 	req: ExpandedRequest,
 	res: Response,
@@ -119,23 +122,37 @@ export const isAdmin = async (
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
-		return res.status(401).json({ message: "Unauthorized" });
+		return res.status(401).json({ message: "Please Login Again" });
 	}
 	try {
 		const decoded = jwt.verify(
 			token,
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
-
 		if (!decoded) {
-			return res.status(401).json({ message: "please login to continue!" });
+			return res.status(401).json({ message: "Expired token,Try Login Again" });
 		}
-
-		if (decoded.role !== "admin") {
-			return res.status(403).json({ message: "forbidden" });
+		const role = await User.findOne({
+			where: { id: decoded.id },
+			include: { model: Role, as: "Roles" },
+		});
+		if (role) {
+			const x = role.toJSON() as unknown as { Roles: { roleName: string } };
+			if (x.Roles.roleName === "ADMIN") {
+				next();
+			} else {
+				return res
+					.status(403)
+					.json({ message: "you are not allowed to access this route!" });
+			}
 		}
-		next();
 	} catch (error) {
-		return res.status(500).json({ message: "Internal server error" });
+		if (error instanceof jwt.JsonWebTokenError) {
+			return res.status(401).json({ message: "Invalid token,Try Login Again" });
+		} else {
+			return res
+				.status(500)
+				.json({ message: "Internal server error", error: error });
+		}
 	}
 };

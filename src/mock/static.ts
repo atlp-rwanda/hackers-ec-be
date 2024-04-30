@@ -34,6 +34,7 @@ export const exist_user = {
 	email: "travis@gmail.com",
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
+	role: "85013dc0-a77a-4a38-9a38-9ef493c87d9d",
 };
 export const user_bad_request = {
 	firstName: "unknow",
@@ -79,4 +80,15 @@ export const NotUserrequestBody = {
 
 export const newPasswordBody = {
 	password: "New@password",
+};
+
+export const roleAdmin = {
+	roleName: "ADMIN",
+};
+
+export const mockRole = {
+	roleName: "UserRole",
+};
+export const mockRoleBuyer = {
+	roleName: "BUYER",
 };

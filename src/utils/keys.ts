@@ -10,3 +10,4 @@ export const EMAIL = process.env.EMAIL;
 export const PASSWORD = process.env.PASSWORD;
 export const HOST = process.env.HOST;
 export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+export const DEFAULT_ROLE = process.env.DEFAULT_ROLE;
