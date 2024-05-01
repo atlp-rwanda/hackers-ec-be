@@ -258,6 +258,10 @@ export const users = {
 		get: userAccount["verify"],
 	},
 
+	// "/api/v1/users/password-update": {
+	// 	patch: updatePassword["update_password"],
+	// },
+
 	"/api/v1/users/forgot-password": {
 		post: reset2_FA["request_reset"],
 	},

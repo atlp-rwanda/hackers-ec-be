@@ -119,6 +119,36 @@ passport.use(
 		},
 	),
 );
+interface GoogleProfileData {
+	id: string;
+	name: {
+		givenName: string;
+		familyName: string;
+	};
+	emails: Array<{ value: string }>;
+}
+
+passport.use(
+	"google",
+	new GoogleStrategy(
+		{
+			clientID: GOOGLE_CLIENT_ID,
+			clientSecret: GOOGLE_SECRET_ID,
+			callbackURL: GOOGLE_CALLBACK_URL,
+			scope: ["profile", "email"],
+			passReqToCallback: true,
+		},
+		(
+			_req: Request,
+			_accessToken: string,
+			_refreshToken: string,
+			profile: any,
+			cb: VerifyCallback,
+		) => {
+			cb(null, userProfile(profile));
+		},
+	),
+);
 
 const userProfile = async (
 	profile: GoogleProfileData,

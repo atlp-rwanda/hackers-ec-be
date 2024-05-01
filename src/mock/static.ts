@@ -153,3 +153,9 @@ export const new_updated_category = {
 	name: "Fancy Cars",
 	description: "This cars are highly amazing!",
 };
+
+export const update_pass = {
+	oldPassword: "passwordQWE123",
+	newPassword: "newPassword123",
+	confirmPassword: "newPassword123",
+}

@@ -1,38 +1,10 @@
+/* eslint-disable no-useless-escape */
 import { userValidate } from "../validations/user.valid";
 import { NextFunction, Request, Response } from "express";
 import validateLogIn from "../validations/login.validation";
 import validateReset from "../validations/reset.validation";
 import { sendResponse } from "../utils/http.exception";
 import validateNewPassword from "../validations/newPassword.validations";
-import { HttpException } from "../utils/http.exception";
-import { User } from "../database/models/User";
-
-const userExist = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		if (req.body) {
-			const newUSer = {
-				email: req.body.email,
-				password: req.body.password,
-			};
-
-			const user = await User.findOne({
-				where: {
-					email: newUSer.email,
-				},
-			});
-			if (user) {
-				return res
-					.status(409)
-					.json(new HttpException("CONFLICT", "User already exist!!"));
-			}
-		}
-		next();
-	} catch (error) {
-		res
-			.status(500)
-			.json(new HttpException("SERVER ERROR", "Something went wrong!!"));
-	}
-};
 const userValid = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		if (req.body) {
@@ -105,5 +77,4 @@ export default {
 	userValid,
 	resetValidated,
 	isPassword,
-	userExist,
 };

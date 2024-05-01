@@ -23,10 +23,7 @@ import { insert_function, read_function } from "../utils/db_methods";
 import { User } from "../database/models/User";
 import bcrypt from "bcrypt";
 import { HttpException } from "../utils/http.exception";
-import { PassThrough } from "stream";
 import jwt, { JwtPayload } from "jsonwebtoken";
-
-
 
 const registerUser = async (
 	req: Request,
@@ -367,6 +364,8 @@ export const updatePassword = async (req: Request, res: Response) => {
 			);
 	}
 };
+
+
 export default {
 	registerUser,
 	login,
