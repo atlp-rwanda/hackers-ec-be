@@ -1,26 +1,24 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { Blacklist } from "../database/models/blacklist";
-// import { userRole } from "../database/models/userroles";
-// import { userRoleModelAttributes } from "../database/models/userroles";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import database_models from "../database/config/db.config";
-const Role = database_models["role"];
-const User = database_models["User"];
+import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
+import { HttpException } from "../utils/http.exception";
 
-interface ExpandedRequest extends Request {
-	UserId?: JwtPayload;
+export interface ExpandedRequest extends Request {
+	user?: JwtPayload;
 }
 
 // only logged in users
-export const authenticateUser = async (
+const authenticateUser = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
-		return res.status(401).json({ message: "Unauthorized" });
+		return res
+			.status(401)
+			.json({ status: "UNAUTHORIZED", message: "Please login to continue" });
 	}
 	//checking token expiration
 	const decoded = jwt.decode(token) as JwtPayload;
@@ -35,13 +33,15 @@ export const authenticateUser = async (
 			token,
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
-		const isInBlcaklist = await Blacklist.findOne({ where: { token } });
+		const isInBlcaklist = await database_models.Blacklist.findOne({
+			where: { token },
+		});
 
-		if (!verifiedToken && isInBlcaklist) {
+		if (!verifiedToken || isInBlcaklist) {
 			return res.status(401).json({ message: "please login to continue!" });
 		}
 
-		req.UserId = verifiedToken;
+		req.user = verifiedToken;
 		next();
 	} catch (error) {
 		if (error instanceof jwt.TokenExpiredError) {
@@ -57,7 +57,7 @@ export const authenticateUser = async (
 };
 
 // only buyers
-export const isBuyer = async (
+const isBuyer = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
@@ -76,7 +76,7 @@ export const isBuyer = async (
 			return res.status(401).json({ message: "please login to continue!" });
 		}
 
-		if (decoded.role !== "buyer") {
+		if (decoded.role !== "BUYER") {
 			return res.status(403).json({ message: "Forbidden" });
 		}
 		next();
@@ -85,37 +85,75 @@ export const isBuyer = async (
 	}
 };
 
-//only vendors
-export const isVendor = async (
+const isSeller = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
-		return res.status(401).json({ message: "Unauthorized" });
+		return res
+			.status(401)
+			.json(new HttpException("UNAUTHORIZED", "Please login to continue!"));
 	}
+
+	const decodedToken = jwt.decode(token) as JwtPayload;
+	if (
+		decodedToken &&
+		decodedToken.exp &&
+		Date.now() >= decodedToken.exp * 1000
+	) {
+		return res
+			.status(401)
+			.json(
+				new HttpException(
+					"UNAUTHORIZED",
+					"You have been loggedOut, Please login to continue!",
+				),
+			);
+	}
+
 	try {
-		const decoded = jwt.verify(
+		const payLoad = jwt.verify(
 			token,
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
 
-		if (!decoded) {
-			return res.status(401).json({ message: "please login to continue!" });
+		if (!payLoad) {
+			return res
+				.status(401)
+				.json(new HttpException("UNAUTHORIZED", "Please login to continue!"));
 		}
 
-		if (decoded.role !== "vendor") {
-			return res.status(403).json({ message: "Forbidden" });
+		req.user = payLoad;
+
+		if (req.user?.role != "SELLER") {
+			return res
+				.status(403)
+				.json(
+					new HttpException(
+						"FORBIDDEN",
+						" Only seller can perform this action!",
+					),
+				);
 		}
+
 		next();
 	} catch (error) {
-		return res.status(500).json({ message: "Internal server error" });
+		if (error instanceof JsonWebTokenError) {
+			return res
+				.status(401)
+				.json(new HttpException("UNAUTHORIZED", "Please login to continue!"));
+		} else {
+			return res
+				.status(401)
+				.json(new HttpException("UNAUTHORIZED", "Please login to continue!"));
+		}
 	}
 };
 
-//only admins auth
-export const isAdmin = async (
+//only admins
+const isAdmin = async (
 	req: ExpandedRequest,
 	res: Response,
 	next: NextFunction,
@@ -132,13 +170,9 @@ export const isAdmin = async (
 		if (!decoded) {
 			return res.status(401).json({ message: "Expired token,Try Login Again" });
 		}
-		const role = await User.findOne({
-			where: { id: decoded.id },
-			include: { model: Role, as: "Roles" },
-		});
+		const role = decoded.role;
 		if (role) {
-			const x = role.toJSON() as unknown as { Roles: { roleName: string } };
-			if (x.Roles.roleName === "ADMIN") {
+			if (role === "ADMIN") {
 				next();
 			} else {
 				return res
@@ -155,4 +189,11 @@ export const isAdmin = async (
 				.json({ message: "Internal server error", error: error });
 		}
 	}
+};
+
+export default {
+	authenticateUser,
+	isBuyer,
+	isSeller,
+	isAdmin,
 };

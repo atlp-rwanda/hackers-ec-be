@@ -60,11 +60,10 @@ const role_routes = {
 					schema: {
 						type: "object",
 						properties: {
-							roleId: {
+							role: {
 								type: "string",
 								required: true,
-								//format:"uuid",
-								example: "083a197e-ac11-4c62-b190-dad7b05954e",
+								example: "BUYER",
 							},
 						},
 					},

@@ -1,42 +1,50 @@
 import { Request, Response } from "express";
-import { User } from "../database/models/User";
 import { ACCESS_TOKEN_SECRET, PORT } from "../utils/keys";
 import { generateAccessToken } from "../helpers/security.helpers";
-import { resetPassword } from "../database/models/resetPassword";
 import Jwt from "jsonwebtoken";
 import { sendEmail } from "../helpers/nodemailer";
 import { hashPassword } from "../utils/password";
 import { resetTokenData } from "../helpers/security.helpers";
 import { isValidPassword } from "../utils/password.checks";
+import { insert_function, read_function } from "../utils/db_methods";
+import {
+	UserModelAttributes,
+	resetPasswordModelAtributes,
+} from "../types/model";
+import { sendResponse } from "../utils/http.exception";
+
+let condition;
 
 export const forgotPassword = async (req: Request, res: Response) => {
 	try {
 		const { email } = req.body;
+		condition = { where: { email: email } };
 
-		const isUserExist: User | null = await User.findOne({
-			where: { email: email },
-		});
-
+		const isUserExist = await read_function<UserModelAttributes>(
+			"User",
+			"findOne",
+			condition,
+		);
 		if (!isUserExist) {
-			return res.status(404).json({
-				message: "User not found",
-			});
+			return sendResponse(res, 404, "NOT FOUND", "User not found");
 		}
 
 		const resetToken = generateAccessToken({
-			id: isUserExist?.dataValues.id,
-			role: isUserExist?.dataValues.role,
-			email: isUserExist?.dataValues.email,
+			id: isUserExist?.id,
+			role: isUserExist?.role,
+			email: isUserExist?.email,
 		});
-
-		await resetPassword.destroy({
-			where: { email: email },
-		});
-
-		await resetPassword.create({
-			resetToken: resetToken,
-			email: email,
-		});
+		await read_function<resetPasswordModelAtributes>(
+			"resetPassword",
+			"destroy",
+			condition,
+		);
+		await insert_function<resetPasswordModelAtributes>(
+			"resetPassword",
+			"create",
+			{ resetToken, email },
+			condition,
+		);
 
 		const host = process.env.BASE_URL || `http://localhost:${PORT}`;
 		const confirmlink: string = `${host}/passwordReset?token=${resetToken}`;
@@ -50,14 +58,15 @@ export const forgotPassword = async (req: Request, res: Response) => {
 		};
 
 		await sendEmail(mailOptions);
-
-		res
-			.status(200)
-			.json({ message: "Email sent successfully", status: "SUCCESS" });
+		return sendResponse(res, 200, "SUCCESS", "Email sent successfully");
 	} catch (error) {
-		res
-			.status(500)
-			.json({ message: "An error occurred while requesting password reset." });
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 
@@ -65,44 +74,62 @@ export const resetPasswort = async (req: Request, res: Response) => {
 	try {
 		const { password } = req.body!;
 		const { token } = req.params;
+		condition = { where: { resetToken: token } };
 
-		const tokenAvailability = await resetPassword.findOne({
-			where: { resetToken: token },
-		});
+		const tokenAvailability = await read_function<resetPasswordModelAtributes>(
+			"resetPassword",
+			"findOne",
+			condition,
+		);
 
 		if (!tokenAvailability) {
-			return res.status(400).json({ message: "Invalid link" });
+			return sendResponse(res, 400, "BAD REQUEST", "Invalid link");
 		}
 
 		const decoded = Jwt.verify(token, ACCESS_TOKEN_SECRET!) as resetTokenData;
 
 		if (!decoded || !decoded.id) {
-			return res.status(404).json({
-				message: "Invalid link",
-			});
+			return sendResponse(res, 404, "NOT FOUND", "Invalid link");
 		}
-		const resettingUser = await User.findOne({ where: { id: decoded.id! } });
-
+		const resettingUser = await read_function<UserModelAttributes>(
+			"User",
+			"findOne",
+			{ where: { id: decoded.id! } },
+		);
 		const sameAsOldPassword = await isValidPassword(
 			password,
-			resettingUser?.dataValues.password as string,
+			resettingUser?.password as string,
 		);
 
 		if (sameAsOldPassword) {
-			return res
-				.status(400)
-				.json({ message: "Password cannot be the same as the old password" });
+			return sendResponse(
+				res,
+				400,
+				"BAD REQUEST",
+				"Password cannot be the same as the old password",
+			);
 		}
-
 		const hashedPassword: string = (await hashPassword(password)) as string;
 
-		await resettingUser?.update({ password: hashedPassword });
-
-		await resetPassword.destroy({ where: { resetToken: token } });
-		res.status(200).json({ message: "Password reset successfully" });
+		await insert_function<UserModelAttributes>(
+			"User",
+			"update",
+			{ password: hashedPassword },
+			{ where: { id: decoded.id! } },
+		);
+		await read_function<resetPasswordModelAtributes>(
+			"resetPassword",
+			"destroy",
+			condition,
+		);
+		return sendResponse(res, 200, "SUCCESS", "Password reset successfully");
 	} catch (error) {
-		res
-			.status(500)
-			.json({ message: "An error occurred while resetting password." });
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };

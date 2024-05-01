@@ -1,3 +1,5 @@
+import { Response } from "express";
+
 export class HttpException {
 	public status: string;
 	public message: string;
@@ -13,3 +15,15 @@ export class HttpException {
 		};
 	}
 }
+
+export const sendResponse = (
+	res: Response,
+	statusNumber: number,
+	status: string,
+	message: string,
+	data?: any,
+) => {
+	return res
+		.status(statusNumber)
+		.json({ ...new HttpException(status, message), data });
+};

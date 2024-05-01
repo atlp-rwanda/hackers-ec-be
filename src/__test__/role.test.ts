@@ -3,15 +3,8 @@ import request from "supertest";
 import { connectionToDatabase } from "../database/config/db.config";
 import { deleteTableData } from "../utils/database.utils";
 import database_models from "../database/config/db.config";
-import { roleAdmin, mockRole, mockRoleBuyer, NewUser } from "../mock/static";
-import { log } from "console";
-import { ACCESS_TOKEN_SECRET } from "../utils/keys";
-import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
+import { roleAdmin, mockRole, NewUser } from "../mock/static";
 import { Token } from "../database/models/token";
-
-interface ExpandedRequest extends Request {
-	UserId?: JwtPayload;
-}
 
 function logErrors(
 	err: { stack: any },
@@ -23,10 +16,8 @@ function logErrors(
 	next(err);
 }
 const role = database_models["role"];
-const user = database_models["User"];
 const Jest_request = request(app.use(logErrors));
 let id: string;
-let roleId: string;
 let token = "";
 let userId: string;
 
@@ -44,7 +35,7 @@ describe("ROLE API TEST", () => {
 
 	afterAll(async () => {
 		await deleteTableData(database_models.User, "users");
-		// await deleteTableData(database_models.role, "roles");
+		await deleteTableData(database_models.Token, "tokens");
 	});
 
 	it("it should  register a user and return 201", async () => {
@@ -53,7 +44,7 @@ describe("ROLE API TEST", () => {
 			.expect(201);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual(
-			"Account Created successfully, Plase Verify your Account",
+			"Account Created successfully, Please Verify your Account",
 		);
 
 		const tokenRecord = await Token.findOne();
@@ -76,9 +67,8 @@ describe("ROLE API TEST", () => {
 			.expect(200);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Login successfully!");
-		expect(body.token).toBeDefined();
-		token = body.token;
-		console.log(body);
+		expect(body.data).toBeDefined();
+		token = body.data;
 	});
 
 	it("it should return all  role  and return 200 ", async () => {
@@ -87,7 +77,7 @@ describe("ROLE API TEST", () => {
 			`Bearer ${token}`,
 		);
 		expect(body.message).toStrictEqual("we have following roles");
-		expect(body.roles).toBeDefined();
+		expect(body.data).toBeDefined();
 	});
 
 	it("it create role  and return 201 ", async () => {
@@ -95,7 +85,7 @@ describe("ROLE API TEST", () => {
 			.set("Authorization", `Bearer ${token}`)
 			.send(mockRole);
 		expect(body.message).toStrictEqual("Role created successfully");
-		expect(body.response).toBeDefined();
+		expect(body.data).toBeDefined();
 	});
 
 	it("it should return role already exist and return 409 ", async () => {
@@ -106,12 +96,12 @@ describe("ROLE API TEST", () => {
 			.set("Authorization", `Bearer ${token}`)
 			.send(mockRoleExist);
 		expect(body.message).toStrictEqual("role already exist");
-		expect(body.status).toStrictEqual(409);
+		expect(body.status).toStrictEqual("CONFLICT");
 	});
 
 	it("it should return role not found and return 404 ", async () => {
 		const roleObj = {
-			roleId: "ad80d123-dc7d-41b8-928b-b7f51532cacd",
+			role: "POPPINS",
 		};
 		userId = "7121d946-7265-45a1-9ce3-3da1789e657e";
 		const { body } = await Jest_request.post(`/api/v1/users/${userId}/roles`)
@@ -122,7 +112,7 @@ describe("ROLE API TEST", () => {
 
 	it("it should assign user to role  and return 201 ", async () => {
 		const roleObj = {
-			roleId: "11afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
+			role: "BUYER",
 		};
 		userId = "7121d946-7265-45a1-9ce3-3da1789e657e";
 		const { body } = await Jest_request.post(`/api/v1/users/${userId}/roles`)
@@ -133,7 +123,7 @@ describe("ROLE API TEST", () => {
 
 	it("it should return please login and return 401 ", async () => {
 		const roleObj = {
-			roleId: "13afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
+			role: "SELLER",
 		};
 		const notuserId = "ad80d123-dc7d-41b8-928b-b7f51532cacd";
 		const nulltoken = "";
@@ -157,7 +147,6 @@ describe("ROLE API TEST", () => {
 	});
 
 	it("it should return updated succefully and return 201 ", async () => {
-		//const id = "13afd4f1-0bed-4a3b-8ad5-0978dabf8fcd";
 		const roleNewName = {
 			roleName: "ENDUSER",
 		};

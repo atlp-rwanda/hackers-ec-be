@@ -31,12 +31,12 @@ jobs:
       DB_PROD_URL: ${{ secrets.DB_PROD_URL }}
       DB_DEV_URL: ${{ secrets.DB_DEV_URL }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-
-      DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
       CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       CLOUDINARY_FOLDER_NAME: ${{ secrets.CLOUDINARY_FOLDER_NAME }}
+      SERVER_URL: ${{ secrets.SERVER_URL }}
+      DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
     strategy:
       matrix:
@@ -52,12 +52,14 @@ jobs:
         run: npm install
       - name: Run tests
         run: npm run test
+
       - name: Setup Code Climate test-reporter
         run: |
           # Download test reporter as a static binary
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           ./cc-test-reporter before-build
+
       - name: Store coverage report
         if: always()
         run: mkdir -p coverage

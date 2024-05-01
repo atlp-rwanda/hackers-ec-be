@@ -1,7 +1,6 @@
 import { Request } from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { UserModelAttributes } from "../database/models/User";
 import { hashPassword } from "../utils/password";
 import { isValidPassword } from "../utils/password.checks";
 import GooglePassport, { VerifyCallback } from "passport-google-oauth20";
@@ -14,12 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const GoogleStrategy = GooglePassport.Strategy;
 import database_models from "../database/config/db.config";
-const User = database_models["User"];
-export interface CustomVerifyOptions {
-	message: string;
-	status: string;
-	statusNumber?: number;
-}
+import { UserModelAttributes } from "../types/model";
 
 passport.serializeUser(function (user: any, done) {
 	done(null, user);
@@ -58,15 +52,15 @@ passport.use(
 					role: role?.dataValues.id as string,
 					isVerified: false,
 				};
-				const userEXist = await User.findOne({
+				const userExist = await database_models.User.findOne({
 					where: {
 						email: data.email,
 					},
 				});
-				if (userEXist) {
+				if (userExist) {
 					return done(null, false, { message: "User already exist!" });
 				}
-				const user = await User.create({ ...data });
+				const user = await database_models.User.create({ ...data });
 				done(null, user);
 			} catch (error) {
 				done(error);
@@ -85,11 +79,21 @@ passport.use(
 		},
 		async (_req: Request, email, password, done) => {
 			try {
-				const user = await User.findOne({ where: { email } });
+				const user = await database_models.User.findOne({
+					where: { email },
+					include: [
+						{
+							model: database_models.role,
+							as: "Roles",
+						},
+					],
+				});
+
+				const my_user = user?.toJSON();
 
 				if (!user) return done(null, false, { message: "Wrong credentials!" });
 
-				const currPassword = user.dataValues.password;
+				const currPassword = my_user?.password as string;
 
 				const isValidPass = await isValidPassword(password, currPassword);
 
@@ -100,7 +104,7 @@ passport.use(
 				if (!user.dataValues.isVerified) {
 					return done(null, false, { message: "Verify your Account" });
 				}
-				return done(null, user);
+				return done(null, my_user);
 			} catch (error) {
 				done(error);
 			}

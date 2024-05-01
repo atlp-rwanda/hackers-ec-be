@@ -1,4 +1,9 @@
-import { GOOGLE_CALLBACK_URL, PORT } from "../utils/keys";
+import {
+	GOOGLE_CALLBACK_URL,
+	DEPLOYED_URL,
+	PORT,
+	SERVER_URL,
+} from "../utils/keys";
 
 const basicInfo = {
 	openapi: "3.0.0",
@@ -10,11 +15,11 @@ const basicInfo = {
 
 	servers: [
 		{
-			url: `http://localhost:${PORT}`,
+			url: SERVER_URL || `http://localhost:${PORT}`,
 			description: "Development server",
 		},
 		{
-			url: "https://hackers-ec-be.onrender.com",
+			url: DEPLOYED_URL,
 			description: "Production server (HTTPS)",
 		},
 	],

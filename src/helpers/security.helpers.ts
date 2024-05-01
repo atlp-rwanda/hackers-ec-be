@@ -1,7 +1,7 @@
-import { Response } from "express";
 import jwt from "jsonwebtoken";
-import { validateToken } from "../utils/token.validation";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
+import { validateToken } from "../utils/token.validation";
+import { Response } from "express";
 
 export interface TokenData {
 	id: string | number;
@@ -16,7 +16,7 @@ export interface resetTokenData {
 
 export const generateAccessToken = (userData: TokenData) => {
 	const token = jwt.sign(userData, ACCESS_TOKEN_SECRET as string, {
-		expiresIn: "1d",
+		expiresIn: "1y",
 	});
 	return token;
 };
