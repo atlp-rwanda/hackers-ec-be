@@ -1,19 +1,20 @@
 import { Request } from "express";
 import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import { hashPassword } from "../utils/password";
-import { isValidPassword } from "../utils/password.checks";
 import GooglePassport, { VerifyCallback } from "passport-google-oauth20";
+import { Strategy as LocalStrategy } from "passport-local";
+import { v4 as uuidv4 } from "uuid";
+import database_models from "../database/config/db.config";
+import { getRoleByName } from "../services/user.services";
+import { UserModelAttributes } from "../types/model";
 import {
+	GOOGLE_CALLBACK_URL,
 	GOOGLE_CLIENT_ID,
 	GOOGLE_SECRET_ID,
-	GOOGLE_CALLBACK_URL,
 } from "../utils/keys";
-import { v4 as uuidv4 } from "uuid";
+import { hashPassword } from "../utils/password";
+import { isValidPassword } from "../utils/password.checks";
 
 const GoogleStrategy = GooglePassport.Strategy;
-import database_models from "../database/config/db.config";
-import { UserModelAttributes } from "../types/model";
 
 passport.serializeUser(function (user: any, done) {
 	done(null, user);
@@ -33,9 +34,7 @@ passport.use(
 		},
 		async (req, email, password, done) => {
 			try {
-				const role = await database_models.role.findOne({
-					where: { roleName: "BUYER" },
-				});
+				const role = await getRoleByName("BUYER");
 				if (!role) {
 					return done(null, false, { message: "you are assigned to no role" });
 				}
@@ -119,16 +118,23 @@ interface GoogleProfileData {
 	};
 	emails: Array<{ value: string }>;
 }
-const userProfile = (profile: GoogleProfileData): UserModelAttributes => {
+const userProfile = async (
+	profile: GoogleProfileData,
+): Promise<UserModelAttributes> => {
 	const { name, emails } = profile;
 
+	const role = await getRoleByName("BUYER");
+
+	if (!role) {
+		throw new Error("Role not found");
+	}
 	const user = {
 		id: uuidv4(),
 		userName: emails[0].value.split("@")[0],
 		firstName: name.givenName,
 		lastName: name.familyName,
 		email: emails[0].value,
-		role: "BUYER",
+		role: role?.dataValues.id as string,
 		password: "",
 		confirmPassword: "",
 		isVerified: false,
@@ -147,14 +153,19 @@ passport.use(
 			scope: ["profile", "email"],
 			passReqToCallback: true,
 		},
-		(
+		async (
 			_req: Request,
 			_accessToken: string,
 			_refreshToken: string,
 			profile: any,
 			cb: VerifyCallback,
 		) => {
-			cb(null, userProfile(profile));
+			try {
+				const user = await userProfile(profile);
+				cb(null, user);
+			} catch (error) {
+				cb(error as Error);
+			}
 		},
 	),
 );
