@@ -16,3 +16,12 @@ export const category_utils = (req: Request, res: Response) => {
 		},
 	};
 };
+
+export const getProductID = (req: Request, res: Response): string | null => {
+	const productId = req.params.id;
+	if (!isValidUUID(productId)) {
+		sendResponse(res, 400, "BAD REQUEST", "You provided an invalid ID!");
+		return null;
+	}
+	return productId;
+};

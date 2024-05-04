@@ -261,3 +261,29 @@ export const mock_users = [
 		isActive: true,
 	},
 ];
+export const new_buyer_user_wishlist = {
+	firstName: "danny",
+	lastName: "mark",
+	email: "mark234525@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+export const new_seller_user_wishlist = {
+	userName: "james",
+	firstName: "peter",
+	lastName: "paul",
+	email: "peter231565@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+
+export const new_wishlist = {
+	productId: "9e555bd6-0f36-454a-a3d5-89edef4ff9d1",
+};
+
+export const invalid_wishlist = {
+	productId: "9e555bd6-0f36-454a-a3d5-89edef4ff9d0",
+};
+
+export const invalid_token =
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjMjUyYWY3LWJhYjYtNGY4MC05YzQ5LTIzZTQ0MWRmMDJjYiIsInJvbGUiOiJTRUxMRVIiLCJpYXQiOjE3MTM5Neg5MDgsImV4cCI6MTc0NTUyNjUwOH0.22hDHx9vHSPw_fQ_yfr-29mUme1LpqFQG-ZIsFjhlH4";

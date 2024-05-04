@@ -5,6 +5,9 @@ import { deleteTableData } from "../utils/database.utils";
 import database_models from "../database/config/db.config";
 import { roleAdmin, mock_not_Role, mockRole, NewUser } from "../mock/static";
 import { Token } from "../database/models/token";
+import { updateRole } from "../controllers/roleController";
+import { Request, Response } from "express";
+import { read_function } from "../utils/db_methods"; // replace with actual import
 
 function logErrors(
 	err: { stack: any },

@@ -12,6 +12,7 @@ import {
 	two_factor_authentication_data,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
+import * as dbMethods from "../utils/db_methods";
 
 jest.setTimeout(30000);
 
@@ -231,6 +232,41 @@ describe("CATEGORY ENDPOINTS", () => {
 			.send(new_updated_category)
 			.expect(400);
 
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("You provided Invalid ID!");
+	});
+	it("should handle server error", async () => {
+		jest.spyOn(dbMethods, "read_function").mockImplementationOnce(() => {
+			throw new Error("Server error");
+		});
+
+		const { body } = await Jest_request.post(`/api/v1/categories/`)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.send({ name: "new category", description: "new category description" })
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toStrictEqual("Something went wrong!");
+	});
+	it("should handle server error", async () => {
+		jest.spyOn(dbMethods, "read_function").mockImplementationOnce(() => {
+			throw new Error("Server error");
+		});
+
+		const { body } = await Jest_request.get(`/api/v1/categories/`)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toStrictEqual("Something went wrong!");
+	});
+	it("should handle server error", async () => {
+		jest.spyOn(dbMethods, "read_function").mockImplementationOnce(() => {
+			throw new Error("Server error");
+		});
+
+		const { body } = await Jest_request.get(`/api/v1/categories/1`)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(400);
 		expect(body.status).toStrictEqual("BAD REQUEST");
 		expect(body.message).toStrictEqual("You provided Invalid ID!");
 	});

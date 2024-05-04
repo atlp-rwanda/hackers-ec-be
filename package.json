@@ -68,14 +68,10 @@
 			"lcov"
 		],
 		"coveragePathIgnorePatterns": [
-			"/src/middlewares/passport.ts",
-			"/src/middlewares/auth.ts",
 			"/src/database/config",
 			"src/helpers",
 			"src/documention/index.ts",
 			"/src/utils",
-			"src/middlewares/multer.ts",
-			"src/middlewares/otp.ts",
 			"src/middlewares"
 		]
 	},

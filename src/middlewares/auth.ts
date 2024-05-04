@@ -170,10 +170,16 @@ const isBuyer = async (
 		}
 
 		if (decoded.role !== "BUYER") {
-			return sendResponse(res, 403, "FORBIDDEN", "Forbidden");
+			return sendResponse(
+				res,
+				403,
+				"FORBIDDEN",
+				"Only buyer can perform this action!",
+			);
 		}
+		req.user = decoded;
 
-		if (decoded.isPasswordExpired) {
+		if (req.user.isPasswordExpired) {
 			return sendResponse(
 				res,
 				403,
