@@ -48,6 +48,7 @@ export interface ProductAttributes {
 	sellerId: string;
 	categoryId: string;
 	expiryDate: Date;
+	productStatus?: string;
 }
 
 export type ProductCreationAttributes = Omit<ProductAttributes, "id">;

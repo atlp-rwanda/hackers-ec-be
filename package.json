@@ -70,7 +70,7 @@
 			"src/helpers",
 			"src/documention/index.ts",
 			"/src/utils",
-			"src/middlewares/multer.ts"
+			"src/middlewares"
 		]
 	},
 	"devDependencies": {

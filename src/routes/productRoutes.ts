@@ -32,6 +32,12 @@ productRouter.patch(
 	fileUpload.array("images"),
 	productController.update_product,
 );
+productRouter.patch(
+	"/:id/availability-status",
+	productMiddlewares.productStatusValidated,
+	userAuthentication.isSeller,
+	productController.update_product_status,
+);
 
 productRouter.delete(
 	"/:id",
