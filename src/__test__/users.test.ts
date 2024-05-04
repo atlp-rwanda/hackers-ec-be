@@ -1,4 +1,5 @@
 import app from "../app";
+import { Request, Response } from "express";
 import request from "supertest";
 import { deleteTableData } from "../utils/database.utils";
 import { User } from "../database/models/User";
@@ -28,6 +29,7 @@ import {
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { resetPassword } from "../database/models/resetPassword";
+import userController from "../controllers/userController";
 
 jest.setTimeout(30000);
 
@@ -412,6 +414,22 @@ describe("USER API TEST", () => {
 			.send({})
 			.expect(400);
 		expect(body.message).toStrictEqual("otp is required");
+	});
+
+	test("should handle server error", async () => {
+		const req = {
+			body: { otp: "123456" },
+			params: { token: "valid_token" },
+		} as unknown as Request;
+		const res = {
+			status: jest.fn().mockReturnThis(),
+			send: jest.fn(),
+			json: jest.fn(),
+		} as unknown as Response;
+
+		await userController.two_factor_authentication(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
 	});
 
 	/**

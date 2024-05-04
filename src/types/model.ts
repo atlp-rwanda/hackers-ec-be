@@ -91,3 +91,13 @@ export interface roleModelAttributes {
 	roleName: string;
 }
 export type roleCreationAttributes = Optional<roleModelAttributes, "id">;
+
+/**
+ * ----------------- role model ----------------------------
+ */
+
+export interface messageModelAttributes {
+	id: string;
+	senderId: string;
+	message: string;
+}

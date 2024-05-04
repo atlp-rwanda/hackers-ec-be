@@ -6,6 +6,7 @@ import blacklist_model from "./blacklist";
 import token_model from "./token";
 import Role_model from "./role";
 import reset_model from "./resetPassword";
+import message_model from "./message";
 
 const Models = (sequelize: Sequelize) => {
 	const Product = product_model(sequelize);
@@ -15,8 +16,18 @@ const Models = (sequelize: Sequelize) => {
 	const Token = token_model(sequelize);
 	const role = Role_model(sequelize);
 	const resetPassword = reset_model(sequelize);
+	const message = message_model(sequelize);
 
-	return { Product, Category, User, Blacklist, Token, role, resetPassword };
+	return {
+		Product,
+		Category,
+		User,
+		Blacklist,
+		Token,
+		role,
+		resetPassword,
+		message,
+	};
 };
 
 export default Models;
