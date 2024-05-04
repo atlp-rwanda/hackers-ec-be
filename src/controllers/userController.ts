@@ -240,7 +240,8 @@ const two_factor_authentication = async (req: Request, res: Response) => {
 		const { otp } = req.body;
 		const { token } = req.params;
 		const decodedToken = verifyAccessToken(token, res) as TokenData;
-		if (decodedToken && decodedToken.otp && otp === decodedToken.otp) {
+		if(decodedToken.otp){
+		if (decodedToken.otp && otp === decodedToken.otp) {
 			await read_function<TokenModelAttributes>("Token", "destroy", {
 				where: { token: token },
 			});
@@ -259,6 +260,7 @@ const two_factor_authentication = async (req: Request, res: Response) => {
 				"Invalid One Time Password!!",
 			);
 		}
+	}
 	} catch (error: any) {
 		return sendResponse(
 			res,
