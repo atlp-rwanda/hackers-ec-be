@@ -1,4 +1,5 @@
 import { Optional } from "sequelize";
+import { cartItem } from "./cart";
 
 /**
  * -------------- User Model ---------------------
@@ -145,3 +146,12 @@ export interface WishesAttributes {
 }
 export interface WishesCreationAttributes
 	extends Omit<WishesAttributes, "id"> {}
+// ---------------------------- cart --------------------------------
+
+export interface cartModelAttributes {
+	id: string;
+	userId: string;
+	products: Array<cartItem>;
+	total: number;
+}
+export type cartCreationAttributes = Optional<cartModelAttributes, "id">;

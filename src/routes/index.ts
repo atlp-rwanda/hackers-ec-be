@@ -6,6 +6,7 @@ import categoryRouter from "./categoryRoutes";
 import chatRoutes from "./chatRoutes";
 import profileRouter from "./profileRouter";
 import wishesRouter from "./wishesRoutes";
+import cartRouter from "./cartRoutes";
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use("/categories", categoryRouter);
 router.use("/chats", chatRoutes);
 router.use("/", profileRouter);
 router.use("/wishes", wishesRouter);
+router.use("/carts", cartRouter);
 
 export default router;

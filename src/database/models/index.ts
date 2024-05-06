@@ -8,6 +8,7 @@ import Role_model from "./role";
 import reset_model from "./resetPassword";
 import message_model from "./message";
 import wish_model from "./wishlist";
+import cart_model from "./cart";
 
 const Models = (sequelize: Sequelize) => {
 	const Product = product_model(sequelize);
@@ -19,6 +20,7 @@ const Models = (sequelize: Sequelize) => {
 	const resetPassword = reset_model(sequelize);
 	const message = message_model(sequelize);
 	const wish = wish_model(sequelize);
+	const Cart = cart_model(sequelize);
 
 	return {
 		Product,
@@ -30,6 +32,7 @@ const Models = (sequelize: Sequelize) => {
 		resetPassword,
 		message,
 		wish,
+		Cart,
 	};
 };
 
