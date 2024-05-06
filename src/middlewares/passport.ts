@@ -59,6 +59,19 @@ passport.use(
 					lastName: req.body.lastName,
 					role: role?.dataValues.id as string,
 					isVerified: false,
+					gender: req.body.gender || " ",
+					birthDate: req.body.birthDate || "01.01.1900",
+					phoneNumber: req.body.phoneNumber || "+250",
+					preferredLanguage: req.body.preferredLanguage || " ",
+					preferredCurrency: req.body.preferredCurrency || " ",
+					profileImage:
+						req.body.profileImage ||
+						"https://res.cloudinary.com/dq6npfdgz/image/upload/v1715034196/cqpjfmkwrk6sbwyh4ysj.png",
+					addressLine1: req.body.addressLine1 || " ",
+					addressLine2: req.body.addressLine2 || " ",
+					country: req.body.country || " ",
+					city: req.body.city || " ",
+					zipCode: req.body.zipCode || 0,
 				};
 				const userExist = await database_models.User.findOne({
 					where: {
@@ -71,6 +84,8 @@ passport.use(
 				const user = await database_models.User.create({ ...data });
 				done(null, user);
 			} catch (error) {
+				console.log(error);
+
 				done(error);
 			}
 		},
@@ -170,6 +185,17 @@ const userProfile = async (
 		password: "",
 		confirmPassword: "",
 		isVerified: false,
+		gender: "",
+		birthDate: new Date(),
+		phoneNumber: "+250",
+		preferredLanguage: "",
+		preferredCurrency: "",
+		profileImage: "",
+		addressLine1: "",
+		addressLine2: "",
+		country: "",
+		city: "",
+		zipCode: 0,
 	};
 
 	return user;

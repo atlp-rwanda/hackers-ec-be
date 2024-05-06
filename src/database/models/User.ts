@@ -18,6 +18,17 @@ export class User extends Model<UserModelAttributes, UserCreationAttributes> {
 	public isPasswordExpired!: boolean;
 	public lastTimePasswordUpdated!: Date;
 	public isActive!: boolean;
+	public gender!: string;
+	public birthDate!: Date;
+	public phoneNumber!: string;
+	public preferredLanguage!: string;
+	public preferredCurrency!: string;
+	public profileImage!: string;
+	public addressLine1!: string;
+	public addressLine2!: string;
+	public country!: string;
+	public city!: string;
+	public zipCode!: number;
 
 	public static associate(models: {
 		Product: typeof Product;
@@ -93,6 +104,49 @@ const user_model = (sequelize: Sequelize) => {
 				type: DataTypes.BOOLEAN,
 				allowNull: false,
 				defaultValue: true,
+			},
+			gender: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			birthDate: {
+				type: DataTypes.DATE,
+				allowNull: true,
+			},
+			phoneNumber: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			preferredLanguage: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			preferredCurrency: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			profileImage: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			addressLine1: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			addressLine2: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			country: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			city: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			zipCode: {
+				type: DataTypes.INTEGER,
 			},
 		},
 		{

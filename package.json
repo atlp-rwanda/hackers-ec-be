@@ -10,7 +10,8 @@
 		"drop-all-tables": "psql -U your_username -d your_database_name -c \"SELECT 'DROP TABLE IF EXISTS \"' || tablename || '\" CASCADE;' FROM pg_tables WHERE schemaname = 'public'\" | psql -U your_username -d your_database_name",
 		"migrate": "npx sequelize-cli db:migrate",
 		"migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed",
-		"migrate:down": "sequelize cli db:migrate:undo:all",
+		"migrate:down": "npx sequelize-cli db:migrate:undo:all",
+		"migrate:undo": "npx sequelize-cli db:migrate:undo",
 		"seed": "npx sequelize-cli db:seed:all",
 		"seed:undo": "npx sequelize-cli db:seed:undo:all",
 		"lint": "eslint .",
@@ -73,6 +74,8 @@
 			"src/helpers",
 			"src/documention/index.ts",
 			"/src/utils",
+			"src/middlewares/multer.ts",
+			"src/middlewares/otp.ts",
 			"src/middlewares"
 		]
 	},
