@@ -17,3 +17,6 @@ export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 export const CLOUDINARY_FOLDER_NAME = process.env.CLOUDINARY_FOLDER_NAME;
 export const DEPLOYED_URL = process.env.DEPLOYED_URL;
 export const SERVER_URL = process.env.SERVER_URL;
+export const DEV_MODE = process.env.DEV_MODE;
+export const CLONE_TIME = process.env.CLONE_TIME as string;
+export const PASS_EXPIRE_DURATION = process.env.PASS_EXPIRE_DURATION as string;

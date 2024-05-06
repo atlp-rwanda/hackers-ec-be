@@ -38,9 +38,9 @@ describe("PRODUCT API TEST", () => {
 	});
 
 	afterAll(async () => {
+		await deleteTableData(database_models.User, "users");
 		await deleteTableData(database_models.Product, "products");
 		await deleteTableData(database_models.Category, "categories");
-		await deleteTableData(database_models.User, "users");
 	});
 
 	it("it should  register a user and return 201", async () => {

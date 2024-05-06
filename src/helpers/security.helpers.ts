@@ -8,6 +8,7 @@ export interface TokenData {
 	role: string;
 	otp?: string;
 	email?: string;
+	isPasswordExpired?: boolean;
 }
 export interface resetTokenData {
 	id: string | number;

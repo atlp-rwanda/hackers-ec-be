@@ -3,6 +3,8 @@ import { UserCreationAttributes, UserModelAttributes } from "../../types/model";
 import { Product } from "./product";
 import database_models from "../config/db.config";
 
+const default_date = new Date(Date.now());
+
 export class User extends Model<UserModelAttributes, UserCreationAttributes> {
 	public id!: string;
 	public userName!: string;
@@ -13,6 +15,9 @@ export class User extends Model<UserModelAttributes, UserCreationAttributes> {
 	public confirmPassword!: string;
 	public role!: string;
 	public isVerified!: boolean;
+	public isPasswordExpired!: boolean;
+	public lastTimePasswordUpdated!: Date;
+	public isActive!: boolean;
 
 	public static associate(models: {
 		Product: typeof Product;
@@ -73,6 +78,21 @@ const user_model = (sequelize: Sequelize) => {
 				type: DataTypes.BOOLEAN,
 				defaultValue: UUIDV4,
 				allowNull: false,
+			},
+			isPasswordExpired: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
+				allowNull: false,
+			},
+			lastTimePasswordUpdated: {
+				type: DataTypes.DATE,
+				defaultValue: default_date,
+				allowNull: false,
+			},
+			isActive: {
+				type: DataTypes.BOOLEAN,
+				allowNull: false,
+				defaultValue: true,
 			},
 		},
 		{

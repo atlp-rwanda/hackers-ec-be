@@ -14,13 +14,21 @@ export interface UserModelAttributes {
 	confirmPassword: string;
 	role: string;
 	isVerified: boolean;
+	isPasswordExpired?: boolean;
+	lastTimePasswordUpdated?: Date;
+	isActive?: boolean;
+	createdAt?: Date;
+	updatedAt?: Date;
 }
 
 export interface UserModelInclude extends UserModelAttributes {
 	Roles: any;
 }
 
-export type UserCreationAttributes = Optional<UserModelAttributes, "id"> & {
+export type UserCreationAttributes = Optional<
+	UserModelAttributes,
+	"id" | "createdAt" | "updatedAt"
+> & {
 	role?: string;
 };
 

@@ -37,6 +37,7 @@ jobs:
       CLOUDINARY_FOLDER_NAME: ${{ secrets.CLOUDINARY_FOLDER_NAME }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
       DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
+      PASS_EXPIRE_DURATION: ${{ secrets.PASS_EXPIRE_DURATION }}
     strategy:
       matrix:
         node-version: ["20.x"]

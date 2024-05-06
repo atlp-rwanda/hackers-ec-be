@@ -26,6 +26,7 @@ import {
 	new_pass_not_equals_confirm_pass,
 	update_with_wrong_old_pass,
 	update_pass,
+	NewUserPasswordExpired,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { resetPassword } from "../database/models/resetPassword";
@@ -84,6 +85,17 @@ describe("USER API TEST", () => {
 		const tokenRecord = await database_models.Token.findOne();
 		token = tokenRecord?.dataValues.token ?? "";
 	});
+
+	it("it should  register a user and return 201", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/register")
+			.send(NewUserPasswordExpired)
+			.expect(201);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual(
+			"Account Created successfully, Please Verify your Account",
+		);
+	});
+
 	it("it should return a user not found and status 400", async () => {
 		const { body } = await Jest_request.post("/api/v1/users/register")
 			.send(user_bad_request)
@@ -191,6 +203,15 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("Please login to continue");
 	});
 
+	it("should validate the request send when updating password", async () => {
+		const { body } = await Jest_request.patch("/api/v1/users/password-update")
+			.set("Authorization", `Bearer ${token}`)
+			.send({})
+			.expect(400);
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toBeDefined();
+	});
+
 	it("should return 400 when old pass, is not equal to one in database", async () => {
 		const { body } = await Jest_request.patch("/api/v1/users/password-update")
 			.set("Authorization", `Bearer ${token}`)
@@ -225,7 +246,6 @@ describe("USER API TEST", () => {
 	});
 
 	it("should update user password and return 200", async () => {
-		console.log("tokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", update_pass);
 		const { body } = await Jest_request.patch("/api/v1/users/password-update")
 			.set("Authorization", `Bearer ${token}`)
 			.send(update_pass)
@@ -449,5 +469,31 @@ describe("USER API TEST", () => {
 		const { body } = await Jest_request.post("/api/v1/users/logout").send();
 		expect(401);
 		expect(body.status).toStrictEqual("UNAUTHORIZED");
+	});
+
+	it("should return 500 if token is missing or invalid", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await forgotPassword(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 if token is missing or invalid", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await userController.accountVerify(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
 	});
 });

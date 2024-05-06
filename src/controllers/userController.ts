@@ -22,7 +22,6 @@ import { insert_function, read_function } from "../utils/db_methods";
 
 import { User } from "../database/models/User";
 import bcrypt from "bcrypt";
-import { HttpException } from "../utils/http.exception";
 import { JwtPayload } from "jsonwebtoken";
 
 const registerUser = async (
@@ -87,15 +86,21 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					return sendResponse(res, 400, "BAD REQUEST", "Bad Request!");
 				}
 
-				const { id, email, firstName, lastName } = user;
+				const { id, email, firstName, lastName, isPasswordExpired } = user;
 				const role = (user as UserModelInclude).Roles?.roleName;
 
 				let authenticationtoken: string;
+				let tokenData: TokenData;
 
 				if (role === "SELLER") {
 					const otp = randomatic("0", 6);
 
-					authenticationtoken = generateAccessToken({ id, role, otp });
+					if (isPasswordExpired) {
+						tokenData = { id, role, otp, isPasswordExpired };
+					} else {
+						tokenData = { id, role, otp };
+					}
+					authenticationtoken = generateAccessToken(tokenData);
 
 					const host =
 						process.env.HOST || `http://localhost:${process.env.port}`;
@@ -126,7 +131,12 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 						"Email sent for verification. Please check your inbox and enter the OTP to complete the authentication process.",
 					);
 				} else {
-					authenticationtoken = generateAccessToken({ id, role });
+					if (isPasswordExpired) {
+						tokenData = { id, role, isPasswordExpired };
+					} else {
+						tokenData = { id, role };
+					}
+					authenticationtoken = generateAccessToken(tokenData);
 					return sendResponse(
 						res,
 						200,
@@ -302,64 +312,64 @@ export const updatePassword = async (req: Request, res: Response) => {
 		const { oldPassword, newPassword, confirmPassword } = req.body;
 
 		const decoded = req.user as JwtPayload;
+		const condition = { where: { id: decoded.id } };
 
-		const user = await User.findOne({ where: { id: decoded.id } });
+		const user = await User.findOne(condition);
 
 		const userPassword = user?.dataValues.password;
-
 		const isPasswordValid = await bcrypt.compare(
 			oldPassword,
 			userPassword as string,
 		);
 		if (!isPasswordValid) {
-			return res
-				.status(400)
-				.json(new HttpException("BAD REQUEST", "Old password is incorrect"));
+			return sendResponse(res, 400, "BAD REQUEST", "Old password is incorrect");
 		}
 
 		if (newPassword === oldPassword) {
-			return res
-				.status(400)
-				.json(
-					new HttpException(
-						"BAD REQUEST",
-						"New password cannot be the same as old password",
-					),
-				);
+			return sendResponse(
+				res,
+				400,
+				"BAD REQUEST",
+				"New password cannot be the same as old password",
+			);
 		}
 
 		if (newPassword !== confirmPassword) {
-			return res
-				.status(400)
-				.json(
-					new HttpException(
-						"BAD REQUEST",
-						"New password and confirm password do not match",
-					),
-				);
+			return sendResponse(
+				res,
+				400,
+				"BAD REQUEST",
+				"New password and confirm password do not match",
+			);
 		}
 
 		const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-		await User.update(
+		const passUpdated = await User.update(
 			{ password: hashedPassword, confirmPassword: hashedPassword },
-			{ where: { id: decoded.id } },
+			condition,
 		);
 
-		const response = new HttpException(
-			"SUCCESS",
-			"Password updated successfully",
-		).response();
-		res.status(200).json(response);
-	} catch (error) {
-		res
-			.status(500)
-			.json(
-				new HttpException(
-					"INTERNAL SERVER ERROR",
-					"Something really went wrong",
-				),
+		if (passUpdated) {
+			await insert_function<UserModelAttributes>(
+				"User",
+				"update",
+				{
+					isPasswordExpired: false,
+					lastTimePasswordUpdated: new Date(Date.now()),
+				},
+				condition,
 			);
+			return sendResponse(res, 200, "SUCCESS", "Password updated successfully");
+		}
+	} catch (error) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 
