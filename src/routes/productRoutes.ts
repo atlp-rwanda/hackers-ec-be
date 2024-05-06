@@ -3,8 +3,11 @@ import userAuthentication from "../middlewares/auth";
 import productController from "../controllers/productController";
 import productMiddlewares from "../middlewares/product.middlewares";
 import fileUpload from "../middlewares/multer";
+import searchProduct from "../controllers/searchProduct";
+import { searchMiddleware } from "../middlewares/search.middleware";
 
 const productRouter = express.Router();
+productRouter.get("/search", searchMiddleware, searchProduct.search_product);
 
 productRouter.post(
 	"/",

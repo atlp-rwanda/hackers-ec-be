@@ -287,3 +287,15 @@ export const invalid_wishlist = {
 
 export const invalid_token =
 	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjMjUyYWY3LWJhYjYtNGY4MC05YzQ5LTIzZTQ0MWRmMDJjYiIsInJvbGUiOiJTRUxMRVIiLCJpYXQiOjE3MTM5Neg5MDgsImV4cCI6MTc0NTUyNjUwOH0.22hDHx9vHSPw_fQ_yfr-29mUme1LpqFQG-ZIsFjhlH4";
+export const search_product = {
+	name: "BMW",
+	minPrice: 1,
+	categoryName: "cars",
+	maxPrice: 10000000,
+};
+export const search_product_Not_found = {
+	name: "Productname",
+	categoryName: "electronic",
+	minPrice: 1,
+	maxPrice: 900,
+};

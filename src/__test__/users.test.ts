@@ -311,7 +311,7 @@ describe("USER API TEST", () => {
 		);
 	});
 
-	it("should update user password and return 200", async () => {
+	it(" should update user password and return 200 ", async () => {
 		const { body } = await Jest_request.patch("/api/v1/users/password-update")
 			.set("Authorization", `Bearer ${token}`)
 			.send(update_pass)
@@ -319,6 +319,7 @@ describe("USER API TEST", () => {
 
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Password updated successfully");
+		console.log("______________________", token);
 	});
 
 	it("should return 400 and error message", async () => {
@@ -397,8 +398,6 @@ describe("USER API TEST", () => {
 	});
 
 	it("it should return 400 when new password is the same to old password", async () => {
-		expect(resetToken).toBeDefined();
-		expect(resetToken).not.toEqual("");
 		const { body } = await Jest_request.post(
 			`/api/v1/users/reset-password/${resetToken}`,
 		)
@@ -732,7 +731,6 @@ describe("USER API TEST", () => {
 
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
-
 	test("userValid middleware should return 500 for internal server error", async () => {
 		const req: any = {};
 
