@@ -21,6 +21,8 @@ import {
 	newPasswordBody,
 	NotUserrequestBody,
 	sameAsOldPassword,
+	new_pass_equals_old_pass,
+	new_pass_not_equals_confirm_pass,
 	update_pass,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
@@ -177,6 +179,35 @@ describe("USER API TEST", () => {
 	/***
 	 * ----------------------------- Password Update -------------------------------------------
 	 */
+	
+	it("should return 401 when token is not provided", async () => {
+		const { body } = await Jest_request.patch("/api/v1/users/password-update")
+			.send(update_pass)
+			.expect(401);
+		expect(body.status).toStrictEqual("UNAUTHORIZED");
+		expect(body.message).toStrictEqual("Token is missing");
+	});
+
+	
+	it ("should return 400 when new password and confirm password do not match", async () => {
+		const { body } = await Jest_request.patch("/api/v1/users/password-update")
+			.set("Authorization", `Bearer ${token}`)
+			.send(new_pass_not_equals_confirm_pass)
+			.expect(400);
+
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("New password and confirm password do not match");
+	});
+
+	it("should return 400 when new password is equal to old password", async () => {
+		const { body } = await Jest_request.patch("/api/v1/users/password-update")
+			.set("Authorization", `Bearer ${token}`)
+			.send(new_pass_equals_old_pass)
+			.expect(400);
+
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("New password cannot be the same as old password");
+	});
 
 	it("should update user password and return 200", async () => {
 		console.log("tokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", update_pass);

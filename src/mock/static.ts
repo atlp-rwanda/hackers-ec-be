@@ -159,3 +159,15 @@ export const update_pass = {
 	newPassword: "newPassword123",
 	confirmPassword: "newPassword123",
 };
+
+export const new_pass_equals_old_pass = {
+	oldPassword: "passwordQWE123",
+	newPassword: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+
+export const new_pass_not_equals_confirm_pass = {
+	oldPassword: "passwordQWE123",
+	newPassword: "newPassword123",
+	confirmPassword: "newPassword1234",
+};
