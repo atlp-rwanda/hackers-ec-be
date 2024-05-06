@@ -13,9 +13,6 @@ userRoutes.post(
 );
 
 userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
-userRoutes.patch(
-    "/password-update", userController.updatePassword
-);
 
 userRoutes.post(
 	"/forgot-password",

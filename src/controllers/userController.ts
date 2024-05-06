@@ -329,6 +329,17 @@ export const updatePassword = async (req: Request, res: Response) => {
 				.json(new HttpException("BAD REQUEST", "Old password is incorrect"));
 		}
 
+		if (newPassword === oldPassword) {
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password cannot be the same as old password",
+					),
+				);
+		}
+
 		if (newPassword !== confirmPassword) {
 			return res
 				.status(400)
@@ -343,7 +354,7 @@ export const updatePassword = async (req: Request, res: Response) => {
 		const hashedPassword = await bcrypt.hash(newPassword, 10);
 
 		await User.update(
-			{ password: hashedPassword },
+			{ password: hashedPassword, confirmPassword: hashedPassword },
 			{ where: { id: decoded.id } },
 		);
 
@@ -365,7 +376,6 @@ export const updatePassword = async (req: Request, res: Response) => {
 	}
 };
 
-
 export default {
 	registerUser,
 	login,
@@ -374,5 +384,5 @@ export default {
 	googleAuthInit,
 	handleGoogleAuth,
 	logout,
-  updatePassword,
+	updatePassword,
 };

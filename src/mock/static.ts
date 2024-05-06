@@ -158,4 +158,4 @@ export const update_pass = {
 	oldPassword: "passwordQWE123",
 	newPassword: "newPassword123",
 	confirmPassword: "newPassword123",
-}
+};

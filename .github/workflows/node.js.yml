@@ -37,22 +37,6 @@ jobs:
       CLOUDINARY_FOLDER_NAME: ${{ secrets.CLOUDINARY_FOLDER_NAME }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
       DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
-      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-      SENDER_NAME: ${{ secrets.SENDER_NAME }}
-      GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
-      GOOGLE_SECRET_ID: ${{ secrets.GOOGLE_SECRET_ID }}
-      DB_PROD_URL: ${{ secrets.DB_PROD_URL }}
-      DB_DEV_URL: ${{ secrets.DB_DEV_URL }}
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-      CLOUDINARY_FOLDER_NAME: ${{ secrets.CLOUDINARY_FOLDER_NAME }}
-      SERVER_URL: ${{ secrets.SERVER_URL }}
-      DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     strategy:
       matrix:
         node-version: ["20.x"]

@@ -174,15 +174,12 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("password is required");
 	});
 
-	
 	/***
 	 * ----------------------------- Password Update -------------------------------------------
 	 */
 
-
 	it("should update user password and return 200", async () => {
-		
-	console.log("tokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",update_pass);
+		console.log("tokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", update_pass);
 		const { body } = await Jest_request.patch("/api/v1/users/password-update")
 			.set("Authorization", `Bearer ${token}`)
 			.send(update_pass)
@@ -190,8 +187,7 @@ describe("USER API TEST", () => {
 
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Password updated successfully");
-	
-});
+	});
 
 	/***
 	 * ---------------------------- RESET PASSWORD --------------------------------------------
