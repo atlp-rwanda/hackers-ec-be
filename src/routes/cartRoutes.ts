@@ -20,6 +20,12 @@ cartRouter.post(
 	addItemToCart,
 );
 cartRouter.get("/", auth.authenticateUser, auth.isBuyer, viewCart);
-cartRouter.delete("/", auth.authenticateUser, auth.isBuyer, clearCart);
-cartRouter.patch("/", auth.authenticateUser, auth.isBuyer, updateCart);
+cartRouter.put("/", auth.authenticateUser, auth.isBuyer, clearCart);
+cartRouter.patch(
+	"/",
+	auth.authenticateUser,
+	auth.isBuyer,
+	isProductExist,
+	updateCart,
+);
 export default cartRouter;

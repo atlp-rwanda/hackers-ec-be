@@ -85,7 +85,7 @@ export const cartsDocRoutes = {
 	"/api/v1/carts/": {
 		post: cart_routes["create_cart"],
 		get: cart_routes["get_cart"],
-		delete: cart_routes["clear_cart"],
+		put: cart_routes["clear_cart"],
 		patch: cart_routes["update_cart"],
 	},
 };

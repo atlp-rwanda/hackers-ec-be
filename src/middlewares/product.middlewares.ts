@@ -2,12 +2,9 @@
 import { NextFunction, Request, Response } from "express";
 import { productValidation } from "../validations/product.validation";
 import { sendResponse } from "../utils/http.exception";
-<<<<<<< HEAD
 import validateProductStatus from "../validations/productStatus.validation";
-=======
 import database_models from "../database/config/db.config";
 import { validate } from "uuid";
->>>>>>> 8f09373 (feat(user cart): Implementation of user cart)
 
 const isValidProduct = async (
 	req: Request,
@@ -42,10 +39,14 @@ export const isProductExist = async (
 	const product = await database_models.Product.findOne({
 		where: { id: productId },
 	});
+
 	if (!product) {
 		return sendResponse(res, 404, "NOT FOUND", "product is not found");
 	}
-	if (product.quantity < quantity) {
+	if (product?.dataValues.productStatus === "Unavailable") {
+		return sendResponse(res, 403, "FORBIDDEN", "product is not available");
+	}
+	if (product.dataValues.quantity < quantity) {
 		return sendResponse(res, 404, "NOT FOUND", "Not enough quantity in stock");
 	}
 	next();

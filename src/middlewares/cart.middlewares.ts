@@ -4,7 +4,14 @@ import { sendResponse } from "../utils/http.exception";
 
 const isCartValidated = (req: Request, res: Response, next: NextFunction) => {
 	const { error } = validateCart(req.body);
-	if (error) return sendResponse(res, 400, "Error", error.details[0].message);
+	if (error) {
+		return sendResponse(
+			res,
+			400,
+			"Error",
+			error.details[0].message.replace(/"/g, ""),
+		);
+	}
 
 	try {
 		next();

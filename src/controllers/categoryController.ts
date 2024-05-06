@@ -121,8 +121,8 @@ const read_single_category = async (req: Request, res: Response) => {
 	} catch (error: unknown) {
 		return sendResponse(
 			res,
-			500,
-			"SERVER ERROR",
+			400,
+			"BAD REQUEST",
 			"Something went wrong!",
 			error as Error,
 		);
@@ -130,65 +130,55 @@ const read_single_category = async (req: Request, res: Response) => {
 };
 
 const update_category = async (req: Request, res: Response) => {
-	try {
-		categoryId = category_utils(req, res).getId;
-		const isValidUUID = category_utils(req, res).isValidUUID(categoryId);
-		if (!isValidUUID) {
-			return;
-		}
-		condition = {
-			where: {
-				id: categoryId,
-			},
-		};
+	categoryId = category_utils(req, res).getId;
+	const isValidUUID = category_utils(req, res).isValidUUID(categoryId);
+	if (!isValidUUID) {
+		return;
+	}
+	condition = {
+		where: {
+			id: categoryId,
+		},
+	};
 
-		const category = await read_function<CategoryAttributes>(
-			"Category",
-			"findOne",
-			condition,
-		);
-		if (!category) {
-			return sendResponse(res, 404, "NOT FOUND", "Category not found!");
-		}
+	const category = await read_function<CategoryAttributes>(
+		"Category",
+		"findOne",
+		condition,
+	);
+	if (!category) {
+		return sendResponse(res, 404, "NOT FOUND", "Category not found!");
+	}
 
-		const updated_field = req.body;
-		if (Object.keys(updated_field).length === 0) {
-			return sendResponse(
-				res,
-				400,
-				"BAD REQUEST",
-				"No field provided to update!",
-			);
-		}
-
-		await insert_function<CategoryAttributes>(
-			"Category",
-			"update",
-			updated_field,
-			condition,
-		);
-		const updated_category = await read_function<CategoryAttributes>(
-			"Category",
-			"findOne",
-			condition,
-		);
-
+	const updated_field = req.body;
+	if (Object.keys(updated_field).length === 0) {
 		return sendResponse(
 			res,
-			200,
-			"SUCCESS",
-			"Category updated successfully!",
-			updated_category,
-		);
-	} catch (error: unknown) {
-		return sendResponse(
-			res,
-			500,
-			"SERVER ERROR",
-			"Something went wrong!",
-			error as Error,
+			400,
+			"BAD REQUEST",
+			"No field provided to update!",
 		);
 	}
+
+	await insert_function<CategoryAttributes>(
+		"Category",
+		"update",
+		updated_field,
+		condition,
+	);
+	const updated_category = await read_function<CategoryAttributes>(
+		"Category",
+		"findOne",
+		condition,
+	);
+
+	return sendResponse(
+		res,
+		200,
+		"SUCCESS",
+		"Category updated successfully!",
+		updated_category,
+	);
 };
 
 export default {

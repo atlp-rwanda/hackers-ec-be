@@ -16,7 +16,8 @@ import { generateAccessToken } from "../helpers/security.helpers";
 import { Token } from "../database/models/token";
 import cartService from "../services/carts.services";
 import UserUtils from "../utils/users";
-
+import { jest } from "@jest/globals";
+import CartUtils from "../utils/cart.utils";
 jest.setTimeout(100000);
 
 function logErrors(
@@ -37,8 +38,12 @@ let product_id: any;
 let token: string;
 
 describe("CART API TEST", () => {
+	let cart: any;
+	let item: any;
 	beforeAll(async () => {
 		await connectionToDatabase();
+		cart = { products: [], total: 0 };
+		item = { id: 1, totalPrice: 100 };
 	});
 
 	afterAll(async () => {
@@ -171,7 +176,7 @@ describe("CART API TEST", () => {
 			.set("Authorization", `Bearer ${seller_token}`)
 			.send({ productId: "96ff9146-ad09-4dbc-b100-94d3b0c33562", quantity: 40 })
 			.expect(403);
-		expect(body.message).toStrictEqual("Forbidden");
+		expect(body.message).toStrictEqual("Only buyer can perform this action!");
 	});
 	it("should return 404 when user try to add not exist product", async () => {
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -181,6 +186,14 @@ describe("CART API TEST", () => {
 		expect(body.status).toStrictEqual("NOT FOUND");
 		expect(body.message).toStrictEqual("product is not found");
 	});
+	it("should return 403 and product is expired", async () => {
+		const { body } = await Jest_request.post(`/api/v1/carts/`)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ productId: product_id, quantity: 4 })
+			.expect(403);
+		expect(body.status).toStrictEqual("FORBIDDEN");
+		expect(body.message).toStrictEqual("product is not available");
+	});
 	it("should return 400 and invalid product id", async () => {
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
@@ -189,18 +202,12 @@ describe("CART API TEST", () => {
 		expect(body.status).toStrictEqual("BAD REQUEST");
 		expect(body.message).toStrictEqual("Invalid product id");
 	});
-	it("should return 404 and Not enough quantity in stock", async () => {
-		const { body } = await Jest_request.post(`/api/v1/carts/`)
-			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id, quantity: 40000 })
-			.expect(404);
-		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("Not enough quantity in stock");
-	});
+
 	it("should return 200 and return empty cart", async () => {
-		const { body } = await Jest_request.get(`/api/v1/carts/`)
-			.set("Authorization", `Bearer ${token}`)
-			.expect(200);
+		const { body } = await Jest_request.get(`/api/v1/carts/`).set(
+			"Authorization",
+			`Bearer ${token}`,
+		);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Cart is empty");
 	});
@@ -220,12 +227,30 @@ describe("CART API TEST", () => {
 	});
 
 	it("should return 201 and added to cart successfully", async () => {
+		await database_models.Product.update(
+			{ productStatus: "Available" },
+			{ where: { id: product_id } },
+		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id, quantity: 10 })
-			.expect(201);
+			.send({ productId: product_id, quantity: 10 });
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("added to cart successfully");
+	});
+	it("should return 201 and added to cart successfully again", async () => {
+		const { body } = await Jest_request.post(`/api/v1/carts/`)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ productId: product_id, quantity: 10 });
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Added to cart successfully");
+	});
+	it("should return 404 and Not enough quantity in stock", async () => {
+		const { body } = await Jest_request.post(`/api/v1/carts/`)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ productId: product_id, quantity: 40000 })
+			.expect(404);
+		expect(body.status).toStrictEqual("NOT FOUND");
+		expect(body.message).toStrictEqual("Not enough quantity in stock");
 	});
 	it("should return 200 and cart with product", async () => {
 		const { body } = await Jest_request.get(`/api/v1/carts/`)
@@ -240,7 +265,7 @@ describe("CART API TEST", () => {
 			.send({ productId: "96ff9146-ad09-4dbc-b100-94d3b0c33562" })
 			.expect(404);
 		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("Product does not exist");
+		expect(body.message).toStrictEqual("product is not found");
 	});
 	it("should return 201 and Cart successfully updated", async () => {
 		const { body } = await Jest_request.patch(`/api/v1/carts/`)
@@ -251,27 +276,59 @@ describe("CART API TEST", () => {
 		expect(body.message).toStrictEqual("Cart successfully updated");
 	});
 	it("should return 200 and Cart Successfully Clear", async () => {
-		const { body } = await Jest_request.delete(`/api/v1/carts/`)
+		const { body } = await Jest_request.put(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
 			.expect(200);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Cart Successfully Clear");
 	});
-	it("should handle internal server error", async () => {
-		// Mock the addItem function to throw an error
-		jest.spyOn(cartService, "addItem").mockImplementationOnce(() => {
-			throw new Error("Internal server error");
-		});
-
-		const { body } = await Jest_request.post(`/api/v1/carts/`)
+	it("should return 404 and product does not exist on update", async () => {
+		const { body } = await Jest_request.patch(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id, quantity: 10 })
-			.expect(500);
-
-		expect(body.status).toStrictEqual("ERROR");
-		expect(body.message).toStrictEqual("Internal Server Error");
+			.send({ productId: product_id, quantity: 3 })
+			.expect(404);
+		expect(body.status).toStrictEqual("NOT FOUND");
+		expect(body.message).toStrictEqual("Product does not exist");
 	});
-	it("should handle internal server error", async () => {
+	it("updates cart products and total", async () => {
+		const cart = { id: "testCartId", products: [], total: 0 };
+		const newTotal = 100;
+		jest.spyOn(database_models.Cart, "update").mockResolvedValue([1]);
+
+		const result = await cartService.updateCartProductsAndTotalService(
+			cart,
+			newTotal,
+		);
+
+		expect(database_models.Cart.update).toHaveBeenCalledWith(
+			{ products: cart.products, total: newTotal },
+			{ where: { id: cart.id } },
+		);
+		expect(result).toEqual([1]);
+	});
+	it("creates a new cart", async () => {
+		const userId = "testUserId";
+		const item = { id: "testItemId" };
+		const mockCart = { id: "testCartId", products: [item], total: 0 };
+		jest.spyOn(database_models.Cart, "create").mockResolvedValue(mockCart);
+
+		const result = await cartService.createCartService(userId, item);
+
+		expect(database_models.Cart.create).toHaveBeenCalledWith({
+			products: [item],
+			userId: userId,
+			total: 0,
+		});
+		expect(result).toEqual(mockCart);
+	});
+	test("should update the cart correctly", () => {
+		const result = CartUtils.updateCart(cart, item);
+
+		expect(result.cart.products).toContain(item);
+		expect(result.newTotal).toBe(item.totalPrice);
+	});
+
+	it("should handle internal server error in getRequestUserId", async () => {
 		jest.spyOn(UserUtils, "getRequestUserId").mockImplementationOnce(() => {
 			throw new Error("Internal server error");
 		});
@@ -283,26 +340,35 @@ describe("CART API TEST", () => {
 		expect(body.status).toStrictEqual("ERROR");
 		expect(body.message).toStrictEqual("Internal Server Error");
 	});
-	it("should handle internal server error", async () => {
-		jest.spyOn(cartService, "clearCart").mockImplementationOnce(() => {
+	it("should handle internal server error on clear cart", async () => {
+		jest.spyOn(UserUtils, "getRequestUserId").mockImplementationOnce(() => {
 			throw new Error("Internal server error");
 		});
 
-		const { body } = await Jest_request.delete(`/api/v1/carts/`)
+		const { body } = await Jest_request.put(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
 			.expect(500);
 
 		expect(body.status).toStrictEqual("ERROR");
 		expect(body.message).toStrictEqual("Internal Server Error");
 	});
-	it("should handle internal server error", async () => {
+	it("should handle internal server error on add cart", async () => {
+		jest.spyOn(UserUtils, "getRequestUserId").mockImplementationOnce(() => {
+			throw new Error("Internal server error");
+		});
+
+		const { body } = await Jest_request.post(`/api/v1/carts/`)
+			.set("Authorization", `Bearer ${token}`)
+			.expect(400);
+	});
+	it("should handle internal server error on update cart", async () => {
 		jest.spyOn(UserUtils, "getRequestUserId").mockImplementationOnce(() => {
 			throw new Error("Internal server error");
 		});
 
 		const { body } = await Jest_request.patch(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id })
+			.send({ productId: product_id, quantity: 2 })
 			.expect(500);
 
 		expect(body.status).toStrictEqual("ERROR");

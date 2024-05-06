@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import { sendResponse } from "../utils/http.exception";
 import searchCondtion from "../services/seachServices";
