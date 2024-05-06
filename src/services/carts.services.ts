@@ -5,28 +5,25 @@ import { Product } from "../database/models/product";
 import { sendResponse } from "../utils/http.exception";
 import database_models from "../database/config/db.config";
 import { ExpandedRequest } from "../middlewares/auth";
+import UserUtils from "../utils/users";
 
 export default class cartService {
 	static async addItem(req: ExpandedRequest, res: Response) {
 		const { productId, quantity } = req.body;
 		const product = await Product.findOne({ where: { id: productId } });
-		if (!product) {
-			return sendResponse(res, 404, "Not Found", "product is not found");
-		}
-		if (product.quantity < quantity) {
-			return sendResponse(res, 400, "Not Found", "enough poduct in stock");
-		}
-		const newprice = product.price * quantity;
+
+		const newprice = product!.price * quantity;
 		const item = {
-			id: product.id,
-			name: product.name,
-			image: product.images[0],
+			id: product!.id,
+			name: product!.name,
+			image: product!.images[0],
 			quantity: quantity,
-			price: product.price,
+			price: product!.price,
 			totalPrice: newprice,
 		};
-		const user = (req as ExpandedRequest).user;
-		const userid = user?.id;
+
+		const userid = UserUtils.getRequestUserId(req);
+
 		const cart = await database_models.Cart.findOne({
 			where: { userId: userid },
 		});
@@ -48,7 +45,7 @@ export default class cartService {
 		}
 		cart.products.push(item);
 		const newTotal = cart.products
-			.map((prod1) => JSON.parse(String(prod1.totalPrice)))
+			.map((prod1) => prod1.totalPrice)
 			.reduce((sum, next) => sum + next);
 		cart.total = newTotal;
 		await database_models.Cart.update(
@@ -56,5 +53,38 @@ export default class cartService {
 			{ where: { id: cart.id } },
 		);
 		return sendResponse(res, 201, "SUCCESS", "Added to cart successfully");
+	}
+	static async viewCart(req: ExpandedRequest, res: Response) {
+		const userId = UserUtils.getRequestUserId(req);
+		const cart = await database_models.Cart.findOne({ where: { userId } });
+		return cart
+			? sendResponse(res, 200, "SUCCESS", "Cart Successfully fetched", cart)
+			: sendResponse(res, 200, "SUCCESS", "Cart is empty", []);
+	}
+	static async clearCart(req: ExpandedRequest, res: Response) {
+		const userId = UserUtils.getRequestUserId(req);
+		const cart = await database_models.Cart.findOne({ where: { userId } });
+		if (!cart) return sendResponse(res, 404, "ERROR", "Cart does not exist");
+		cart.dataValues.products = [];
+		cart.dataValues.total = 0;
+		database_models.Cart.update({ ...cart.dataValues }, { where: { userId } });
+
+		return sendResponse(res, 200, "SUCCESS", "Cart Successfully Clear", cart);
+	}
+	static async updateCart(req: ExpandedRequest, res: Response) {
+		const userId = UserUtils.getRequestUserId(req);
+		const { productId } = req.body;
+		const cart = await database_models.Cart.findOne({ where: { userId } });
+		if (!cart) return sendResponse(res, 404, "ERROR", "Cart does not exist");
+		const itemExist = cart.products.findIndex(
+			(cItem) => cItem.id === productId,
+		);
+		if (itemExist === -1) {
+			return sendResponse(res, 404, "NOT FOUND", "Product does not exist");
+		}
+		const removedProduct = cart.products.splice(itemExist, 1);
+		cart.total -= removedProduct[0].totalPrice;
+		database_models.Cart.update({ ...cart.dataValues }, { where: { userId } });
+		return sendResponse(res, 201, "SUCCESS", "Cart successfully updated", cart);
 	}
 }

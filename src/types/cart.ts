@@ -6,3 +6,12 @@ export type cartItem = {
 	price: number;
 	totalPrice: number;
 };
+
+export type cartType = {
+	id: string;
+	userId: string;
+	products: cartItem[];
+	total: number;
+	createdAt: string;
+	updatedAt: string;
+};
