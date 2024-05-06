@@ -23,6 +23,7 @@ import {
 	sameAsOldPassword,
 	new_pass_equals_old_pass,
 	new_pass_not_equals_confirm_pass,
+	update_with_wrong_old_pass,
 	update_pass,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
@@ -179,7 +180,7 @@ describe("USER API TEST", () => {
 	/***
 	 * ----------------------------- Password Update -------------------------------------------
 	 */
-	
+
 	it("should return 401 when token is not provided", async () => {
 		const { body } = await Jest_request.patch("/api/v1/users/password-update")
 			.send(update_pass)
@@ -188,15 +189,25 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("Token is missing");
 	});
 
-	
-	it ("should return 400 when new password and confirm password do not match", async () => {
+	it("should return 400 when old pass, is not equal to one in database", async () => {
+		const { body } = await Jest_request.patch("/api/v1/users/password-update")
+			.set("Authorization", `Bearer ${token}`)
+			.send(update_with_wrong_old_pass)
+			.expect(400);
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("Old password is incorrect");
+	});
+
+	it("should return 400 when new password and confirm password do not match", async () => {
 		const { body } = await Jest_request.patch("/api/v1/users/password-update")
 			.set("Authorization", `Bearer ${token}`)
 			.send(new_pass_not_equals_confirm_pass)
 			.expect(400);
 
 		expect(body.status).toStrictEqual("BAD REQUEST");
-		expect(body.message).toStrictEqual("New password and confirm password do not match");
+		expect(body.message).toStrictEqual(
+			"New password and confirm password do not match",
+		);
 	});
 
 	it("should return 400 when new password is equal to old password", async () => {
@@ -206,7 +217,9 @@ describe("USER API TEST", () => {
 			.expect(400);
 
 		expect(body.status).toStrictEqual("BAD REQUEST");
-		expect(body.message).toStrictEqual("New password cannot be the same as old password");
+		expect(body.message).toStrictEqual(
+			"New password cannot be the same as old password",
+		);
 	});
 
 	it("should update user password and return 200", async () => {
@@ -219,6 +232,8 @@ describe("USER API TEST", () => {
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Password updated successfully");
 	});
+
+	it("should return 500 when something went wrong", async () => {});
 
 	/***
 	 * ---------------------------- RESET PASSWORD --------------------------------------------

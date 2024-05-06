@@ -122,6 +122,11 @@ export const roleAdmin = {
 export const mockRole = {
 	roleName: "UserRole",
 };
+
+export const mock_not_Role = {
+	roleName: "NotRole",
+};
+
 export const mockRoleBuyer = {
 	roleName: "BUYER",
 };
@@ -156,6 +161,12 @@ export const new_updated_category = {
 
 export const update_pass = {
 	oldPassword: "passwordQWE123",
+	newPassword: "newPassword123",
+	confirmPassword: "newPassword123",
+};
+
+export const update_with_wrong_old_pass = {
+	oldPassword: "asswordQWE123",
 	newPassword: "newPassword123",
 	confirmPassword: "newPassword123",
 };
