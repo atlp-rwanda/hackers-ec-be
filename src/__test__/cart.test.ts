@@ -186,6 +186,7 @@ describe("CART API TEST", () => {
 		expect(body.status).toStrictEqual("NOT FOUND");
 		expect(body.message).toStrictEqual("product is not found");
 	});
+	//TODO: Update product status
 	it("should return 403 and product is expired", async () => {
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
@@ -262,7 +263,7 @@ describe("CART API TEST", () => {
 	it("should return 404 and product not found in cart", async () => {
 		const { body } = await Jest_request.patch(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: "96ff9146-ad09-4dbc-b100-94d3b0c33562" })
+			.send({ productId: "96ff9146-ad09-4dbc-b100-94d3b0c33562", quantity: 1 })
 			.expect(404);
 		expect(body.status).toStrictEqual("NOT FOUND");
 		expect(body.message).toStrictEqual("product is not found");
@@ -270,7 +271,7 @@ describe("CART API TEST", () => {
 	it("should return 201 and Cart successfully updated", async () => {
 		const { body } = await Jest_request.patch(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id })
+			.send({ productId: product_id, quantity: 3 })
 			.expect(201);
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Cart successfully updated");
@@ -352,7 +353,7 @@ describe("CART API TEST", () => {
 		expect(body.status).toStrictEqual("ERROR");
 		expect(body.message).toStrictEqual("Internal Server Error");
 	});
-	it("should handle internal server error on add cart", async () => {
+	it("should handle internal server error on clear cart", async () => {
 		jest.spyOn(UserUtils, "getRequestUserId").mockImplementationOnce(() => {
 			throw new Error("Internal server error");
 		});

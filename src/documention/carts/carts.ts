@@ -72,6 +72,10 @@ const cart_routes = {
 								type: "string",
 								example: "9e555bd6-0f36-454a-a3d5-89edef4ff9d4",
 							},
+							quantity: {
+								type: "number",
+								example: 4,
+							},
 						},
 					},
 				},
