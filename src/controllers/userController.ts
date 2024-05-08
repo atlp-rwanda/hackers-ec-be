@@ -240,24 +240,26 @@ const two_factor_authentication = async (req: Request, res: Response) => {
 		const { otp } = req.body;
 		const { token } = req.params;
 		const decodedToken = verifyAccessToken(token, res) as TokenData;
-		if (decodedToken && decodedToken.otp && otp === decodedToken.otp) {
-			await read_function<TokenModelAttributes>("Token", "destroy", {
-				where: { token: token },
-			});
-			return sendResponse(
-				res,
-				200,
-				"SUCCESS",
-				"Account authentication successfully!",
-				token,
-			);
-		} else {
-			return sendResponse(
-				res,
-				401,
-				"Unauthorized",
-				"Invalid One Time Password!!",
-			);
+		if (decodedToken.otp) {
+			if (decodedToken.otp && otp === decodedToken.otp) {
+				await read_function<TokenModelAttributes>("Token", "destroy", {
+					where: { token: token },
+				});
+				return sendResponse(
+					res,
+					200,
+					"SUCCESS",
+					"Account authentication successfully!",
+					token,
+				);
+			} else {
+				return sendResponse(
+					res,
+					401,
+					"Unauthorized",
+					"Invalid One Time Password!!",
+				);
+			}
 		}
 	} catch (error: any) {
 		return sendResponse(
