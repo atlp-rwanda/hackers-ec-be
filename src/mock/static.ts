@@ -122,6 +122,11 @@ export const roleAdmin = {
 export const mockRole = {
 	roleName: "UserRole",
 };
+
+export const mock_not_Role = {
+	roleName: "NotRole",
+};
+
 export const mockRoleBuyer = {
 	roleName: "BUYER",
 };
@@ -152,4 +157,28 @@ export const new_category = {
 export const new_updated_category = {
 	name: "Fancy Cars",
 	description: "This cars are highly amazing!",
+};
+
+export const update_pass = {
+	oldPassword: "passwordQWE123",
+	newPassword: "newPassword123",
+	confirmPassword: "newPassword123",
+};
+
+export const update_with_wrong_old_pass = {
+	oldPassword: "asswordQWE123",
+	newPassword: "newPassword123",
+	confirmPassword: "newPassword123",
+};
+
+export const new_pass_equals_old_pass = {
+	oldPassword: "passwordQWE123",
+	newPassword: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+
+export const new_pass_not_equals_confirm_pass = {
+	oldPassword: "passwordQWE123",
+	newPassword: "newPassword123",
+	confirmPassword: "newPassword1234",
 };

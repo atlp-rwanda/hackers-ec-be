@@ -37,7 +37,6 @@ jobs:
       CLOUDINARY_FOLDER_NAME: ${{ secrets.CLOUDINARY_FOLDER_NAME }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
       DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     strategy:
       matrix:
         node-version: ["20.x"]

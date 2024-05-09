@@ -20,6 +20,11 @@ import {
 import { InfoAttribute } from "../types/passport";
 import { insert_function, read_function } from "../utils/db_methods";
 
+import { User } from "../database/models/User";
+import bcrypt from "bcrypt";
+import { HttpException } from "../utils/http.exception";
+import { JwtPayload } from "jsonwebtoken";
+
 const registerUser = async (
 	req: Request,
 	res: Response,
@@ -292,6 +297,72 @@ const logout = async (req: Request, res: Response) => {
 	}
 };
 
+export const updatePassword = async (req: Request, res: Response) => {
+	try {
+		const { oldPassword, newPassword, confirmPassword } = req.body;
+
+		const decoded = req.user as JwtPayload;
+
+		const user = await User.findOne({ where: { id: decoded.id } });
+
+		const userPassword = user?.dataValues.password;
+
+		const isPasswordValid = await bcrypt.compare(
+			oldPassword,
+			userPassword as string,
+		);
+		if (!isPasswordValid) {
+			return res
+				.status(400)
+				.json(new HttpException("BAD REQUEST", "Old password is incorrect"));
+		}
+
+		if (newPassword === oldPassword) {
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password cannot be the same as old password",
+					),
+				);
+		}
+
+		if (newPassword !== confirmPassword) {
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password and confirm password do not match",
+					),
+				);
+		}
+
+		const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+		await User.update(
+			{ password: hashedPassword, confirmPassword: hashedPassword },
+			{ where: { id: decoded.id } },
+		);
+
+		const response = new HttpException(
+			"SUCCESS",
+			"Password updated successfully",
+		).response();
+		res.status(200).json(response);
+	} catch (error) {
+		res
+			.status(500)
+			.json(
+				new HttpException(
+					"INTERNAL SERVER ERROR",
+					"Something really went wrong",
+				),
+			);
+	}
+};
+
 export default {
 	registerUser,
 	login,
@@ -300,4 +371,5 @@ export default {
 	googleAuthInit,
 	handleGoogleAuth,
 	logout,
+	updatePassword,
 };

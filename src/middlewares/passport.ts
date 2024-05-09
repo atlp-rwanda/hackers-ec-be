@@ -14,6 +14,15 @@ import {
 import { hashPassword } from "../utils/password";
 import { isValidPassword } from "../utils/password.checks";
 
+interface GoogleProfileData {
+	id: string;
+	name: {
+		givenName: string;
+		familyName: string;
+	};
+	emails: Array<{ value: string }>;
+}
+
 const GoogleStrategy = GooglePassport.Strategy;
 
 passport.serializeUser(function (user: any, done) {
@@ -118,6 +127,29 @@ interface GoogleProfileData {
 	};
 	emails: Array<{ value: string }>;
 }
+
+passport.use(
+	"google",
+	new GoogleStrategy(
+		{
+			clientID: GOOGLE_CLIENT_ID,
+			clientSecret: GOOGLE_SECRET_ID,
+			callbackURL: GOOGLE_CALLBACK_URL,
+			scope: ["profile", "email"],
+			passReqToCallback: true,
+		},
+		(
+			_req: Request,
+			_accessToken: string,
+			_refreshToken: string,
+			profile: any,
+			cb: VerifyCallback,
+		) => {
+			cb(null, userProfile(profile));
+		},
+	),
+);
+
 const userProfile = async (
 	profile: GoogleProfileData,
 ): Promise<UserModelAttributes> => {

@@ -24,6 +24,12 @@ userRoutes.post(
 	userMiddleware.isPassword,
 	resetPasswort,
 );
+userRoutes.patch(
+	"/password-update",
+	authentication.authenticateUser,
+	userMiddleware.isUpdatePassValid,
+	userController.updatePassword,
+);
 userRoutes.get("/account/verify/:token", userController.accountVerify);
 userRoutes.post(
 	"/logout",

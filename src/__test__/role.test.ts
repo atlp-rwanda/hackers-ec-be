@@ -3,7 +3,7 @@ import request from "supertest";
 import { connectionToDatabase } from "../database/config/db.config";
 import { deleteTableData } from "../utils/database.utils";
 import database_models from "../database/config/db.config";
-import { roleAdmin, mockRole, NewUser } from "../mock/static";
+import { roleAdmin, mock_not_Role, mockRole, NewUser } from "../mock/static";
 import { Token } from "../database/models/token";
 
 function logErrors(
@@ -144,6 +144,19 @@ describe("ROLE API TEST", () => {
 			.set("Authorization", `Bearer ${Invalidtoken}`)
 			.send(roleObj);
 		expect(body.message).toStrictEqual("Invalid token,Try Login Again");
+	});
+
+	it("it should return 404 when role to update does not exist", async () => {
+		const roleNewName = {
+			roleName: "ENDUSER",
+		};
+		const { body } = await Jest_request.patch(
+			`/api/v1/roles/11afd4f1-0bed-4a3b-8ad5-0978dabf8fce`,
+		)
+			.set("Authorization", `Bearer ${token}`)
+			.send(roleNewName)
+			.expect(404);
+		expect(body.status).toStrictEqual("NOT FOUND");
 	});
 
 	it("it should return updated succefully and return 201 ", async () => {
