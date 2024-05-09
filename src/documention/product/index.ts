@@ -184,6 +184,45 @@ const update_product = {
 	},
 	responses,
 };
+const update_product_status = {
+	tags: ["Products"],
+	security: [
+		{
+			bearerAuth: [],
+		},
+	],
+	summary: "Updating a product availability status",
+	parameters: [
+		{
+			in: "path",
+			name: "id",
+			required: true,
+			schema: {
+				type: "string",
+				format: "uuid",
+			},
+		},
+	],
+	requestBody: {
+		required: true,
+		content: {
+			"application/json": {
+				schema: {
+					type: "object",
+					properties: {
+						productStatus: {
+							type: "string",
+							description: "Product availability status",
+							required: true,
+							example: "Available",
+						},
+					},
+				},
+			},
+		},
+	},
+	responses,
+};
 
 const delete_product = {
 	tags: ["Products"],
@@ -219,6 +258,9 @@ export const products = {
 	},
 	"/api/v1/products/{id}/": {
 		patch: update_product,
+	},
+	"/api/v1/products/{id}/availability-status": {
+		patch: update_product_status,
 	},
 	"/api/v1/products/{ID}": {
 		delete: delete_product,

@@ -113,7 +113,7 @@ const read_all_products = async (req: Request, res: Response) => {
 		const user = (req as ExpandedRequest).user;
 		const sellerId = user?.id;
 		const condition_one = { where: { sellerId }, include };
-		const condition_two = { include };
+		const condition_two = { where: { productStatus: "Available" }, include };
 		let products;
 
 		if (user?.role === "SELLER") {
@@ -144,6 +144,7 @@ const read_all_products = async (req: Request, res: Response) => {
 			);
 		}
 	} catch (error: unknown) {
+		console.log("error fetching products", error);
 		return sendResponse(
 			res,
 			500,
@@ -164,7 +165,10 @@ const read_single_product = async (req: Request, res: Response) => {
 		const user = (req as ExpandedRequest).user;
 		const sellerId = user?.id;
 		const condition_one = { where: { id: product_id, sellerId }, include };
-		const condition_two = { where: { id: product_id }, include };
+		const condition_two = {
+			where: { id: product_id, productStatus: "Available" },
+			include,
+		};
 		let product;
 
 		if (user?.role === "SELLER") {
@@ -273,7 +277,7 @@ const update_product = async (req: Request, res: Response) => {
 		let images: string[];
 		let updated_data;
 
-		const files = req.files;
+		const files: any = req.files;
 		if (files?.length !== 0) {
 			images = (await uploadMultiple(files, req)).images as string[];
 			const image_error = (req as Info<Message>).info;
@@ -301,6 +305,82 @@ const update_product = async (req: Request, res: Response) => {
 			200,
 			"SUCCESS",
 			"Product updated successfully!",
+			updated_product,
+		);
+	} catch (error: unknown) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			error as Error,
+		);
+	}
+};
+
+//update product status: available or unavailable
+const update_product_status = async (req: Request, res: Response) => {
+	try {
+		product_id = category_utils(req, res).getId;
+		const isValidUUID = category_utils(req, res).isValidUUID(product_id);
+		if (!isValidUUID) {
+			return;
+		}
+		const user = (req as ExpandedRequest).user;
+		const sellerId = user?.id;
+		const newStatus = req.body.productStatus;
+
+		const condition = {
+			where: {
+				id: product_id,
+				sellerId,
+			},
+		};
+
+		const productExist = await read_function<ProductAttributes>(
+			"Product",
+			"findOne",
+			condition,
+		);
+		if (!productExist) {
+			return sendResponse(
+				res,
+				404,
+				"NOT FOUND",
+				"The product you're trying to update status for is not found or owned!",
+			);
+		}
+		// Check if the new status is the same as the current status
+		if (productExist.productStatus === newStatus) {
+			return sendResponse(
+				res,
+				400,
+				"BAD REQUEST",
+				"You can't change product status to the current status!",
+			);
+		}
+
+		const updatedData: Partial<ProductAttributes> = {
+			productStatus: newStatus,
+		};
+
+		await insert_function<ProductAttributes>(
+			"Product",
+			"update",
+			updatedData,
+			condition,
+		);
+
+		const updated_product = await read_function<ProductAttributes>(
+			"Product",
+			"findOne",
+			condition,
+		);
+		return sendResponse(
+			res,
+			200,
+			"SUCCESS",
+			"Product status updated successfully!",
 			updated_product,
 		);
 	} catch (error: unknown) {
@@ -378,6 +458,7 @@ const delete_product = async (req: Request, res: Response) => {
 export default {
 	create_product,
 	update_product,
+	update_product_status,
 	read_all_products,
 	read_single_product,
 	delete_product,

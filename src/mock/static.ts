@@ -148,6 +148,12 @@ export const new_update_product = {
 	quantity: 356,
 	images: [image_one_path],
 };
+export const new_updated_status = {
+	productStatus: "Available",
+};
+export const sameAsOldStatus = {
+	productStatus: "Available",
+};
 
 export const new_category = {
 	name: "Cars",

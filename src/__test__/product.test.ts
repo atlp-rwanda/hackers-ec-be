@@ -10,6 +10,8 @@ import {
 	new_seller_user,
 	new_update_product,
 	two_factor_authentication_data,
+	new_updated_status,
+	sameAsOldStatus,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 
@@ -277,6 +279,44 @@ describe("PRODUCT API TEST", () => {
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Product updated successfully!");
 		expect(body.data).toBeDefined();
+	});
+	it("It should update product availability status and return 200", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/products/${product_id}/availability-status`,
+		)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.send(new_updated_status)
+			.expect(200);
+
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Product status updated successfully!");
+		expect(body.data).toBeDefined();
+	});
+	it("It should return 400 not update product availability status with the same status", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/products/${product_id}/availability-status`,
+		)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.send(sameAsOldStatus)
+			.expect(400);
+
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual(
+			"You can't change product status to the current status!",
+		);
+	});
+	it("should not update product availability status of unavailable product and return 404", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/products/4dde8798-5e62-4a84-b44f-c04b71859b25/availability-status`,
+		)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.send(new_updated_status)
+			.expect(404);
+
+		expect(body.status).toStrictEqual("NOT FOUND");
+		expect(body.message).toStrictEqual(
+			"The product you're trying to update status for is not found or owned!",
+		);
 	});
 
 	it("should delete a product and return 200", async () => {
