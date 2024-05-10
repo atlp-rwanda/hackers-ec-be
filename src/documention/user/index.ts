@@ -287,6 +287,127 @@ const reset2_FA = {
 	},
 };
 
+const read_profile = {
+	readProfile: {
+		tags: ["User"],
+
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		sammary: "Get profile",
+		consumes: ["application/json"],
+		responses,
+	},
+};
+
+const update_user_profile = {
+	updateProfile: {
+		tags: ["User"],
+
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		sammary: "Update user profile",
+		requestBody: {
+			required: true,
+			content: {
+				"multipart/form-data": {
+					schema: {
+						type: "object",
+						properties: {
+							firstName: {
+								type: "string",
+								description: "Your first name",
+								required: false,
+								example: "July",
+							},
+							lastName: {
+								type: "string",
+								description: "Your last name",
+								required: false,
+								example: "Gakunzi",
+							},
+							gender: {
+								type: "string",
+								description: "Your gender",
+								required: true,
+								example: "Female",
+							},
+							phoneNumber: {
+								type: "number",
+								description: "Your phone number",
+								required: true,
+								example: "+250789101112",
+							},
+							birthDate: {
+								type: "string",
+								format: "date",
+								description: "Your birth date",
+								required: true,
+								example: "1900-01-01",
+							},
+							preferredLanguage: {
+								type: "string",
+								description: "Your preferred language",
+								required: true,
+								example: "Kinyarwanda",
+							},
+							preferredCurrency: {
+								type: "string",
+								description: "Your preffered currency",
+								required: true,
+								example: "RWF",
+							},
+							profileImage: {
+								type: "string",
+								format: "binary",
+								description: "Place you image",
+								required: false,
+							},
+							addressLine1: {
+								type: "string",
+								description: "Add your primary address",
+								required: true,
+								example: "Kn 136 st",
+							},
+							addressLine2: {
+								type: "string",
+								description: "Add your secondary address",
+								required: false,
+								example: "KG 002 st",
+							},
+							country: {
+								type: "string",
+								description: "Add you current country",
+								required: true,
+								example: "Rwanda",
+							},
+							city: {
+								type: "string",
+								description: "Add your current city",
+								required: true,
+								example: "Muhanga",
+							},
+							zipCode: {
+								type: "number",
+								description: "add your zip code",
+								required: false,
+								example: 6002,
+							},
+						},
+					},
+				},
+			},
+		},
+		consumes: "application/json",
+		responses,
+	},
+};
+
 export const users = {
 	"/api/v1/users/register": {
 		post: register_login["register"],
@@ -315,5 +436,11 @@ export const users = {
 
 	"/api/v1/users/2fa/{token}": {
 		post: reset2_FA["Twofa"],
+	},
+	"/api/v1/profile": {
+		get: read_profile["readProfile"],
+	},
+	"/api/v1/profile/": {
+		patch: update_user_profile["updateProfile"],
 	},
 };

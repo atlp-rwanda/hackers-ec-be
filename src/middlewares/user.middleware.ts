@@ -6,6 +6,7 @@ import validateReset from "../validations/reset.validation";
 import { sendResponse } from "../utils/http.exception";
 import validateNewPassword from "../validations/newPassword.validations";
 import updatePassValidate from "../validations/updatePass.valid";
+import { userProfileValidation } from "../validations/updateUser.validation";
 const userValid = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		if (req.body) {
@@ -87,10 +88,26 @@ const isUpdatePassValid = (req: Request, res: Response, next: NextFunction) => {
 	next();
 };
 
+const validateProfile = (req: Request, res: Response, next: NextFunction) => {
+	const error = userProfileValidation(req.body);
+
+	if (error) {
+		return sendResponse(
+			res,
+			400,
+			"BAD REQUEST",
+			error.details[0].message.replace(/"/g, ""),
+		);
+	}
+
+	next();
+};
+
 export default {
 	logInValidated,
 	userValid,
 	resetValidated,
 	isPassword,
 	isUpdatePassValid,
+	validateProfile,
 };

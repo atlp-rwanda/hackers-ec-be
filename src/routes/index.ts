@@ -4,6 +4,7 @@ import { roleRoutes } from "./roleRoutes";
 import productRouter from "./productRoutes";
 import categoryRouter from "./categoryRoutes";
 import chatRoutes from "./chatRoutes";
+import profileRouter from "./profileRouter";
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use("/", roleRoutes);
 router.use("/products", productRouter);
 router.use("/categories", categoryRouter);
 router.use("/chats", chatRoutes);
+router.use("/", profileRouter);
 
 export default router;

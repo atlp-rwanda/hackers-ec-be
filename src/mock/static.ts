@@ -17,6 +17,11 @@ export const image_four_path: string = path.resolve(
 	"images/BMW4.webp",
 );
 
+export const profile_image: string = path.resolve(
+	__dirname,
+	"images/abicar.png",
+);
+
 export const login_user = {
 	email: "peter23456545@gmail.com",
 	password: "passwordQWE123",
@@ -54,6 +59,34 @@ export const NewUserPasswordExpired = {
 export const logInPasswordExpired = {
 	email: "paul@gmail.com",
 	password: "passwordQWE123",
+};
+export const updated_profile_data = {
+	firstName: "Hannah",
+	lastName: "Agahozo",
+	profileImage: profile_image,
+	gender: "Female",
+	phoneNumber: "+250782332323",
+	preferredLanguage: "Kinyarwanda",
+	preferredCurrency: "RWF",
+	addressLine1: "Kn 123 st",
+	country: "Rwanda",
+	city: "Kigali",
+	birthDate: "1909-02-09",
+	zipCode: "jshshs",
+};
+export const updated_profile_error = {
+	firstName: "Hannah",
+	lastName: "Agahozo",
+	profileImage: profile_image,
+	gender: "Female",
+	phoneNumber: "0782332323",
+	preferredLanguage: "Kinyarwanda",
+	preferredCurrency: "RWF",
+	addressLine1: "Kn 123 st",
+	country: "Rwanda",
+	city: "Kigali",
+	birthDate: "1909-02-09",
+	zipCode: "jshshs",
 };
 
 export const new_buyer_user = {
@@ -182,6 +215,11 @@ export const update_pass = {
 	oldPassword: "passwordQWE123",
 	newPassword: "newPassword123",
 	confirmPassword: "newPassword123",
+};
+export const update_pass_empty = {
+	oldPassword: "passwordQWE123",
+	newPassword: "",
+	confirmPassword: "",
 };
 
 export const update_with_wrong_old_pass = {

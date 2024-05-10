@@ -19,10 +19,11 @@ import {
 } from "../types/model";
 import { InfoAttribute } from "../types/passport";
 import { insert_function, read_function } from "../utils/db_methods";
-
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { User } from "../database/models/User";
+import cloudinary from "../helpers/cloudinary";
+
 import bcrypt from "bcrypt";
-import { JwtPayload } from "jsonwebtoken";
 
 const registerUser = async (
 	req: Request,
@@ -372,6 +373,126 @@ export const updatePassword = async (req: Request, res: Response) => {
 		);
 	}
 };
+const read_profile = async (req: Request, res: Response) => {
+	try {
+		const token = req.headers.authorization?.split(" ")[1];
+		if (token) {
+			const decoded = jwt.decode(token) as JwtPayload;
+			const { id } = decoded;
+
+			const single_user = await read_function<UserModelAttributes>(
+				"User",
+				"findOne",
+				{ where: { id } },
+			);
+			const single_user_profile = {
+				firstName: single_user.firstName,
+				lastName: single_user.lastName,
+				email: single_user.email,
+				gender: single_user.gender,
+				phoneNumber: single_user.phoneNumber,
+				birthDate: single_user.birthDate,
+				preferredLanguage: single_user.preferredLanguage,
+				preferredCurrency: single_user.preferredCurrency,
+				profileImage: single_user.profileImage,
+				addressLine1: single_user.addressLine1,
+				addressLine2: single_user.addressLine2,
+				country: single_user.country,
+				city: single_user.city,
+				zipCode: single_user.zipCode,
+			};
+			return sendResponse(
+				res,
+				200,
+				"SUCCESS",
+				`Hi ${single_user.firstName} Here is your profile`,
+				single_user_profile,
+			);
+		}
+	} catch (error) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something Went Wrong",
+			(error as Error).message,
+		);
+	}
+};
+const update_user_profile = async (req: Request, res: Response) => {
+	try {
+		const token = req.headers.authorization?.split(" ")[1];
+		if (token) {
+			const decoded = jwt.decode(token) as JwtPayload;
+			const { id } = decoded;
+			const single_user = await User.findOne({ where: { id } });
+
+			if (single_user) {
+				let updated_profile_image = single_user.profileImage;
+				if (req.file) {
+					const results = await cloudinary.uploader.upload(req.file.path);
+					await single_user.update({ profileImage: results.secure_url });
+					updated_profile_image = results.secure_url;
+				}
+				await single_user.update({
+					firstName: req.body.firstName || single_user.firstName,
+					lastName: req.body.lastName || single_user.lastName,
+					gender: req.body.gender || single_user.gender,
+					phoneNumber: req.body.phoneNumber || single_user.phoneNumber,
+					birthDate: req.body.birthDate || single_user.birthDate,
+					profileImage: updated_profile_image || single_user.profileImage,
+					preferredLanguage:
+						req.body.preferredLanguage || single_user.preferredLanguage,
+					preferredCurrency:
+						req.body.preferredCurrency || single_user.preferredCurrency,
+					addressLine1: req.body.addressLine1 || single_user.addressLine1,
+					addressLine2: req.body.addressLine2 || single_user.addressLine2,
+					country: req.body.country || single_user.country,
+					city: req.body.city || single_user.city,
+					zipCode: req.body.zipCode || single_user.zipCode,
+				});
+			}
+			const updated_data = await read_function<UserModelAttributes>(
+				"User",
+				"findOne",
+				{ where: { id } },
+			);
+
+			const updated_profile = {
+				firstName: updated_data.firstName,
+				lastName: updated_data.lastName,
+				email: updated_data.email,
+				gender: updated_data.gender,
+				phoneNumber: updated_data.phoneNumber,
+				birthDate: updated_data.birthDate,
+				preferredLanguage: updated_data.preferredLanguage,
+				preferredCurrency: updated_data.preferredCurrency,
+				profileImage: updated_data.profileImage,
+				addressLine1: updated_data.addressLine1,
+				addressLine2: updated_data.addressLine2,
+				country: updated_data.country,
+				city: updated_data.city,
+				zipCode: updated_data.zipCode,
+			};
+
+			return sendResponse(
+				res,
+				200,
+				"SUCCESS",
+				"Profile updated successfully",
+				updated_profile,
+			);
+		}
+	} catch (error) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something Went Wrong",
+			(error as Error).message,
+		);
+	}
+};
 
 export default {
 	registerUser,
@@ -382,4 +503,6 @@ export default {
 	handleGoogleAuth,
 	logout,
 	updatePassword,
+	read_profile,
+	update_user_profile,
 };

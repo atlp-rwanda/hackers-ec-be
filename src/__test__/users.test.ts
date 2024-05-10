@@ -5,7 +5,6 @@ import { deleteTableData } from "../utils/database.utils";
 import { User } from "../database/models/User";
 import { forgotPassword } from "../controllers/resetPasswort";
 import { resetPasswort } from "../controllers/resetPasswort";
-
 import database_models, {
 	connectionToDatabase,
 } from "../database/config/db.config";
@@ -27,10 +26,21 @@ import {
 	update_with_wrong_old_pass,
 	update_pass,
 	NewUserPasswordExpired,
+	updated_profile_data,
+	updated_profile_error,
+	update_pass_empty,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { resetPassword } from "../database/models/resetPassword";
 import userController from "../controllers/userController";
+import productController from "../controllers/productController";
+import { chatLogin, read_all_messages } from "../controllers/chat";
+import { assignRole, updateRole } from "../controllers/roleController";
+import userMiddleware from "../middlewares/user.middleware";
+import {
+	roleIdValidations,
+	roleNameValid,
+} from "../middlewares/role.middleware";
 
 jest.setTimeout(30000);
 
@@ -139,6 +149,61 @@ describe("USER API TEST", () => {
 
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Login successfully!");
+	});
+
+	/**
+	 * -----------------------------------------PROFILE--------------------------------------
+	 */
+
+	it("Should list profile details and return 200", async () => {
+		const { body } = await Jest_request.get("/api/v1/profile")
+			.send()
+			.set("Authorization", `Bearer ${token}`)
+			.expect(200);
+
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual(
+			`Hi ${NewUser.firstName} Here is your profile`,
+		);
+	});
+
+	it("Should update profile and return 200", async () => {
+		const { body } = await Jest_request.patch("/api/v1/profile")
+			.set("Authorization", `Bearer ${token}`)
+			.field("firstName", updated_profile_data.firstName)
+			.field("lastName", updated_profile_data.lastName)
+			.field("phoneNumber", updated_profile_data.phoneNumber)
+			.field("city", updated_profile_data.city)
+			.field("gender", updated_profile_data.gender)
+			.field("country", updated_profile_data.country)
+			.field("preferredLanguage", updated_profile_data.preferredLanguage)
+			.field("preferredCurrency", updated_profile_data.preferredCurrency)
+			.field("addressLine1", updated_profile_data.addressLine1)
+			.field("birthDate", updated_profile_data.birthDate)
+			.attach("profileImage", updated_profile_data.profileImage);
+		expect(200);
+
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Profile updated successfully");
+	});
+
+	it("Should return 400 and error message", async () => {
+		const { body } = await Jest_request.patch("/api/v1/profile")
+			.set("Authorization", `Bearer ${token}`)
+			.field("phoneNumber", updated_profile_error.phoneNumber)
+			.field("city", updated_profile_error.city)
+			.field("gender", updated_profile_error.gender)
+			.field("country", updated_profile_error.country)
+			.field("preferredLanguage", updated_profile_error.preferredLanguage)
+			.field("preferredCurrency", updated_profile_error.preferredCurrency)
+			.field("addressLine1", updated_profile_error.addressLine1)
+			.field("birthDate", updated_profile_error.birthDate);
+		expect(400);
+
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual(
+			"phone number must be a valid and has country code",
+		);
 	});
 
 	it("Should successfully login a seller and return 202", async () => {
@@ -255,6 +320,17 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("Password updated successfully");
 	});
 
+	it("should return 400 and error message", async () => {
+		const { body } = await Jest_request.patch("/api/v1/users/password-update")
+			.set("Authorization", `Bearer ${token}`)
+			.send(update_pass_empty)
+			.expect(400);
+
+		expect(body.status).toStrictEqual("BAD REQUEST");
+
+		expect(body.message).toStrictEqual("Password field can't be empty");
+	});
+
 	it("should return 500 when something went wrong", async () => {});
 
 	/***
@@ -360,7 +436,7 @@ describe("USER API TEST", () => {
 		await forgotPassword(req, res);
 	});
 
-	it("should return 500 if token is missing or invalid", async () => {
+	it("should return 500 something went wrong", async () => {
 		const req: any = {};
 
 		const res: any = {
@@ -436,7 +512,7 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual("otp is required");
 	});
 
-	test("should handle server error", async () => {
+	it("should handle server error", async () => {
 		const req = {
 			body: { otp: "123456" },
 			params: { token: "valid_token" },
@@ -471,7 +547,7 @@ describe("USER API TEST", () => {
 		expect(body.status).toStrictEqual("UNAUTHORIZED");
 	});
 
-	it("should return 500 if token is missing or invalid", async () => {
+	it("should return 500 something went wrong", async () => {
 		const req: any = {};
 
 		const res: any = {
@@ -484,7 +560,7 @@ describe("USER API TEST", () => {
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
 
-	it("should return 500 if token is missing or invalid", async () => {
+	it("should return 500 something went wrong", async () => {
 		const req: any = {};
 
 		const res: any = {
@@ -493,6 +569,183 @@ describe("USER API TEST", () => {
 		};
 
 		await userController.accountVerify(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 something went wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await userController.logout(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 something went wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await userController.read_profile(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 and something wend wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await userController.updatePassword(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 and something wend wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await userController.update_user_profile(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 and something wend wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await productController.delete_product(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 and something wend wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await productController.create_product(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 and something wend wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await productController.read_single_product(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 and something wend wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await productController.update_product(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 and something wend wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await productController.update_product_status(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	test("userValid middleware should return 500 for internal server error", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		const next = jest.fn(() => {
+			throw new Error("Internal Server Error");
+		});
+		const consoleErrorSpy = jest
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+
+		await userMiddleware.userValid(req, res, next);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	test("userValid middleware should return 500 for internal server error", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		const next = jest.fn(() => {
+			throw new Error("Internal Server Error");
+		});
+		const consoleErrorSpy = jest
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+
+		await roleNameValid(req, res, next);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	test("userValid middleware should return 500 for internal server error", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		const next = jest.fn(() => {
+			throw new Error("Internal Server Error");
+		});
+		const consoleErrorSpy = jest
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+
+		await roleIdValidations(req, res, next);
 
 		expect(res.status).toHaveBeenCalledWith(500);
 	});

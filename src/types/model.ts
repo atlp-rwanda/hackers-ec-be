@@ -19,6 +19,17 @@ export interface UserModelAttributes {
 	isActive?: boolean;
 	createdAt?: Date;
 	updatedAt?: Date;
+	gender?: string;
+	birthDate?: Date;
+	phoneNumber?: string;
+	preferredLanguage?: string;
+	preferredCurrency?: string;
+	profileImage?: string;
+	addressLine1?: string;
+	addressLine2?: string;
+	country?: string;
+	city?: string;
+	zipCode?: number;
 }
 
 export interface UserModelInclude extends UserModelAttributes {
@@ -30,6 +41,19 @@ export type UserCreationAttributes = Optional<
 	"id" | "createdAt" | "updatedAt"
 > & {
 	role?: string;
+	firstName?: string;
+	lastName?: string;
+	gender?: string;
+	birthDate?: Date;
+	phoneNumber?: string;
+	preferredLanguage?: string;
+	preferredCurrency?: string;
+	profileImage?: string;
+	addressLine1?: string;
+	addressLine2?: string;
+	country?: string;
+	city?: string;
+	zipCode?: number;
 };
 
 /**
@@ -40,6 +64,7 @@ export interface TokenModelAttributes {
 	id: string;
 	token: string;
 }
+
 export type TokenCreationAttributes = Optional<TokenModelAttributes, "id">;
 
 /**
