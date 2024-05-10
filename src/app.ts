@@ -1,4 +1,5 @@
-import express from "express";
+import express, { Request, Response } from "express";
+import cors from "cors";
 import session from "express-session";
 import passport from "./middlewares/passport";
 import { SESSION_SECRET } from "./utils/keys";
@@ -29,6 +30,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
@@ -38,12 +40,12 @@ app.use(
 );
 
 app.use("/api/v1", router);
-app.get("/api/v1", (_req, res) => {
+app.get("/api/v1", (_req: Request, res: Response) => {
 	res.status(200).json({
 		message: "Welcome to Hacker's e-commerce backend!",
 	});
 });
-app.get("/", (_req, res) => {
+app.get("/", (_req: Request, res: Response) => {
 	res.send(root_home_page);
 });
 export default app;

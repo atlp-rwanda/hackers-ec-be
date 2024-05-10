@@ -9,7 +9,8 @@ type ModelTypes =
 	| "Blacklist"
 	| "Token"
 	| "resetPassword"
-	| "role";
+	| "role"
+	| "message";
 type MethodTypes = "findAll" | "findOne" | "destroy" | "create" | "update";
 
 export const read_function = async <T>(

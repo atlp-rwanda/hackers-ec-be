@@ -3,10 +3,38 @@ import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import database_models from "../database/config/db.config";
 import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import { HttpException } from "../utils/http.exception";
+import { Socket } from "socket.io";
 
 export interface ExpandedRequest extends Request {
 	user?: JwtPayload;
 }
+
+export interface ExtendedSocket extends Socket {
+	user?: JwtPayload;
+}
+
+//only for logged in user and used for socket middleware not compatible with express req(s)
+
+export const isLogin = async (socket: ExtendedSocket): Promise<boolean> => {
+	return new Promise((resolve, reject) => {
+		const token = socket.handshake.auth.token;
+		if (!token) {
+			reject(new Error("UNAUTHORIZED: Token is missing"));
+		}
+
+		try {
+			const verifiedToken = jwt.verify(
+				token,
+				ACCESS_TOKEN_SECRET as string,
+			) as JwtPayload;
+
+			socket.user = verifiedToken;
+			resolve(true);
+		} catch (error) {
+			reject(new Error("UNAUTHORIZED: Invalid token"));
+		}
+	});
+};
 
 // only logged in users
 const authenticateUser = async (
@@ -196,4 +224,5 @@ export default {
 	isBuyer,
 	isSeller,
 	isAdmin,
+	isLogin,
 };
