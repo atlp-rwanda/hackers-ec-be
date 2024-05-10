@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { ACCESS_TOKEN_SECRET } from "../utils/keys";
 import database_models from "../database/config/db.config";
 import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
-import { HttpException } from "../utils/http.exception";
 import { Socket } from "socket.io";
+import { HttpException, sendResponse } from "../utils/http.exception";
 
 export interface ExpandedRequest extends Request {
 	user?: JwtPayload;
@@ -48,7 +48,6 @@ const authenticateUser = async (
 			.status(401)
 			.json({ status: "UNAUTHORIZED", message: "Please login to continue" });
 	}
-	//checking token expiration
 	const decoded = jwt.decode(token) as JwtPayload;
 	if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
 		return res
@@ -70,7 +69,68 @@ const authenticateUser = async (
 		}
 
 		req.user = verifiedToken;
+
+		if (req.user.isPasswordExpired) {
+			return sendResponse(
+				res,
+				403,
+				"FORBIDDEN",
+				"Password has expired, Please update your password!",
+			);
+		}
+
 		next();
+	} catch (error) {
+		if (error instanceof jwt.TokenExpiredError) {
+			return res
+				.status(401)
+				.json({ message: "Token has expired, please login again!" });
+		} else if (error instanceof jwt.JsonWebTokenError) {
+			return res.status(401).json({ message: "Invalid token!" });
+		} else {
+			return res.status(500).json({ message: "Internal server error" });
+		}
+	}
+};
+
+const is_authenticated_when_password_expired = async (
+	req: ExpandedRequest,
+	res: Response,
+	next: NextFunction,
+) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res
+			.status(401)
+			.json({ status: "UNAUTHORIZED", message: "Please login to continue" });
+	}
+	const decoded = jwt.decode(token) as JwtPayload;
+	if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
+		return res
+			.status(401)
+			.json({ message: "Token has expired, please login again!" });
+	}
+
+	try {
+		const verifiedToken = jwt.verify(
+			token,
+			ACCESS_TOKEN_SECRET as string,
+		) as JwtPayload;
+		const isInBlacklist = await database_models.Blacklist.findOne({
+			where: { token },
+		});
+
+		if (!verifiedToken || isInBlacklist) {
+			return res.status(401).json({ message: "Please login to continue!" });
+		}
+
+		req.user = verifiedToken;
+
+		if (req.user.isPasswordExpired) {
+			return next();
+		}
+
+		return next();
 	} catch (error) {
 		if (error instanceof jwt.TokenExpiredError) {
 			return res
@@ -92,7 +152,7 @@ const isBuyer = async (
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
-		return res.status(401).json({ message: "Unauthorized" });
+		return sendResponse(res, 401, "UNAUTHORIZED", "Unauthorized");
 	}
 	try {
 		const decoded = jwt.verify(
@@ -101,15 +161,35 @@ const isBuyer = async (
 		) as JwtPayload;
 
 		if (!decoded) {
-			return res.status(401).json({ message: "please login to continue!" });
+			return sendResponse(
+				res,
+				401,
+				"UNAUTHORIZED",
+				"Please login to continue!",
+			);
 		}
 
 		if (decoded.role !== "BUYER") {
-			return res.status(403).json({ message: "Forbidden" });
+			return sendResponse(res, 403, "FORBIDDEN", "Forbidden");
 		}
+
+		if (decoded.isPasswordExpired) {
+			return sendResponse(
+				res,
+				403,
+				"FORBIDDEN",
+				"Password has expired, Please update your password!",
+			);
+		}
+
 		next();
 	} catch (error) {
-		return res.status(500).json({ message: "Internal server error" });
+		return sendResponse(
+			res,
+			500,
+			"INTERNAL SERVER ERROR",
+			"Internal server error",
+		);
 	}
 };
 
@@ -166,6 +246,15 @@ const isSeller = async (
 				);
 		}
 
+		if (req.user.isPasswordExpired) {
+			return sendResponse(
+				res,
+				403,
+				"FORBIDDEN",
+				"Password has expired, Please update your password!",
+			);
+		}
+
 		next();
 	} catch (error) {
 		if (error instanceof JsonWebTokenError) {
@@ -201,6 +290,15 @@ const isAdmin = async (
 		const role = decoded.role;
 		if (role) {
 			if (role === "ADMIN") {
+				if (decoded.isPasswordExpired) {
+					return sendResponse(
+						res,
+						403,
+						"FORBIDDEN",
+						"Password has expired, Please update your password!",
+					);
+				}
+
 				next();
 			} else {
 				return res
@@ -220,6 +318,7 @@ const isAdmin = async (
 };
 
 export default {
+	is_authenticated_when_password_expired,
 	authenticateUser,
 	isBuyer,
 	isSeller,

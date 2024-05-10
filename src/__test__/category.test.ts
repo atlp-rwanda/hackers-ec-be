@@ -122,6 +122,16 @@ describe("CATEGORY ENDPOINTS", () => {
 		);
 	});
 
+	it("should return server error on creation of category", async () => {
+		const { body } = await Jest_request.post("/api/v1/categories")
+			.set("Authorization", `Bearer ${seller_token}`)
+			.send()
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toStrictEqual(`Something went wrong!`);
+	});
+
 	it("should return 409 when category already exist", async () => {
 		const { body } = await Jest_request.post("/api/v1/categories")
 			.set("Authorization", `Bearer ${seller_token}`)

@@ -44,6 +44,18 @@ export const NewUser = {
 	confirmPassword: "passwordQWE123",
 };
 
+export const NewUserPasswordExpired = {
+	firstName: "peter",
+	lastName: "paul",
+	email: "paul@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+export const logInPasswordExpired = {
+	email: "paul@gmail.com",
+	password: "passwordQWE123",
+};
+
 export const new_buyer_user = {
 	firstName: "mark",
 	lastName: "mark",
@@ -189,3 +201,25 @@ export const new_pass_not_equals_confirm_pass = {
 	newPassword: "newPassword123",
 	confirmPassword: "newPassword1234",
 };
+export const mock_users = [
+	{
+		id: "7121d946-7265-45a1-9ce3-3da1789e657e",
+		...NewUser,
+		userName: "e555bd6",
+		role: "11afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
+		isVerified: false,
+		lastTimePasswordUpdated: new Date(Date.now()),
+		isPasswordExpired: false,
+		isActive: true,
+	},
+	{
+		id: "7221d946-7265-45a1-9ce3-3da1789e657e",
+		...new_buyer_user,
+		userName: "e555bd6",
+		role: "11afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
+		isVerified: true,
+		lastTimePasswordUpdated: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+		isPasswordExpired: false,
+		isActive: true,
+	},
+];

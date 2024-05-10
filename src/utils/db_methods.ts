@@ -17,9 +17,8 @@ export const read_function = async <T>(
 	model: ModelTypes,
 	method: MethodTypes,
 	condition?: FindOptions,
-): Promise<T> => {
+) => {
 	if (!database_models[model] || !database_models[model][method]) {
-		// database_models[model] -> database_models.model // invalid modename "" ""
 		throw new Error(
 			`Invalid ${!database_models[model] ? "modelName" : ""} ${!database_models[model] && !database_models[model][method] ? "and" : ""} ${!database_models[model][method] ? "method" : ""}`,
 		);
