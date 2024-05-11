@@ -58,6 +58,7 @@ passport.use(
 					firstName: req.body.firstName,
 					lastName: req.body.lastName,
 					role: role?.dataValues.id as string,
+					isActive: true,
 					isVerified: false,
 					gender: req.body.gender || " ",
 					birthDate: req.body.birthDate || "01.01.1900",
@@ -185,6 +186,7 @@ const userProfile = async (
 		password: "",
 		confirmPassword: "",
 		isVerified: false,
+<<<<<<< HEAD
 		gender: "",
 		birthDate: new Date(),
 		phoneNumber: "+250",
@@ -196,6 +198,9 @@ const userProfile = async (
 		country: "",
 		city: "",
 		zipCode: 0,
+=======
+		isActive: true,
+>>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 	};
 
 	return user;

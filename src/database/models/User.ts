@@ -15,6 +15,7 @@ export class User extends Model<UserModelAttributes, UserCreationAttributes> {
 	public confirmPassword!: string;
 	public role!: string;
 	public isVerified!: boolean;
+<<<<<<< HEAD
 	public isPasswordExpired!: boolean;
 	public lastTimePasswordUpdated!: Date;
 	public isActive!: boolean;
@@ -29,6 +30,9 @@ export class User extends Model<UserModelAttributes, UserCreationAttributes> {
 	public country!: string;
 	public city!: string;
 	public zipCode!: number;
+=======
+	public isActive!: boolean;
+>>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 
 	public static associate(models: {
 		Product: typeof Product;
@@ -90,6 +94,7 @@ const user_model = (sequelize: Sequelize) => {
 				defaultValue: UUIDV4,
 				allowNull: false,
 			},
+<<<<<<< HEAD
 			isPasswordExpired: {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false,
@@ -101,10 +106,14 @@ const user_model = (sequelize: Sequelize) => {
 				allowNull: false,
 			},
 			isActive: {
+=======
+			isActive: {                                   
+>>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 				type: DataTypes.BOOLEAN,
 				allowNull: false,
 				defaultValue: true,
 			},
+<<<<<<< HEAD
 			gender: {
 				type: DataTypes.STRING,
 				allowNull: true,
@@ -148,6 +157,9 @@ const user_model = (sequelize: Sequelize) => {
 			zipCode: {
 				type: DataTypes.INTEGER,
 			},
+=======
+				
+>>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 		},
 		{
 			sequelize,

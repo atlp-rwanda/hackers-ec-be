@@ -20,7 +20,12 @@ module.exports = {
 					password: await hashPassword("longPassWORD123"),
 					confirmPassword: await hashPassword("longPassWORD123"),
 					role: "11afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
+<<<<<<< HEAD
 					isVerified: true,
+=======
+					isVerified: false,
+					isActive: true,
+>>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -33,7 +38,12 @@ module.exports = {
 					password: await hashPassword("longPassWORD123"),
 					confirmPassword: await hashPassword("longPassWORD123"),
 					role: "12afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
+<<<<<<< HEAD
 					isVerified: true,
+=======
+					isVerified: false,
+					isActive: true,
+>>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -60,6 +70,7 @@ module.exports = {
 					confirmPassword: await hashPassword("longPassWORD123"),
 					role: "13afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
 					isVerified: false,
+					isActive: true,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},

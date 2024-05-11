@@ -15,6 +15,7 @@ export interface UserModelAttributes {
 	confirmPassword: string;
 	role: string;
 	isVerified: boolean;
+<<<<<<< HEAD
 	isPasswordExpired?: boolean;
 	lastTimePasswordUpdated?: Date;
 	isActive?: boolean;
@@ -31,6 +32,9 @@ export interface UserModelAttributes {
 	country?: string;
 	city?: string;
 	zipCode?: number;
+=======
+	isActive: boolean;
+>>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 }
 
 export interface UserModelInclude extends UserModelAttributes {
