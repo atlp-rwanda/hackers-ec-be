@@ -6,12 +6,9 @@ import validateReset from "../validations/reset.validation";
 import { sendResponse } from "../utils/http.exception";
 import validateNewPassword from "../validations/newPassword.validations";
 import updatePassValidate from "../validations/updatePass.valid";
-<<<<<<< HEAD
 import { userProfileValidation } from "../validations/updateUser.validation";
-=======
 import accountStatusValidate from "../validations/accountStatus.validate";
 import { User } from "../database/models/User";
->>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 const userValid = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		if (req.body) {
@@ -93,7 +90,6 @@ const isUpdatePassValid = (req: Request, res: Response, next: NextFunction) => {
 	next();
 };
 
-<<<<<<< HEAD
 const validateProfile = (req: Request, res: Response, next: NextFunction) => {
 	const error = userProfileValidation(req.body);
 
@@ -107,7 +103,7 @@ const validateProfile = (req: Request, res: Response, next: NextFunction) => {
 	}
 
 	next();
-=======
+};
 const checkAccountStatus = async (req: Request, res: Response, next: NextFunction) => {
 	const userId = req.params.userId;
 	try{
@@ -147,7 +143,6 @@ const checkAccountStatus = async (req: Request, res: Response, next: NextFunctio
 			error: error,
 		});
 	}
->>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 };
 
 export default {
@@ -156,9 +151,6 @@ export default {
 	resetValidated,
 	isPassword,
 	isUpdatePassValid,
-<<<<<<< HEAD
 	validateProfile,
-=======
 	checkAccountStatus,
->>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 };

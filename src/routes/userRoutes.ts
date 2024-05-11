@@ -31,15 +31,11 @@ userRoutes.patch(
 	userMiddleware.isUpdatePassValid,
 	userController.updatePassword,
 );
-userRoutes.get(
-	"/users",
-	authentication.isAdmin,
-	userController.allUsers,
-);
+userRoutes.get("/users", authentication.isAdmin, userController.allUsers);
 userRoutes.patch(
-	"/:userId/account-status", 
-	authentication.isAdmin, 
-	userMiddleware.checkAccountStatus, 
+	"/:userId/account-status",
+	authentication.isAdmin,
+	userMiddleware.checkAccountStatus,
 	userController.accountStatus,
 );
 userRoutes.get("/account/verify/:token", userController.accountVerify);

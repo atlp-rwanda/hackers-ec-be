@@ -506,55 +506,47 @@ const update_user_profile = async (req: Request, res: Response) => {
 
 export const accountStatus = async (req: Request, res: Response) => {
 	const userId = req.params.userId;
-	const {isAccountActive, reason} = req.body;
+	const { isAccountActive, reason } = req.body;
 
-	try{
-
-		const user = await User.findOne({where: {id: userId}});
-		if(!user){
-			return sendResponse(
-				res,
-				404,
-				"NOT FOUND",
-				"User not found",
-			);
+	try {
+		const user = await User.findOne({ where: { id: userId } });
+		if (!user) {
+			return sendResponse(res, 404, "NOT FOUND", "User not found");
 		}
 
-		if(!isAccountActive){
-
-			await User.update({isActive: isAccountActive}, {where: {id: userId}});
+		if (!isAccountActive) {
+			await User.update(
+				{ isActive: isAccountActive },
+				{ where: { id: userId } },
+			);
 			const message = `Dear Beloved user ${user.userName}, your account has been disabled due to ${reason}. if you have any queries please contact our support team. Thank you.`;
-						await sendEmail({
-							to: user.email,
-							subject: "Account Disabled!",
-							html: message,
-						});
+			await sendEmail({
+				to: user.email,
+				subject: "Account Disabled!",
+				html: message,
+			});
 			return sendResponse(
 				res,
 				200,
 				"SUCCESS",
 				"Account disabled successfully",
-				reason
+				reason,
 			);
 		}
 		if (isAccountActive) {
-
-			await User.update({isActive: isAccountActive}, {where: {id: userId}});
-			const message = `Dear Beloved user ${user.userName}, your account has been enabled, Thank you for using our service.`;
-						await sendEmail({
-							to: user.email,
-							subject: "Account Enabled!",
-							html: message,
-						});
-			return sendResponse(
-				res,
-				200,
-				"SUCCESS",
-				"Account enabled successfully",
+			await User.update(
+				{ isActive: isAccountActive },
+				{ where: { id: userId } },
 			);
+			const message = `Dear Beloved user ${user.userName}, your account has been enabled, Thank you for using our service.`;
+			await sendEmail({
+				to: user.email,
+				subject: "Account Enabled!",
+				html: message,
+			});
+			return sendResponse(res, 200, "SUCCESS", "Account enabled successfully");
 		}
-
-	}catch (error) {
+	} catch (error) {
 		return sendResponse(
 			res,
 			500,
@@ -567,10 +559,18 @@ export const accountStatus = async (req: Request, res: Response) => {
 
 export const allUsers = async (req: Request, res: Response) => {
 	try {
-		const users = await User.findAll({ attributes: ['id', 'userName', 'email', 'role', 'isActive'] });
+		const users = await User.findAll({
+			attributes: ["id", "userName", "email", "role", "isActive"],
+		});
 		return sendResponse(res, 200, "SUCCESS", "All users", users);
 	} catch (error) {
-		return sendResponse(res, 500, "SERVER ERROR", "Something went wrong!", (error as Error).message);
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
 	}
 };
 
@@ -583,11 +583,8 @@ export default {
 	handleGoogleAuth,
 	logout,
 	updatePassword,
-<<<<<<< HEAD
 	read_profile,
 	update_user_profile,
-=======
 	accountStatus,
 	allUsers,
->>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 };

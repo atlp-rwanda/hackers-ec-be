@@ -186,7 +186,6 @@ const userProfile = async (
 		password: "",
 		confirmPassword: "",
 		isVerified: false,
-<<<<<<< HEAD
 		gender: "",
 		birthDate: new Date(),
 		phoneNumber: "+250",
@@ -198,9 +197,7 @@ const userProfile = async (
 		country: "",
 		city: "",
 		zipCode: 0,
-=======
 		isActive: true,
->>>>>>> fa58d14 (ft(user-status): added controller and middleware functionalities)
 	};
 
 	return user;

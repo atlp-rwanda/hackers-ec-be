@@ -10,7 +10,7 @@ const accountStatusValidator = Joi.object({
 				"Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number",
 		})
 		.required(),
-        reason: Joi.string()
+	reason: Joi.string()
 		.required()
 		.pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$"))
 		.messages({
