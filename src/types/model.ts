@@ -134,3 +134,14 @@ export interface messageModelAttributes {
 	senderId: string;
 	message: string;
 }
+/**
+ * -------------- Wishes Model ---------------------
+ */
+export interface WishesAttributes {
+	id: string;
+	userId: string;
+	productId: string;
+	product?: ProductAttributes;
+}
+export interface WishesCreationAttributes
+	extends Omit<WishesAttributes, "id"> {}

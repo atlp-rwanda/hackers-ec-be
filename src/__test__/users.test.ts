@@ -1,10 +1,11 @@
 import app from "../app";
-import { Request, Response } from "express";
 import request from "supertest";
 import { deleteTableData } from "../utils/database.utils";
 import { User } from "../database/models/User";
 import { forgotPassword } from "../controllers/resetPasswort";
 import { resetPasswort } from "../controllers/resetPasswort";
+import { Request, Response } from "express";
+
 import database_models, {
 	connectionToDatabase,
 } from "../database/config/db.config";
@@ -403,6 +404,8 @@ describe("USER API TEST", () => {
 		)
 			.send(sameAsOldPassword)
 			.expect(400);
+		expect(resetToken).toBeDefined();
+		expect(resetToken).not.toEqual("");
 	});
 
 	it("it should return 400 when invalid link is provided", async () => {
