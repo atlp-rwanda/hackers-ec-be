@@ -8,6 +8,7 @@ import validateNewPassword from "../validations/newPassword.validations";
 import updatePassValidate from "../validations/updatePass.valid";
 import { userProfileValidation } from "../validations/updateUser.validation";
 import accountStatusValidate from "../validations/accountStatus.validate";
+import { JwtPayload } from "jsonwebtoken";
 import { User } from "../database/models/User";
 const userValid = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -104,10 +105,15 @@ const validateProfile = (req: Request, res: Response, next: NextFunction) => {
 
 	next();
 };
-const checkAccountStatus = async (req: Request, res: Response, next: NextFunction) => {
-	const userId = req.params.userId;
-	try{
 
+const checkAccountStatus = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	const decoded = req.user as JwtPayload;
+
+	try {
 		const error = accountStatusValidate(req.body);
 		if (error) {
 			return sendResponse(
@@ -118,7 +124,7 @@ const checkAccountStatus = async (req: Request, res: Response, next: NextFunctio
 			);
 		}
 
-		const user = await User.findOne({where: {id: userId}});
+		const user = await User.findOne({ where: { id: decoded.id } });
 		if (!user) {
 			return sendResponse(
 				res,

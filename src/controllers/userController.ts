@@ -510,11 +510,12 @@ export const accountStatus = async (req: Request, res: Response) => {
 
 	try {
 		const user = await User.findOne({ where: { id: userId } });
+		console.log(user);
 		if (!user) {
 			return sendResponse(res, 404, "NOT FOUND", "User not found");
 		}
 
-		if (!isAccountActive) {
+		if (isAccountActive === "false") {
 			await User.update(
 				{ isActive: isAccountActive },
 				{ where: { id: userId } },
@@ -533,7 +534,7 @@ export const accountStatus = async (req: Request, res: Response) => {
 				reason,
 			);
 		}
-		if (isAccountActive) {
+		if (isAccountActive === "true") {
 			await User.update(
 				{ isActive: isAccountActive },
 				{ where: { id: userId } },
@@ -559,10 +560,22 @@ export const accountStatus = async (req: Request, res: Response) => {
 
 export const allUsers = async (req: Request, res: Response) => {
 	try {
-		const users = await User.findAll({
-			attributes: ["id", "userName", "email", "role", "isActive"],
-		});
-		return sendResponse(res, 200, "SUCCESS", "All users", users);
+		if (req.body) {
+			const users = await read_function<UserModelAttributes>("User", "findAll");
+			return sendResponse(
+				res,
+				200,
+				"SUCCESS",
+				"we have following roles",
+				users,
+			);
+		}
+
+		// if (!users) {
+		// 	return sendResponse(res, 404, "NOT FOUND", "Users not found");
+		// }
+
+		// return sendResponse(res, 200, "SUCCESS", "All users", users);
 	} catch (error) {
 		return sendResponse(
 			res,
