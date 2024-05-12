@@ -14,8 +14,8 @@ userRoutes.post(
 
 userRoutes.post(
 	"/login",
-	userMiddleware.checkAccountStatus,
 	userMiddleware.logInValidated,
+	userMiddleware.checkAccountStatus,
 	userController.login,
 );
 
@@ -40,6 +40,7 @@ userRoutes.get("/", authentication.isAdmin, userController.allUsers);
 userRoutes.patch(
 	"/:userId/account-status",
 	authentication.isAdmin,
+	userMiddleware.accountStatusValid,
 	userController.accountStatus,
 );
 userRoutes.get("/account/verify/:token", userController.accountVerify);

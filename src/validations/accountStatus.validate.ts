@@ -4,6 +4,7 @@ const accountStatusValidator = Joi.object({
 	isAccountActive: Joi.string()
 		.required()
 		.messages({
+			"any. only": "isAccountActive required",
 			"string.empty": "field can't be empty",
 		})
 		.required(),

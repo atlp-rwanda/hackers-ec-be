@@ -304,3 +304,17 @@ export const invalidTokens = {
 	invalidtoke:
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBmZTFkYjllLWI5MDQtNGFhMS04MDgwLTU0YWE3MmIxYWZhYyIsInJvbGUiOiJTRUxMRVIiLCJvdHAiOiIwNDMyODQiLCJpYXQiOjE3MTUxNTgzNjgsImV4cCI6MTc0NjcxNTk2OH0.WJsyXFc2p9Gdi8GBJzaiURV6rYxieHebtOA90",
 };
+export const disable_user = {
+	isAccountActive: "false",
+	reason: "you disobeyed rules of our app",
+};
+
+export const enable_user = {
+	isAccountActive: "true",
+	reason: "you have obeyed our rules",
+};
+
+export const account_status_invalid = {
+	isAccountActive: "",
+	reason: "",
+};

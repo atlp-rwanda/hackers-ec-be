@@ -566,16 +566,10 @@ export const allUsers = async (req: Request, res: Response) => {
 				res,
 				200,
 				"SUCCESS",
-				"we have following roles",
+				"Here is a list of users",
 				users,
 			);
 		}
-
-		// if (!users) {
-		// 	return sendResponse(res, 404, "NOT FOUND", "Users not found");
-		// }
-
-		// return sendResponse(res, 200, "SUCCESS", "All users", users);
 	} catch (error) {
 		return sendResponse(
 			res,

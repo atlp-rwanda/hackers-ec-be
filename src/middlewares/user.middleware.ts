@@ -8,7 +8,6 @@ import validateNewPassword from "../validations/newPassword.validations";
 import updatePassValidate from "../validations/updatePass.valid";
 import { userProfileValidation } from "../validations/updateUser.validation";
 import accountStatusValidate from "../validations/accountStatus.validate";
-import { JwtPayload } from "jsonwebtoken";
 import { User } from "../database/models/User";
 const userValid = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -93,7 +92,14 @@ const isUpdatePassValid = (req: Request, res: Response, next: NextFunction) => {
 
 const validateProfile = (req: Request, res: Response, next: NextFunction) => {
 	const error = userProfileValidation(req.body);
+};
 
+const accountStatusValid = (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	const error = accountStatusValidate(req.body);
 	if (error) {
 		return sendResponse(
 			res,
@@ -102,7 +108,6 @@ const validateProfile = (req: Request, res: Response, next: NextFunction) => {
 			error.details[0].message.replace(/"/g, ""),
 		);
 	}
-
 	next();
 };
 
@@ -111,20 +116,10 @@ const checkAccountStatus = async (
 	res: Response,
 	next: NextFunction,
 ) => {
-	const decoded = req.user as JwtPayload;
+	const { email } = req.body;
 
 	try {
-		const error = accountStatusValidate(req.body);
-		if (error) {
-			return sendResponse(
-				res,
-				400,
-				"BAD REQUEST",
-				error.details[0].message.replace(/"/g, ""),
-			);
-		}
-
-		const user = await User.findOne({ where: { id: decoded.id } });
+		const user = await User.findOne({ where: { email: email } });
 		if (!user) {
 			return sendResponse(
 				res,
@@ -141,6 +136,7 @@ const checkAccountStatus = async (
 				"Your account has been disabled",
 			);
 		}
+		req.user = user;
 		next();
 	} catch (error) {
 		res.status(500).json({
@@ -159,4 +155,5 @@ export default {
 	isUpdatePassValid,
 	validateProfile,
 	checkAccountStatus,
+	accountStatusValid,
 };
