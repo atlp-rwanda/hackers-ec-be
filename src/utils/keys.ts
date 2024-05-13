@@ -20,3 +20,4 @@ export const SERVER_URL = process.env.SERVER_URL;
 export const DEV_MODE = process.env.DEV_MODE;
 export const CLONE_TIME = process.env.CLONE_TIME as string;
 export const PASS_EXPIRE_DURATION = process.env.PASS_EXPIRE_DURATION as string;
+export const DB_PROD_URL = process.env.DB_PROD_URL;

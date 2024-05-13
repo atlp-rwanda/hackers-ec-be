@@ -5,6 +5,7 @@ import { categories } from "./category";
 import { products } from "./product";
 import { messages } from "./message";
 import { wishes } from "./wishlist";
+import { searches } from "./SearchProduct";
 
 export default {
 	...basicInfo,
@@ -12,6 +13,7 @@ export default {
 		...users,
 		...roles,
 		...categories,
+		...searches,
 		...products,
 		...messages,
 		...wishes,

@@ -12,6 +12,8 @@ import {
 	two_factor_authentication_data,
 	new_updated_status,
 	sameAsOldStatus,
+	search_product,
+	search_product_Not_found,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 
@@ -82,10 +84,8 @@ describe("PRODUCT API TEST", () => {
 			.set("Authorization", `Bearer ${seller_token}`)
 			.send(new_category)
 			.expect(201);
-
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.data).toBeDefined();
-
 		category_id = body.data?.id;
 	});
 
@@ -140,7 +140,6 @@ describe("PRODUCT API TEST", () => {
 
 	it("should return 400 if the category doesn't exist", async () => {
 		const all_images = new_product.images;
-
 		let request = Jest_request.post("/api/v1/products")
 			.set("Authorization", `Bearer ${seller_token}`)
 			.field("name", new_update_product.name)
@@ -292,6 +291,63 @@ describe("PRODUCT API TEST", () => {
 		expect(body.message).toStrictEqual("Product status updated successfully!");
 		expect(body.data).toBeDefined();
 	});
+
+	it("it should return searched product with name only", async () => {
+		const { body } = await Jest_request.get("/api/v1/products/search?")
+			.query({ name: search_product.name })
+			.expect(200);
+		expect(body.status).toStrictEqual("success");
+		expect(body.product).toBeDefined();
+	});
+
+	it("it should return searched product with category only", async () => {
+		const { body } = await Jest_request.get("/api/v1/products/search?")
+			.query({ categoryName: search_product.categoryName })
+			.expect(200);
+		expect(body.status).toStrictEqual("success");
+		expect(body.product).toBeDefined();
+	});
+
+	it("it should return searched product with in Price range", async () => {
+		const { body } = await Jest_request.get("/api/v1/products/search?")
+			.query({ maxPrice: search_product.maxPrice })
+			.query({ minPrice: search_product.minPrice })
+			.expect(200);
+		expect(body.status).toStrictEqual("success");
+		expect(body.product).toBeDefined();
+	});
+
+	it("it should return searched product with minumum price only", async () => {
+		const { body } = await Jest_request.get("/api/v1/products/search?")
+			.query({ minPrice: search_product.minPrice })
+			.expect(200);
+		expect(body.status).toStrictEqual("success");
+		expect(body.product).toBeDefined();
+	});
+
+	it("it should return searched product with maxPrice only", async () => {
+		const { body } = await Jest_request.get("/api/v1/products/search?")
+			.query({ maxPrice: search_product.maxPrice })
+			.expect(200);
+		expect(body.status).toStrictEqual("success");
+		expect(body.product).toBeDefined();
+	});
+
+	it("it should return bad request when we are using mismatch type in price", async () => {
+		const { body } = await Jest_request.get("/api/v1/products/search?")
+			.query({ maxPrice: search_product.name })
+			.expect(400);
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("maxPrice must be a number");
+	});
+
+	it("it should return product not found", async () => {
+		const { body } = await Jest_request.get("/api/v1/products/search?")
+			.query({ name: search_product_Not_found.name })
+			.expect(200);
+		expect(body.message).toStrictEqual("no product found");
+	});
+
 	it("It should return 400 not update product availability status with the same status", async () => {
 		const { body } = await Jest_request.patch(
 			`/api/v1/products/${product_id}/availability-status`,

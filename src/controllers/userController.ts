@@ -318,6 +318,7 @@ export const updatePassword = async (req: Request, res: Response) => {
 		const user = await User.findOne(condition);
 
 		const userPassword = user?.dataValues.password;
+
 		const isPasswordValid = await bcrypt.compare(
 			oldPassword,
 			userPassword as string,

@@ -14,6 +14,27 @@ module.exports = {
 					updatedAt: new Date(),
 					createdAt: new Date(),
 				},
+				{
+					id: "8efe453c-b779-453c-b96e-afe656eeebab",
+					name: "Electronic",
+					description: "Fruits are amazing",
+					updatedAt: new Date(),
+					createdAt: new Date(),
+				},
+				{
+					id: "8ffe453c-b779-453c-b96e-afe656eeebab",
+					name: "Furniture",
+					description: "Fruits are amazing",
+					updatedAt: new Date(),
+					createdAt: new Date(),
+				},
+				{
+					id: "7efe453c-b779-453c-b96e-afe656eeebab",
+					name: "Medicine",
+					description: "Fruits are amazing",
+					updatedAt: new Date(),
+					createdAt: new Date(),
+				},
 			],
 			{},
 		);
