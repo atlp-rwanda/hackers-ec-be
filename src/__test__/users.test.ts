@@ -364,6 +364,12 @@ describe("USER API TEST", () => {
 	/***
 	 * ----------------------------- Getting all users, Disabling/Enabling user's Account -------------------------------------------
 	 */
+	it("should return 404 when not admin tries to get all users", async () => {
+		const { body } = await Jest_request.get("/api/v1/users")
+			.set("Authorization", `Bearer ${token}`)
+			.expect(403);
+		expect(body.message).toBe("you are not allowed to access this route!");
+	});
 	it("should get all users and return 200", async () => {
 		const { body } = await Jest_request.get("/api/v1/users")
 			.set("Authorization", `Bearer ${admin_token}`)

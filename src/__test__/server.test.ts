@@ -83,14 +83,14 @@ describe("USER SERVER API TEST", () => {
 		await deleteTableData(database_models.User, "users");
 	});
 
-    it("should return 500 when something goes wrong on authenticate the user", async () => {
+	it("should return 500 when something goes wrong on authenticate the user", async () => {
 		const authenticatetoken = generateAccessToken({
 			id: "1",
 			role: "seller",
 			otp: two_factor_authentication_data.otp,
 		});
 
-        (read_function as jest.Mock).mockRejectedValueOnce(new Error('Test error'));
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
 		const { body } = await Jest_request.post(
 			`/api/v1/users/2fa/${authenticatetoken}`,
@@ -99,30 +99,29 @@ describe("USER SERVER API TEST", () => {
 			.expect(500);
 
 		expect(body.status).toStrictEqual("SERVER ERROR");
-        expect(body.message).toStrictEqual("Something went wrong!");
+		expect(body.message).toStrictEqual("Something went wrong!");
 	});
 
-    it("should return 500 when something went wrong on disabling users", async () => {
-		(read_function as jest.Mock).mockRejectedValueOnce(new Error('Test error'));
+	it("should return 500 when something went wrong on disabling users", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
 		const { body } = await Jest_request.patch(
 			`/api/v1/users/${userId}/account-status`,
 		)
 			.set("Authorization", `Bearer ${admin_token}`)
-            .send(disable_user)
+			.send(disable_user)
 			.expect(500);
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
 	});
 
-    it("should return 500 when something went wrong on listing all users", async () => {
-		(read_function as jest.Mock).mockRejectedValueOnce(new Error('Test error'));
+	it("should return 500 when something went wrong on listing all users", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
-		const {body} = await Jest_request.get("/api/v1/users")
+		const { body } = await Jest_request.get("/api/v1/users")
 			.set("Authorization", `Bearer ${admin_token}`)
 			.expect(500);
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
 	});
-    
 });
