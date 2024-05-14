@@ -4,6 +4,7 @@ import * as http from "http";
 import { config } from "./utils/socket.util";
 import { startCheckPasswordExpiration } from "./helpers/cronJobs";
 import { CLONE_TIME, PORT } from "./utils/keys";
+import { checkProductExpiration } from "./utils/products.expiration";
 
 const startServer = async () => {
 	await connectionToDatabase();
@@ -14,6 +15,7 @@ const startServer = async () => {
 	server.listen(PORT, async () => {
 		console.log(`Server is running at http://localhost:${PORT}`);
 		await startCheckPasswordExpiration(CLONE_TIME);
+		await checkProductExpiration();
 	});
 };
 

@@ -47,3 +47,20 @@ export const update_pass_email_template = (user: UserModelAttributes) => {
   </div>
   `;
 };
+
+export const update_product_email_template = (
+	user: UserModelAttributes,
+	productName: string,
+) => {
+	return `
+  <div style="max-width: 600px; margin: auto; padding: 20px; background-color: #f4f4f4;">
+      <h2 style="color: #333;">Your Product Has Expired</h2>
+      <p>Dear ${user.firstName} ${user.lastName},</p>
+      <p>We hope this email finds you well.</p>
+      <p>We wanted to inform you that your product called ${productName} on Hacker's E-commerce has expired. This is just a friendly reminder to remove product on platform</p>
+      
+      <p>Thank you for your attention to this matter.</p>
+      <p>Best regards</p>
+  </div>
+  `;
+};
