@@ -50,7 +50,6 @@ jest.setTimeout(30000);
 
 const role = database_models["role"];
 const user = database_models["User"];
-
 jest.setTimeout(30000);
 function logErrors(
 	err: { stack: any },
@@ -62,14 +61,14 @@ function logErrors(
 	next(err);
 }
 let token: string;
+let admin_token: string;
 
 const Jest_request = request(app.use(logErrors));
 
 let resetToken = "";
 let id: string;
-const admin_token =
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwYTg2MDNjLWE2YWQtNGFlOS05NWFkLWVjMmRmYjk4OTI1MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTcxNTYxMTQ1OSwiZXhwIjoxNzQ3MTY5MDU5fQ.IPu81R6tOtgKwFmVQthkCyElECya1vMsfFEcn88zzB0";
 let userId: string;
+let adminId: string;
 
 describe("USER API TEST", () => {
 	beforeAll(async () => {
@@ -84,6 +83,14 @@ describe("USER API TEST", () => {
 		if (userStatus) {
 			userId = userStatus?.dataValues.id;
 		}
+		const adminUser = await user.findOne({
+			where: { role: "12afd4f1-0bed-4a3b-8ad5-0978dabf8fcd" },
+		});
+		if (adminUser) {
+			adminId = adminUser?.dataValues.id;
+		}
+
+		admin_token = generateAccessToken({ id: adminId, role: "ADMIN" });
 	});
 
 	afterAll(async () => {
@@ -219,12 +226,6 @@ describe("USER API TEST", () => {
 		expect(body.message).toStrictEqual(
 			"phone number must be a valid and has country code",
 		);
-	it("should return 401 when a user login with wrong credentials", async () => {
-		const { body } = await Jest_request.post("/api/v1/users/login")
-			.send(login_user_wrong_credentials)
-			.expect(401);
-		expect(body.status).toStrictEqual("UNAUTHORIZED");
-		expect(body.message).toStrictEqual("Wrong credentials!");
 	});
 
 	it("Should successfully login a seller and return 202", async () => {
@@ -345,7 +346,6 @@ describe("USER API TEST", () => {
 
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Password updated successfully");
-		console.log("______________________", token);
 	});
 
 	it("should return 400 and error message", async () => {
@@ -370,6 +370,7 @@ describe("USER API TEST", () => {
 			.expect(403);
 		expect(body.message).toBe("you are not allowed to access this route!");
 	});
+
 	it("should get all users and return 200", async () => {
 		const { body } = await Jest_request.get("/api/v1/users")
 			.set("Authorization", `Bearer ${admin_token}`)
@@ -836,6 +837,5 @@ describe("USER API TEST", () => {
 		await roleIdValidations(req, res, next);
 
 		expect(res.status).toHaveBeenCalledWith(500);
-	});
 	});
 });

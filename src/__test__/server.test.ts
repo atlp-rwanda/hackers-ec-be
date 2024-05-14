@@ -26,6 +26,7 @@ import {
 	update_with_wrong_old_pass,
 	update_pass,
 	disable_user,
+	new_category,
 	enable_user,
 	account_status_invalid,
 } from "../mock/static";
@@ -58,11 +59,13 @@ const Jest_request = request(app.use(logErrors));
 
 let resetToken = "";
 let id: string;
-const admin_token =
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwYTg2MDNjLWE2YWQtNGFlOS05NWFkLWVjMmRmYjk4OTI1MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTcxNTYxMTQ1OSwiZXhwIjoxNzQ3MTY5MDU5fQ.IPu81R6tOtgKwFmVQthkCyElECya1vMsfFEcn88zzB0";
 let userId: string;
+let adminId: string;
+let seller_token: string;
+let sellerId: string;
+let category_id: string;
 
-describe("USER SERVER API TEST", () => {
+describe("SERVER API TEST", () => {
 	beforeAll(async () => {
 		await connectionToDatabase();
 		const adminRole = await role.findOne({ where: { roleName: "ADMIN" } });
@@ -76,6 +79,21 @@ describe("USER SERVER API TEST", () => {
 		if (userStatus) {
 			userId = userStatus?.dataValues.id;
 		}
+		const adminUser = await user.findOne({
+			where: { role: "12afd4f1-0bed-4a3b-8ad5-0978dabf8fcd" },
+		});
+		if (adminUser) {
+			adminId = adminUser?.dataValues.id;
+		}
+		token = generateAccessToken({ id: adminId, role: "ADMIN" });
+
+		const sellerUser = await user.findOne({
+			where: { role: "13afd4f1-0bed-4a3b-8ad5-0978dabf8fcd" },
+		});
+		if (sellerUser) {
+			sellerId = sellerUser?.dataValues.id;
+		}
+		seller_token = generateAccessToken({ id: sellerId, role: "SELLER" });
 	});
 
 	afterAll(async () => {
@@ -108,7 +126,7 @@ describe("USER SERVER API TEST", () => {
 		const { body } = await Jest_request.patch(
 			`/api/v1/users/${userId}/account-status`,
 		)
-			.set("Authorization", `Bearer ${admin_token}`)
+			.set("Authorization", `Bearer ${token}`)
 			.send(disable_user)
 			.expect(500);
 		expect(body.status).toStrictEqual("SERVER ERROR");
@@ -119,9 +137,34 @@ describe("USER SERVER API TEST", () => {
 		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
 		const { body } = await Jest_request.get("/api/v1/users")
-			.set("Authorization", `Bearer ${admin_token}`)
+			.set("Authorization", `Bearer ${token}`)
 			.expect(500);
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when creating category goes wrong", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+
+		const { body } = await Jest_request.post("/api/v1/categories")
+			.set("Authorization", `Bearer ${seller_token}`)
+			.send(new_category)
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toStrictEqual("Something went wrong!");
+		expect(body.data).toBeDefined();
+	});
+
+	it("should return 500 when fetch all categories goes wrong", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+
+		const { body } = await Jest_request.get("/api/v1/categories")
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toStrictEqual("Something went wrong!");
+		expect(body.data).toBeDefined();
 	});
 });

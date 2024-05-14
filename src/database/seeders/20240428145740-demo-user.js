@@ -49,6 +49,7 @@ module.exports = {
 					confirmPassword: await hashPassword("longPassWORD123"),
 					role: "13afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",
 					isVerified: true,
+					isActive: true,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},

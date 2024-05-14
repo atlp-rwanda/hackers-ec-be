@@ -518,7 +518,7 @@ export const accountStatus = async (req: Request, res: Response) => {
 				{ isActive: isAccountActive },
 				{ where: { id: userId } },
 			);
-			const message = `Dear Beloved user ${user.userName}, your account has been disabled due to ${reason}. if you have any queries please contact our support team. Thank you.`;
+			const message = `Dear Beloved user ${user.userName}, your account has been disabled due to this reason:  ${reason}. if you have any queries please contact our support team. Thank you.`;
 			await sendEmail({
 				to: user.email,
 				subject: "Account Disabled!",
@@ -537,7 +537,7 @@ export const accountStatus = async (req: Request, res: Response) => {
 				{ isActive: isAccountActive },
 				{ where: { id: userId } },
 			);
-			const message = `Dear Beloved user ${user.userName}, your account has been enabled, Thank you for using our service.`;
+			const message = `Dear Beloved user ${user.userName}, your account has been enabled, Thank you for using our application, if you have any queries please contact our support team!.`;
 			await sendEmail({
 				to: user.email,
 				subject: "Account Enabled!",

@@ -92,6 +92,17 @@ const isUpdatePassValid = (req: Request, res: Response, next: NextFunction) => {
 
 const validateProfile = (req: Request, res: Response, next: NextFunction) => {
 	const error = userProfileValidation(req.body);
+
+	if (error) {
+		return sendResponse(
+			res,
+			400,
+			"BAD REQUEST",
+			error.details[0].message.replace(/"/g, ""),
+		);
+	}
+
+	next();
 };
 
 const accountStatusValid = (
@@ -121,12 +132,7 @@ const checkAccountStatus = async (
 	try {
 		const user = await User.findOne({ where: { email: email } });
 		if (!user) {
-			return sendResponse(
-				res,
-				404,
-				"NOT FOUND",
-				"User not found",
-			);
+			return sendResponse(res, 404, "NOT FOUND", "User not found");
 		}
 		if (user.isActive === false) {
 			return sendResponse(
