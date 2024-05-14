@@ -325,7 +325,6 @@ export const updatePassword = async (req: Request, res: Response) => {
 			userPassword as string,
 		);
 
-		console.log("****************user", isPasswordValid);
 		if (!isPasswordValid) {
 			return res
 				.status(400)
@@ -510,7 +509,6 @@ export const accountStatus = async (req: Request, res: Response) => {
 
 	try {
 		const user = await User.findOne({ where: { id: userId } });
-		console.log(user);
 		if (!user) {
 			return sendResponse(res, 404, "NOT FOUND", "User not found");
 		}
