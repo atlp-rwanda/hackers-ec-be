@@ -189,7 +189,7 @@ describe("STRIPE PAYMENTS API TEST", () => {
 
 		expect(body.status).toStrictEqual("PAYMENT REQUIRED");
 		expect(body.message).toStrictEqual(
-			"Invalid payment method! I recommend you to use stripe here!",
+			"Invalid payment method! I recommend you to use stripe or momo here!",
 		);
 	});
 

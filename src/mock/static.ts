@@ -388,3 +388,24 @@ export const status_past_date = {
 	status: "canceled",
 	deliveryDate: "2020-06-18T11:14:50.065Z",
 };
+
+export const momoPayWithExpectedData = {
+	phoneNumber: "0783520504",
+};
+export const momoPayWithInsufficientAmount = {
+	phoneNumber: "0782570202",
+};
+
+export const noAmountMomo = {
+	phoneNumber: "0782570202",
+};
+export const noPhoneNumberMomo = {
+	phoneNumber: "0782570202",
+};
+export const noExternalIdMomo = {
+	phoneNumber: "0782570202",
+};
+
+export const momoPayWithRejectUSSD = {
+	phoneNumber: "3",
+};

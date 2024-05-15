@@ -13,6 +13,7 @@ import {
 import { PaymentDetails } from "../types/payment";
 import { insert_function, read_function } from "../utils/db_methods";
 import { EventName, myEmitter } from "../utils/nodeEvents";
+import { v4 as uuidv4 } from "uuid";
 
 export const findUserCartById = async (userId: string) => {
 	return await read_function<cartModelAttributes>("Cart", "findOne", {
@@ -120,3 +121,7 @@ export const orderItems = async (cart: cartModelAttributes) => {
 		],
 	});
 };
+export function generateUUID() {
+	const uuid = uuidv4();
+	return uuid;
+}

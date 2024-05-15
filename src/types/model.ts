@@ -255,3 +255,28 @@ export interface NotificationEmition {
 	userId: string;
 	message: string;
 }
+// **
+//  * -------------- Order Model ---------------------
+//  */
+export interface OrderModelAttributes {
+	id: string;
+	buyerId: string;
+	status: string;
+	createdAt?: Date;
+	updatedAt?: Date;
+}
+
+/**
+ * -------------- sales Model ---------------------
+ */
+export interface salesModelAttributes {
+	id: string;
+	orderId: string;
+	buyerId: string;
+	productId: string;
+	status: string;
+	deliveryDate: Date;
+	quantitySold: number;
+	createdAt?: Date;
+	updatedAt?: Date;
+}

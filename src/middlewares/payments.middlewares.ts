@@ -1,9 +1,18 @@
+import axios from "axios";
 import { NextFunction, Request, Response } from "express";
-import { sendResponse } from "../utils/http.exception";
-import { ExpandedRequest } from "./auth";
 import { findUserCartById } from "../services/payment.services";
-import { CartRequest } from "../types/payment";
 import { cartItem } from "../types/cart";
+import { CartRequest, MomoInfo } from "../types/payment";
+import { sendResponse } from "../utils/http.exception";
+import {
+	MTN_MOMO_CURRENCY,
+	MTN_MOMO_REQUEST_PAYMENT_URL,
+	MTN_MOMO_SUBSCRIPTION_KEY,
+	MTN_MOMO_TARGET_ENVIRONMENT,
+} from "../utils/keys";
+import { getToken } from "../utils/momoMethods";
+import { momoValidation } from "../validations/momo.payments.validate";
+import { ExpandedRequest } from "./auth";
 
 const paymentMethods = (methods: Array<string>) => {
 	return (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +22,7 @@ const paymentMethods = (methods: Array<string>) => {
 				res,
 				402,
 				"PAYMENT REQUIRED",
-				"Invalid payment method! I recommend you to use stripe here!",
+				"Invalid payment method! I recommend you to use stripe or momo here!",
 			);
 		}
 		next();
@@ -67,10 +76,93 @@ const TAMOUNT_NOTBELOW = (lessAmount: number = 500) => {
 		next();
 	};
 };
+const validMomo = async (req: Request, res: Response, next: NextFunction) => {
+	if (req.query.method === "momo") {
+		const { error } = momoValidation.validate(req.body.phoneNumber);
+		if (error) {
+			return sendResponse(
+				res,
+				400,
+				"BAD REQUEST",
+				error.details[0].message.replace(/"/g, ""),
+			);
+		}
+		return next();
+	}
+	next();
+};
+
+const requestToPay = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	if (req.query.method === "momo") {
+		const cart = (req as CartRequest).cart;
+
+		const { phoneNumber } = req.body;
+
+		const url = `${MTN_MOMO_REQUEST_PAYMENT_URL}`;
+		const target = MTN_MOMO_TARGET_ENVIRONMENT;
+		const subscriptionKey = MTN_MOMO_SUBSCRIPTION_KEY;
+		const token = await getToken();
+
+		// const referenceId = generateUUID();
+
+		const headers = {
+			// "X-Reference-Id": `${referenceId}`,
+			"X-Reference-Id": `${cart.id}`,
+			"X-Target-Environment": target,
+			"Ocp-Apim-Subscription-Key": subscriptionKey,
+			Authorization: `Bearer ${token}`,
+		};
+
+		console.log("head dddddddddddddd", headers["X-Reference-Id"]);
+		const body = {
+			amount: `${cart.total}`,
+			currency: `${MTN_MOMO_CURRENCY}`,
+			externalId: `${cart.userId}`,
+			payer: {
+				partyIdType: "MSISDN",
+				partyId: phoneNumber,
+			},
+			payerMessage: "Thank you for payment",
+			payeeNote: "Thank you for payment",
+		};
+		console.log("X-reference: ", body.externalId);
+		try {
+			res = await axios.post(url, body, { headers });
+
+			(req as MomoInfo).momoInfo = {
+				XReferenceId: headers["X-Reference-Id"],
+			};
+			res;
+
+			return next();
+		} catch (error: any) {
+			if (error.response.statusText === "Conflict") {
+				(req as MomoInfo).momoInfo = {
+					XReferenceId: headers["X-Reference-Id"] as unknown as string,
+				};
+				return next();
+			} else {
+				return sendResponse(
+					res,
+					error.response.status,
+					error.response.statusText,
+					error.data.message,
+				);
+			}
+		}
+	}
+	next();
+};
 
 export default {
 	paymentMethods,
 	userHasCart,
 	cartHasProducts,
 	TAMOUNT_NOTBELOW,
+	validMomo,
+	requestToPay,
 };
