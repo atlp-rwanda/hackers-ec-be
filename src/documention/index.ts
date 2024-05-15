@@ -8,6 +8,7 @@ import { wishes } from "./wishlist";
 import { searches } from "./SearchProduct";
 import { cartsDocRoutes } from "./carts/carts";
 import { app_payments } from "./payments";
+import { stats } from "./stats";
 
 export default {
 	...basicInfo,
@@ -21,5 +22,6 @@ export default {
 		...wishes,
 		...cartsDocRoutes,
 		...app_payments,
+		...stats,
 	},
 };

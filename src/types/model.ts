@@ -127,6 +127,8 @@ export interface ProductAttributes {
 	categoryId: string;
 	expiryDate: Date;
 	productStatus?: string;
+	isExpired?: boolean;
+	isSold?: boolean;
 }
 
 export type ProductCreationAttributes = Omit<ProductAttributes, "id">;
