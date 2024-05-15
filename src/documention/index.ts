@@ -6,6 +6,7 @@ import { products } from "./product";
 import { messages } from "./message";
 import { wishes } from "./wishlist";
 import { searches } from "./SearchProduct";
+import { cartsDocRoutes } from "./carts/carts";
 
 export default {
 	...basicInfo,
@@ -17,5 +18,6 @@ export default {
 		...products,
 		...messages,
 		...wishes,
+		...cartsDocRoutes,
 	},
 };

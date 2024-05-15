@@ -299,3 +299,8 @@ export const search_product_Not_found = {
 	minPrice: 1,
 	maxPrice: 900,
 };
+
+export const invalidTokens = {
+	invalidtoke:
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBmZTFkYjllLWI5MDQtNGFhMS04MDgwLTU0YWE3MmIxYWZhYyIsInJvbGUiOiJTRUxMRVIiLCJvdHAiOiIwNDMyODQiLCJpYXQiOjE3MTUxNTgzNjgsImV4cCI6MTc0NjcxNTk2OH0.WJsyXFc2p9Gdi8GBJzaiURV6rYxieHebtOA90",
+};

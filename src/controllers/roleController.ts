@@ -123,33 +123,18 @@ export const assignRole = async (req: Request, res: Response) => {
 
 export const updateRole = async (req: Request, res: Response) => {
 	const { id } = req.params;
-	try {
-		const role = await read_function<roleModelAttributes>("role", "findOne", {
-			where: { id },
-			raw: true,
-		});
-		if (!role) {
-			return sendResponse(
-				res,
-				404,
-				"NOT FOUND",
-				`Role with ${id} doesn't exist`,
-			);
-		}
-		await insert_function<roleModelAttributes>(
-			"role",
-			"update",
-			{ roleName: req.body.roleName },
-			{ where: { id } },
-		);
-		return sendResponse(res, 201, "SUCCESS", "Role updated successfully");
-	} catch (error) {
-		return sendResponse(
-			res,
-			500,
-			"SERVER ERROR",
-			"Something went wrong!",
-			(error as Error).message,
-		);
+	const role = await read_function<roleModelAttributes>("role", "findOne", {
+		where: { id },
+		raw: true,
+	});
+	if (!role) {
+		return sendResponse(res, 404, "NOT FOUND", `Role with ${id} doesn't exist`);
 	}
+	await insert_function<roleModelAttributes>(
+		"role",
+		"update",
+		{ roleName: req.body.roleName },
+		{ where: { id } },
+	);
+	return sendResponse(res, 201, "SUCCESS", "Role updated successfully");
 };

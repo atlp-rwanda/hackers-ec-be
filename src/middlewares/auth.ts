@@ -48,6 +48,7 @@ const authenticateUser = async (
 			.status(401)
 			.json({ status: "UNAUTHORIZED", message: "Please login to continue" });
 	}
+	//TODO: Duplicate code.(user verified or decoded)
 	const decoded = jwt.decode(token) as JwtPayload;
 	if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
 		return res
