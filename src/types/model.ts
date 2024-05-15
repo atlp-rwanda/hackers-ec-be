@@ -58,6 +58,50 @@ export type UserCreationAttributes = Optional<
 };
 
 /**
+ * -------------- Order Model ---------------------
+ */
+export interface OrderModelAttributes {
+	id: string;
+	buyerId: string;
+	status: string;
+	createdAt?: Date;
+	updatedAt?: Date;
+}
+export type OrderCreationAttributes = Optional<
+	OrderModelAttributes,
+	"id" | "createdAt" | "updatedAt"
+> & {
+	status?: string;
+	buyerId?: string;
+};
+
+/**
+ * -------------- sales Model ---------------------
+ */
+export interface salesModelAttributes {
+	id: string;
+	orderId: string;
+	buyerId: string;
+	productId: string;
+	status: string;
+	deliveryDate: Date;
+	quantitySold: number;
+	createdAt?: Date;
+	updatedAt?: Date;
+}
+export type salesCreationAttributes = Optional<
+	salesModelAttributes,
+	"id" | "createdAt" | "updatedAt"
+> & {
+	status?: string;
+	orderId?: string;
+	buyerId?: string;
+	productId?: string;
+	deliveryDate?: Date;
+	quantitySold?: number;
+};
+
+/**
  * -------------- Token Model ---------------------
  */
 
@@ -155,3 +199,19 @@ export interface cartModelAttributes {
 	total: number;
 }
 export type cartCreationAttributes = Optional<cartModelAttributes, "id">;
+
+/**
+ * ---------------- payments -----------------------
+ */
+
+export interface PaymentsModelAttributes {
+	id: string;
+	payerId: string;
+	paymentMethod: string;
+	paymentId: string;
+}
+
+export type paymentsCreationAttributes = Optional<
+	PaymentsModelAttributes,
+	"id"
+>;
