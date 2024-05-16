@@ -1,5 +1,6 @@
 import { DataTypes, Model, Sequelize, UUIDV4 } from "sequelize";
 import { User } from "./User";
+import { Sales } from "./sales";
 import { Category } from "./category";
 import {
 	ProductAttributes,
@@ -24,6 +25,7 @@ export class Product extends Model<
 	public static associate(models: {
 		User: typeof User;
 		Category: typeof Category;
+		Sales: typeof Sales;
 	}) {
 		this.belongsTo(models.User, {
 			foreignKey: "sellerId",
@@ -33,6 +35,11 @@ export class Product extends Model<
 		this.belongsTo(models.Category, {
 			foreignKey: "categoryId",
 			as: "category",
+		});
+
+		this.hasMany(models.Sales, {
+			foreignKey: "productId",
+			as: "sales",
 		});
 	}
 }
