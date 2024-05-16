@@ -12,6 +12,7 @@ import {
 } from "../types/model";
 import { PaymentDetails } from "../types/payment";
 import { insert_function, read_function } from "../utils/db_methods";
+import { EventName, myEmitter } from "../utils/nodeEvents";
 
 export const findUserCartById = async (userId: string) => {
 	return await read_function<cartModelAttributes>("Cart", "findOne", {
@@ -95,6 +96,7 @@ export const orderItems = async (cart: cartModelAttributes) => {
 			quantitySold: product.quantity,
 		};
 		await insert_function<salesModelAttributes>("Sales", "create", sale_data);
+		myEmitter.emit(EventName.PRRODUCT_BOUGHT, product.id, order);
 	}
 	await database_models.Cart.update(
 		{ products: [], total: 0 },

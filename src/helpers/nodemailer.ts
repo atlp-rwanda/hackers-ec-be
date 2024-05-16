@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { EMAIL, PASSWORD, SENDER_NAME } from "../utils/keys";
 
-interface MailOptions {
+export interface MailOptions {
 	to: string;
 	subject: string;
 	html: any;
@@ -18,8 +18,7 @@ const sender = nodemailer.createTransport({
 	},
 });
 
-// SEND EMAIL FUNCTION
-export function sendEmail({ to, subject, html }: MailOptions) {
+export async function sendEmail({ to, subject, html }: MailOptions) {
 	const mailOptions = {
 		from: `"${SENDER_NAME}" <${EMAIL}>`,
 		to,
@@ -30,6 +29,7 @@ export function sendEmail({ to, subject, html }: MailOptions) {
 	sender.sendMail(mailOptions, (error) => {
 		if (error) {
 			console.log("EMAILING USER FAILED:", error);
+			return;
 		}
 	});
 }

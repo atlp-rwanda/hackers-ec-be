@@ -238,3 +238,20 @@ export interface reviewsAttribute {
 
 export interface reviewCreationAttributes
 	extends Omit<reviewsAttribute, "id"> {}
+
+/**
+ * ------------------------------Notification model---------------------------------
+ */
+
+export interface NotificationAttributes {
+	id?: string;
+	message: string;
+	unread: boolean;
+	userId: string;
+}
+// Notification.ts
+
+export interface NotificationEmition {
+	userId: string;
+	message: string;
+}

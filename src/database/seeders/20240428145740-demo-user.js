@@ -44,7 +44,7 @@ module.exports = {
 					firstName: "tito",
 					lastName: "tuyisenge",
 					userName: "tite",
-					email: "titoSeller@gmail.com",
+					email: "izanyibukayvette105@gmail.com",
 					password: await hashPassword("longPassWORD123"),
 					confirmPassword: await hashPassword("longPassWORD123"),
 					role: "13afd4f1-0bed-4a3b-8ad5-0978dabf8fcd",

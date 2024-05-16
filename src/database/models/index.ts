@@ -12,6 +12,7 @@ import Role_model from "./role";
 //import sales_model from "./sales";
 import token_model from "./token";
 import wish_model from "./wishlist";
+import notification_model from "./notification";
 
 import reviewModel from "./review";
 import order_model from "./order";
@@ -29,11 +30,11 @@ const Models = (sequelize: Sequelize) => {
 	const Cart = cart_model(sequelize);
 	const Payments = paymemt_model(sequelize);
 	const Order = order_model(sequelize);
-	//	const Sales = sales_model(sequelize);
+	const Sales = sales_model(sequelize);
+	const Notification = notification_model(sequelize);
 
 	const review = reviewModel(sequelize);
 	//const Order = order_model(sequelize);
-	const Sales = sales_model(sequelize);
 	return {
 		Product,
 		Category,
@@ -49,6 +50,7 @@ const Models = (sequelize: Sequelize) => {
 		review,
 		Order,
 		Sales,
+		Notification,
 	};
 };
 
