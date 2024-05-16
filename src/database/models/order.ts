@@ -18,6 +18,7 @@ export class Order extends Model<
 			foreignKey: "buyerId",
 			as: "buyer",
 		});
+
 		this.hasMany(models.Sales, {
 			foreignKey: "orderId",
 			as: "sales",
@@ -34,6 +35,7 @@ const order_model = (sequelize: Sequelize) => {
 			},
 			buyerId: {
 				type: DataTypes.UUID,
+				defaultValue: UUIDV4,
 				allowNull: false,
 				references: {
 					model: "users",

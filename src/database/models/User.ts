@@ -35,6 +35,7 @@ export class User extends Model<UserModelAttributes, UserCreationAttributes> {
 		Product: typeof Product;
 		role: typeof database_models.role;
 		Payments: typeof Payments;
+		review: typeof database_models.review;
 	}) {
 		this.hasOne(models.Product, {
 			foreignKey: "sellerId",
@@ -45,6 +46,7 @@ export class User extends Model<UserModelAttributes, UserCreationAttributes> {
 			foreignKey: "payerId",
 			as: "payments",
 		});
+		this.hasMany(models.review, { as: "user", foreignKey: "userId" });
 	}
 }
 

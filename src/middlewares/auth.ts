@@ -4,9 +4,19 @@ import database_models from "../database/config/db.config";
 import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import { Socket } from "socket.io";
 import { HttpException, sendResponse } from "../utils/http.exception";
+import {
+	OrderWithUserAssociations,
+	ProductWithAssociations,
+	reviewsAttribute,
+	salesCreationAttributes,
+} from "../types/model";
 
 export interface ExpandedRequest extends Request {
 	user?: JwtPayload;
+	product?: ProductWithAssociations;
+	review?: reviewsAttribute;
+	sales?: salesCreationAttributes;
+	order?: OrderWithUserAssociations;
 }
 
 export interface ExtendedSocket extends Socket {
@@ -153,7 +163,7 @@ const isBuyer = async (
 ) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
-		return sendResponse(res, 401, "UNAUTHORIZED", "Unauthorized");
+		return sendResponse(res, 404, "Bad Request", "Please Login");
 	}
 	try {
 		const decoded = jwt.verify(
@@ -188,15 +198,22 @@ const isBuyer = async (
 				"Password has expired, Please update your password!",
 			);
 		}
-
 		next();
 	} catch (error) {
-		return sendResponse(
-			res,
-			500,
-			"INTERNAL SERVER ERROR",
-			"Internal server error",
-		);
+		if (error instanceof jwt.JsonWebTokenError) {
+			return res.status(401).json({ message: "Invalid token,Try Login Again" });
+		} else {
+			return res
+				.status(500)
+				.json({ message: "Internal server error", error: error });
+		}
+
+		// return sendResponse(
+		// 	res,
+		// 	500,
+		// 	"INTERNAL SERVER ERROR",
+		// 	"Internal server error",
+		// );
 	}
 };
 

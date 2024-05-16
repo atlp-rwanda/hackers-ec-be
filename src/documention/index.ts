@@ -9,6 +9,7 @@ import { searches } from "./SearchProduct";
 import { cartsDocRoutes } from "./carts/carts";
 import { app_payments } from "./payments";
 import { stats } from "./stats";
+import { review } from "./review";
 
 export default {
 	...basicInfo,
@@ -23,5 +24,6 @@ export default {
 		...cartsDocRoutes,
 		...app_payments,
 		...stats,
+		...review,
 	},
 };

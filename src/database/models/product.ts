@@ -5,6 +5,7 @@ import {
 	ProductAttributes,
 	ProductCreationAttributes,
 } from "../../types/model";
+import database_models from "../config/db.config";
 
 export class Product extends Model<
 	ProductAttributes,
@@ -24,6 +25,7 @@ export class Product extends Model<
 	public static associate(models: {
 		User: typeof User;
 		Category: typeof Category;
+		review: typeof database_models.review;
 	}) {
 		this.belongsTo(models.User, {
 			foreignKey: "sellerId",
@@ -34,6 +36,7 @@ export class Product extends Model<
 			foreignKey: "categoryId",
 			as: "category",
 		});
+		this.hasMany(models.review, { foreignKey: "productId", as: "product" });
 	}
 }
 

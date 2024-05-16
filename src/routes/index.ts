@@ -10,6 +10,7 @@ import cartRouter from "./cartRoutes";
 import paymentRouter from "./paymentsRoutes";
 import { statisticsRouter } from "./statisticsRoutes";
 
+import reviewRouter from "./review.routes";
 const router = express.Router();
 
 router.use("/users", userRoutes);
@@ -22,5 +23,6 @@ router.use("/wishes", wishesRouter);
 router.use("/carts", cartRouter);
 router.use("/payments", paymentRouter);
 router.use("/", statisticsRouter);
+router.use("/reviews", reviewRouter);
 
 export default router;

@@ -326,3 +326,40 @@ export const account_status_invalid = {
 	isAccountActive: "",
 	reason: "",
 };
+export const review = {
+	productId: "",
+	feedBack: "any feed back",
+	retings: "2",
+};
+
+export const review_user = {
+	userName: "james",
+	firstName: "peter",
+	lastName: "paul",
+	email: "peterBuyer5@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+export const review_user_login = {
+	email: "peterBuyer5@gmail.com",
+	password: "passwordQWE123",
+};
+export const second_review_user = {
+	userName: "james",
+	firstName: "peter",
+	lastName: "paul",
+	email: "mosesBuyer5@gmail.com",
+	password: "passwordQWE123",
+	confirmPassword: "passwordQWE123",
+};
+export const second_review_user_login = {
+	email: "mosesBuyer5@gmail.com",
+	password: "passwordQWE123",
+};
+export const role_buyer_review = {
+	roleName: "BUYER",
+};
+
+export const role_seller_review = {
+	roleName: "ADMIN",
+};

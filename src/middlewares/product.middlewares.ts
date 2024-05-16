@@ -5,6 +5,9 @@ import { sendResponse } from "../utils/http.exception";
 import validateProductStatus from "../validations/productStatus.validation";
 import database_models from "../database/config/db.config";
 import { validate } from "uuid";
+import { validateuuid } from "../utils/validateuuid";
+import { ExpandedRequest } from "./auth";
+import { Op } from "sequelize";
 
 const isValidProduct = async (
 	req: Request,
@@ -12,7 +15,6 @@ const isValidProduct = async (
 	next: NextFunction,
 ) => {
 	const { error } = productValidation.validate(req.body);
-
 	if (error) {
 		return sendResponse(
 			res,
@@ -57,21 +59,83 @@ const productStatusValidated = (
 	res: Response,
 	next: NextFunction,
 ) => {
-	const error = validateProductStatus(req.body);
+	try {
+		const error = validateProductStatus(req.body);
+		if (error) {
+			return sendResponse(
+				res,
+				400,
+				"BAD REQUEST",
+				error.details[0].message.replace(/"/g, ""),
+			);
+		}
 
-	if (error) {
+		next();
+	} catch (error) {
 		return sendResponse(
 			res,
-			400,
-			"BAD REQUEST",
-			error.details[0].message.replace(/"/g, ""),
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			error as Error,
 		);
 	}
+};
 
-	next();
+const IdValidated = (field: string, idName: string) => {
+	return async (req: ExpandedRequest, res: Response, next: NextFunction) => {
+		const uuid = req.body[field] || req.params[field];
+		if (!uuid) {
+			return sendResponse(res, 400, "BAD REQUEST", `${idName} is required`);
+		}
+		const isValid = validateuuid(uuid);
+		if (!isValid) {
+			return sendResponse(res, 400, "BAD REQUEST", `${idName} must be UUID V4`);
+		}
+		next();
+	};
+};
+
+const isProductAvailable = (field: string) => {
+	return async (req: ExpandedRequest, res: Response, next: NextFunction) => {
+		try {
+			const productId = req.body[field] || req.params[field];
+			const product = await database_models.Product.findOne({
+				where: {
+					id: productId,
+					productStatus: "Available",
+					expiryDate: {
+						[Op.gt]: new Date(),
+					},
+				},
+				include: [
+					{
+						model: database_models.User,
+						as: "seller",
+					},
+				],
+			});
+
+			if (!product) {
+				return sendResponse(res, 404, "BAD REQUEST", "product not found!");
+			}
+			req.product = product;
+			next();
+		} catch (error) {
+			return sendResponse(
+				res,
+				500,
+				"SERVER ERROR",
+				"Something went wrong!",
+				error as Error,
+			);
+		}
+	};
 };
 
 export default {
 	isValidProduct,
 	productStatusValidated,
+	isProductAvailable,
+	IdValidated,
 };

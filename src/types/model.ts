@@ -75,6 +75,10 @@ export type OrderCreationAttributes = Optional<
 	buyerId?: string;
 };
 
+export type OrderWithUserAssociations = OrderModelAttributes & {
+	User?: UserCreationAttributes;
+};
+
 /**
  * -------------- sales Model ---------------------
  */
@@ -132,6 +136,10 @@ export interface ProductAttributes {
 }
 
 export type ProductCreationAttributes = Omit<ProductAttributes, "id">;
+
+export type ProductWithAssociations = ProductAttributes & {
+	seller?: UserCreationAttributes;
+};
 
 /**
  * -------------- Category Model ---------------------
@@ -217,3 +225,16 @@ export type paymentsCreationAttributes = Optional<
 	PaymentsModelAttributes,
 	"id"
 >;
+/**
+ * -------------- Review Model ---------------------
+ */
+export interface reviewsAttribute {
+	id: string;
+	userId: string;
+	productId: string;
+	feedBack: string;
+	ratings: number;
+}
+
+export interface reviewCreationAttributes
+	extends Omit<reviewsAttribute, "id"> {}

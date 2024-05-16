@@ -1,4 +1,4 @@
-import { UserModelAttributes } from "../types/model";
+import { UserModelAttributes, reviewCreationAttributes } from "../types/model";
 import { DEPLOYED_URL, SERVER_URL } from "./keys";
 import { ProductAttributes } from "../types/model";
 
@@ -71,7 +71,25 @@ export const update_product_email_template = (
   </ul>
   <p>This is just a friendly reminder to update or remove these products from the platform.</p>
   <p>Thank you for your attention to this matter.</p>
-  <p>Best regards</p>
+  <p>Best regards</p>`;
+};
+
+export const review_product_email_template = (
+	seller: string,
+	review: reviewCreationAttributes,
+	products: string,
+) => {
+	return `
+<div style="max-width: 600px; margin: auto; padding: 20px; background-color: #f4f4f4;">
+<h2 style="color: #333;">New Product Review and Rating</h2>
+<p>Dear ${seller},</p>
+<p>We hope this email finds you well.</p>
+<p>We are pleased to inform you that one of your products on Hacker's E-commerce has received a new review and rating from a buyer.</p>
+<p><strong>Product:</strong> ${products}</p>
+<p><strong>Rating:</strong> ${review.ratings} stars</p>
+<p><strong>feedBack:</strong> ${review.feedBack}</p>
+<p>Best regards</p>
+<p>The Hacker's E-commerce Team</p>
 </div>
 `;
 };

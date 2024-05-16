@@ -5,8 +5,10 @@ import productMiddlewares from "../middlewares/product.middlewares";
 import fileUpload from "../middlewares/multer";
 import searchProduct from "../controllers/searchProduct";
 import { searchMiddleware } from "../middlewares/search.middleware";
+import { getReviewsOnProduct } from "../controllers/review.controller";
 
 const productRouter = express.Router();
+
 productRouter.get("/search", searchMiddleware, searchProduct.search_product);
 
 productRouter.post(
@@ -47,5 +49,10 @@ productRouter.delete(
 	userAuthentication.isSeller,
 	productController.delete_product,
 );
-
+productRouter.get(
+	"/:id/reviews/",
+	productMiddlewares.IdValidated("id", "reviewId"),
+	productMiddlewares.isProductAvailable("id"),
+	getReviewsOnProduct,
+);
 export default productRouter;
