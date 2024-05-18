@@ -22,8 +22,8 @@ import { insert_function, read_function } from "../utils/db_methods";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { User } from "../database/models/User";
 import cloudinary from "../helpers/cloudinary";
-
 import bcrypt from "bcrypt";
+import { HttpException } from "../utils/http.exception";
 
 const registerUser = async (
 	req: Request,
@@ -321,28 +321,36 @@ export const updatePassword = async (req: Request, res: Response) => {
 
 		const isPasswordValid = await bcrypt.compare(
 			oldPassword,
+
 			userPassword as string,
 		);
+
 		if (!isPasswordValid) {
-			return sendResponse(res, 400, "BAD REQUEST", "Old password is incorrect");
+			return res
+				.status(400)
+				.json(new HttpException("BAD REQUEST", "Old password is incorrect"));
 		}
 
 		if (newPassword === oldPassword) {
-			return sendResponse(
-				res,
-				400,
-				"BAD REQUEST",
-				"New password cannot be the same as old password",
-			);
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password cannot be the same as old password",
+					),
+				);
 		}
 
 		if (newPassword !== confirmPassword) {
-			return sendResponse(
-				res,
-				400,
-				"BAD REQUEST",
-				"New password and confirm password do not match",
-			);
+			return res
+				.status(400)
+				.json(
+					new HttpException(
+						"BAD REQUEST",
+						"New password and confirm password do not match",
+					),
+				);
 		}
 
 		const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -495,6 +503,82 @@ const update_user_profile = async (req: Request, res: Response) => {
 	}
 };
 
+export const accountStatus = async (req: Request, res: Response) => {
+	const userId = req.params.userId;
+	const { isAccountActive, reason } = req.body;
+
+	try {
+		const user = await User.findOne({ where: { id: userId } });
+		if (!user) {
+			return sendResponse(res, 404, "NOT FOUND", "User not found");
+		}
+
+		if (isAccountActive === "false") {
+			await User.update(
+				{ isActive: isAccountActive },
+				{ where: { id: userId } },
+			);
+			const message = `Dear Beloved user ${user.userName}, your account has been disabled due to this reason:  ${reason}. if you have any queries please contact our support team. Thank you.`;
+			await sendEmail({
+				to: user.email,
+				subject: "Account Disabled!",
+				html: message,
+			});
+			return sendResponse(
+				res,
+				200,
+				"SUCCESS",
+				"Account disabled successfully",
+				reason,
+			);
+		}
+		if (isAccountActive === "true") {
+			await User.update(
+				{ isActive: isAccountActive },
+				{ where: { id: userId } },
+			);
+			const message = `Dear Beloved user ${user.userName}, your account has been enabled, Thank you for using our application, if you have any queries please contact our support team!.`;
+			await sendEmail({
+				to: user.email,
+				subject: "Account Enabled!",
+				html: message,
+			});
+			return sendResponse(res, 200, "SUCCESS", "Account enabled successfully");
+		}
+	} catch (error) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
+	}
+};
+
+export const allUsers = async (req: Request, res: Response) => {
+	try {
+		if (req.body) {
+			const users = await read_function<UserModelAttributes>("User", "findAll");
+			return sendResponse(
+				res,
+				200,
+				"SUCCESS",
+				"Here is a list of users",
+				users,
+			);
+		}
+	} catch (error) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			(error as Error).message,
+		);
+	}
+};
+
 export default {
 	registerUser,
 	login,
@@ -506,4 +590,6 @@ export default {
 	updatePassword,
 	read_profile,
 	update_user_profile,
+	accountStatus,
+	allUsers,
 };

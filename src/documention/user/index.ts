@@ -109,6 +109,20 @@ const register_login = {
 	},
 };
 
+const get_users = {
+	users: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "get all users",
+		consumes: ["application/json"],
+		responses,
+	},
+};
+
 const userAccount = {
 	verify: {
 		tags: ["User"],
@@ -286,6 +300,47 @@ const reset2_FA = {
 		responses,
 	},
 };
+const disable_users = {
+	disableUser: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		summary: "disable/enable user's accounts due to various reasons",
+		parameters: [
+			{
+				in: "path",
+				name: "userId",
+				required: true,
+			},
+		],
+		requestBody: {
+			required: true,
+			content: {
+				"application/json": {
+					schema: {
+						type: "object",
+						properties: {
+							isAccountActive: {
+								type: "string",
+								required: true,
+								example: "false",
+							},
+							reason: {
+								type: "string",
+								required: true,
+								example: "you don't follow our terms and condition!",
+							},
+						},
+					},
+				},
+			},
+		},
+		responses,
+	},
+};
 
 const read_profile = {
 	readProfile: {
@@ -415,6 +470,9 @@ export const users = {
 	"/api/v1/users/login": {
 		post: register_login["login"],
 	},
+	"/api/v1/users": {
+		get: get_users["users"],
+	},
 	"/api/v1/users/logout": {
 		post: register_login["logout"],
 	},
@@ -442,5 +500,8 @@ export const users = {
 	},
 	"/api/v1/profile/": {
 		patch: update_user_profile["updateProfile"],
+	},
+	"/api/v1/users/{userId}/account-status": {
+		patch: disable_users["disableUser"],
 	},
 };

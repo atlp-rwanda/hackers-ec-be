@@ -30,6 +30,9 @@ import {
 	updated_profile_data,
 	updated_profile_error,
 	update_pass_empty,
+	disable_user,
+	enable_user,
+	account_status_invalid,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { resetPassword } from "../database/models/resetPassword";
@@ -46,6 +49,7 @@ import {
 jest.setTimeout(30000);
 
 const role = database_models["role"];
+const user = database_models["User"];
 jest.setTimeout(30000);
 function logErrors(
 	err: { stack: any },
@@ -57,11 +61,14 @@ function logErrors(
 	next(err);
 }
 let token: string;
+let admin_token: string;
 
 const Jest_request = request(app.use(logErrors));
 
 let resetToken = "";
 let id: string;
+let userId: string;
+let adminId: string;
 
 describe("USER API TEST", () => {
 	beforeAll(async () => {
@@ -70,6 +77,20 @@ describe("USER API TEST", () => {
 		if (adminRole) {
 			id = adminRole?.dataValues.id;
 		}
+		const userStatus = await user.findOne({
+			where: { role: "11afd4f1-0bed-4a3b-8ad5-0978dabf8fcd" },
+		});
+		if (userStatus) {
+			userId = userStatus?.dataValues.id;
+		}
+		const adminUser = await user.findOne({
+			where: { role: "12afd4f1-0bed-4a3b-8ad5-0978dabf8fcd" },
+		});
+		if (adminUser) {
+			adminId = adminUser?.dataValues.id;
+		}
+
+		admin_token = generateAccessToken({ id: adminId, role: "ADMIN" });
 	});
 
 	afterAll(async () => {
@@ -225,12 +246,18 @@ describe("USER API TEST", () => {
 		);
 	});
 
-	it("should return 401 when a user login with wrong credentials", async () => {
+	it("should return 403 if user account is disabled (user.isActive === false)", async () => {
+		await database_models.User.update(
+			{ isActive: false },
+			{ where: { email: login_user.email } },
+		);
+
 		const { body } = await Jest_request.post("/api/v1/users/login")
-			.send(login_user_wrong_credentials)
-			.expect(401);
-		expect(body.status).toStrictEqual("UNAUTHORIZED");
-		expect(body.message).toStrictEqual("Wrong credentials!");
+			.send(login_user)
+			.expect(403);
+
+		expect(body.status).toStrictEqual("FORBIDDEN");
+		expect(body.message).toStrictEqual("Your account has been disabled");
 	});
 
 	it("should return 400 when a user user enter invalid email (login validation purposes)", async () => {
@@ -319,7 +346,6 @@ describe("USER API TEST", () => {
 
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Password updated successfully");
-		console.log("______________________", token);
 	});
 
 	it("should return 400 and error message", async () => {
@@ -334,6 +360,68 @@ describe("USER API TEST", () => {
 	});
 
 	it("should return 500 when something went wrong", async () => {});
+
+	/***
+	 * ----------------------------- Getting all users, Disabling/Enabling user's Account -------------------------------------------
+	 */
+	it("should return 404 when not admin tries to get all users", async () => {
+		const { body } = await Jest_request.get("/api/v1/users")
+			.set("Authorization", `Bearer ${token}`)
+			.expect(403);
+		expect(body.message).toBe("you are not allowed to access this route!");
+	});
+
+	it("should get all users and return 200", async () => {
+		const { body } = await Jest_request.get("/api/v1/users")
+			.set("Authorization", `Bearer ${admin_token}`)
+			.expect(200);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toBe("Here is a list of users");
+	});
+
+	it("it should return 404 when user is not found", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/users/b605555a-c6ec-405e-b4fe-89ee24c34a89/account-status`,
+		)
+			.set("Authorization", `Bearer ${admin_token}`)
+			.send(disable_user)
+			.expect(404);
+		expect(body.status).toStrictEqual("NOT FOUND");
+		expect(body.message).toBe("User not found");
+	});
+
+	it("it should disable user's account and return 200", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/users/${userId}/account-status`,
+		)
+			.set("Authorization", `Bearer ${admin_token}`)
+			.send(disable_user)
+			.expect(200);
+		expect(body.status).toBe("SUCCESS");
+		expect(body.message).toBe("Account disabled successfully");
+	});
+
+	it("it should enable user's account and return 200", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/users/${userId}/account-status`,
+		)
+			.set("Authorization", `Bearer ${admin_token}`)
+			.send(enable_user)
+			.expect(200);
+		expect(body.status).toBe("SUCCESS");
+		expect(body.message).toBe("Account enabled successfully");
+	});
+
+	it("it should return joi error", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/users/${userId}/account-status`,
+		)
+			.set("Authorization", `Bearer ${admin_token}`)
+			.send(account_status_invalid)
+			.expect(400);
+		expect(body.status).toBe("BAD REQUEST");
+		expect(body.message).toBe("field can't be empty");
+	});
 
 	/***
 	 * ---------------------------- RESET PASSWORD --------------------------------------------

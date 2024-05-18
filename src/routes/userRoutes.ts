@@ -12,7 +12,12 @@ userRoutes.post(
 	userController.registerUser,
 );
 
-userRoutes.post("/login", userMiddleware.logInValidated, userController.login);
+userRoutes.post(
+	"/login",
+	userMiddleware.logInValidated,
+	userMiddleware.checkAccountStatus,
+	userController.login,
+);
 
 userRoutes.post(
 	"/forgot-password",
@@ -27,8 +32,16 @@ userRoutes.post(
 userRoutes.patch(
 	"/password-update",
 	authentication.is_authenticated_when_password_expired,
+	authentication.authenticateUser,
 	userMiddleware.isUpdatePassValid,
 	userController.updatePassword,
+);
+userRoutes.get("/", authentication.isAdmin, userController.allUsers);
+userRoutes.patch(
+	"/:userId/account-status",
+	authentication.isAdmin,
+	userMiddleware.accountStatusValid,
+	userController.accountStatus,
 );
 userRoutes.get("/account/verify/:token", userController.accountVerify);
 userRoutes.post(
