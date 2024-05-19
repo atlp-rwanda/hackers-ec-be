@@ -7,6 +7,7 @@ import { messages } from "./message";
 import { wishes } from "./wishlist";
 import { searches } from "./SearchProduct";
 import { cartsDocRoutes } from "./carts/carts";
+import { app_payments } from "./payments";
 
 export default {
 	...basicInfo,
@@ -19,5 +20,6 @@ export default {
 		...messages,
 		...wishes,
 		...cartsDocRoutes,
+		...app_payments,
 	},
 };

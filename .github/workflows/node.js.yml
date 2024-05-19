@@ -38,6 +38,7 @@ jobs:
       SERVER_URL: ${{ secrets.SERVER_URL }}
       DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
       PASS_EXPIRE_DURATION: ${{ secrets.PASS_EXPIRE_DURATION }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
     strategy:
       matrix:
         node-version: ["20.x"]

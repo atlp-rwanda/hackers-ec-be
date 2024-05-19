@@ -16,6 +16,8 @@ import {
 	search_product_Not_found,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
+import { read_function } from "../utils/db_methods";
+import { response } from "express";
 
 jest.setTimeout(100000);
 
@@ -404,5 +406,32 @@ describe("PRODUCT API TEST", () => {
 
 		expect(body.status).toStrictEqual("BAD REQUEST");
 		expect(body.message).toStrictEqual("You provided Invalid ID!");
+	});
+
+	it("should drop server error when a user try to create a product", async () => {
+		jest.spyOn(response, "status").mockImplementationOnce(() => {
+			throw new Error("Invalid status on response!");
+		});
+		const { body } = await Jest_request.post("/api/v1/products")
+			.set("Authorization", `Bearer ${seller_token}`)
+			.field("name", new_product.name)
+			.field("price", new_product.price)
+			.field("discount", new_product.discount)
+			.field("quantity", new_product.quantity)
+			.field("categoryId", category_id)
+			.field("expiryDate", new_product.expiryDate)
+			.expect(500);
+	});
+
+	it("should return 500 while fetch all products", async () => {
+		jest.spyOn(response, "status").mockImplementationOnce(() => {
+			throw new Error("Internal server error!");
+		});
+		const { body } = await Jest_request.get("/api/v1/products")
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toStrictEqual("Something went wrong!");
 	});
 });

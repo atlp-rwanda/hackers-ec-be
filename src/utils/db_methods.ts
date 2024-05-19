@@ -11,7 +11,11 @@ type ModelTypes =
 	| "resetPassword"
 	| "role"
 	| "message"
-	| "wish";
+	| "wish"
+	| "Payments"
+	| "Cart"
+	| "Order"
+	| "Sales";
 type MethodTypes = "findAll" | "findOne" | "destroy" | "create" | "update";
 
 export const read_function = async <T>(
