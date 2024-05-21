@@ -9,13 +9,11 @@ const search = {
 				name: "name",
 				in: "query",
 				description: "Name of the item to search",
-				schema: { type: "string" },
 			},
 			{
 				name: "minPrice",
 				in: "query",
 				description: "price of the item to search",
-				schema: { type: "number" },
 			},
 			{
 				name: "maxPrice",

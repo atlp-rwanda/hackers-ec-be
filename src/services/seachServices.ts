@@ -14,23 +14,23 @@ const searchCondtion = async (queryParams: queryParamsAttribute) => {
 		};
 	} else if (minPrice) {
 		condition.price = {
-			[Op.gt]: [minPrice],
+			[Op.gte]: [minPrice],
 		};
 	} else if (maxPrice) {
 		condition.price = {
-			[Op.lt]: [maxPrice],
+			[Op.lte]: [maxPrice],
 		};
 	}
 
 	if (categoryName) {
 		const category = await findCategory(categoryName);
-		if (category) {
+		if (category?.length !== 0) {
 			condition.categoryId = {
 				[Op.eq]: category,
 			};
 		}
 	}
-	const whereClause = { [Op.or]: condition };
+	const whereClause = { [Op.and]: condition };
 	return whereClause;
 };
 export default searchCondtion;
