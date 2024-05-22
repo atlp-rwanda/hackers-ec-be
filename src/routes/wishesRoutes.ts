@@ -7,8 +7,8 @@ const wishesRouter = express.Router();
 // create wish
 wishesRouter.post(
 	"/",
-	wishMiddlewares.isValidWish,
 	userAuthentication.isBuyer,
+	wishMiddlewares.isValidWish,
 	wishesController.createWishlist,
 );
 
@@ -23,6 +23,7 @@ wishesRouter.get(
 wishesRouter.get(
 	"/:id",
 	userAuthentication.isSeller,
+	wishMiddlewares.userWishProduct,
 	wishesController.getSingleWishlist,
 );
 
