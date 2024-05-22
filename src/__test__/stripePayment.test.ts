@@ -10,19 +10,13 @@ import {
 	new_seller_user,
 	two_factor_authentication_data,
 	NewUser,
-	mock_users,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { Token } from "../database/models/token";
 import { jest } from "@jest/globals";
-import { lineCartItems } from "../services/payment.services";
 import { stripe } from "../controllers/paymentController";
 import cartService from "../services/carts.services";
 jest.setTimeout(100000);
-
-// jest.mock("../services/payment.services", () => ({
-// 	lineCartItems: jest.fn()
-// }))
 
 function logErrors(
 	err: { stack: any },
@@ -295,6 +289,18 @@ describe("STRIPE PAYMENTS API TEST", () => {
 		);
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toStrictEqual("Payment process error!");
+	});
+
+	it("should return 201 and added to cart successfully", async () => {
+		await database_models.Product.update(
+			{ productStatus: "Available", price: 499000 },
+			{ where: { id: product_id } },
+		);
+		const { body } = await Jest_request.post(`/api/v1/carts/`)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ productId: product_id, quantity: 10 });
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Added to cart successfully");
 	});
 
 	it("should drop server error on checkout session creation", async () => {

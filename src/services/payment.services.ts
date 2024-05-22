@@ -1,4 +1,5 @@
 import { stripe } from "../controllers/paymentController";
+import database_models from "../database/config/db.config";
 import { Product } from "../database/models/product";
 import { Sales } from "../database/models/sales";
 import { cartItem } from "../types/cart";
@@ -95,6 +96,10 @@ export const orderItems = async (cart: cartModelAttributes) => {
 		};
 		await insert_function<salesModelAttributes>("Sales", "create", sale_data);
 	}
+	await database_models.Cart.update(
+		{ products: [], total: 0 },
+		{ where: { id: cart.id } },
+	);
 	return await read_function<OrderModelAttributes>("Order", "findOne", {
 		where: { id: order.id },
 		include: [
