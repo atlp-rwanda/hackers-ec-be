@@ -1,5 +1,6 @@
 import { UserModelAttributes } from "../types/model";
 import { DEPLOYED_URL, SERVER_URL } from "./keys";
+import { ProductAttributes } from "../types/model";
 
 export const root_home_page = `
 <div style="
@@ -46,4 +47,31 @@ export const update_pass_email_template = (user: UserModelAttributes) => {
       <p>Best regards</p>
   </div>
   `;
+};
+
+export const update_product_email_template = (
+	user: UserModelAttributes,
+	products: ProductAttributes[],
+) => {
+	const host = process.env.BASE_URL;
+	const productLinks = products
+		.map(
+			(product) =>
+				`<li><a href="${host}/products/${product.id}">${product.name}</a></li>`,
+		)
+		.join("");
+	return `
+<div style="max-width: 600px; margin: auto; padding: 20px; background-color: #f4f4f4;">
+  <h2 style="color: #333;">Your Products Have Expired</h2>
+  <p>Dear ${user.firstName} ${user.lastName},</p>
+  <p>We hope this email finds you well.</p>
+  <p>We wanted to inform you that the following products on Hacker's E-commerce have expired you can click on it to update:</p>
+  <ul>
+      ${productLinks}
+  </ul>
+  <p>This is just a friendly reminder to update or remove these products from the platform.</p>
+  <p>Thank you for your attention to this matter.</p>
+  <p>Best regards</p>
+</div>
+`;
 };
