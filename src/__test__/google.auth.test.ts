@@ -1,5 +1,5 @@
-import app from "../app";
 import request from "supertest";
+import app from "../app";
 import { google_profile } from "../mock/static";
 
 jest.setTimeout(30000);

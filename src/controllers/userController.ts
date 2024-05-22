@@ -1,16 +1,16 @@
+import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import randomatic from "randomatic";
+import { User } from "../database/models/User";
+import cloudinary from "../helpers/cloudinary";
+import { sendEmail } from "../helpers/nodemailer";
 import {
 	TokenData,
 	generateAccessToken,
 	verifyAccessToken,
 } from "../helpers/security.helpers";
-import { sendResponse } from "../utils/http.exception";
-import randomatic from "randomatic";
-import HTML_TEMPLATE from "../utils/mail-template";
 import passport from "../middlewares/passport";
-import { validateToken } from "../utils/token.validation";
-import { ACCESS_TOKEN_SECRET } from "../utils/keys";
-import { sendEmail } from "../helpers/nodemailer";
 import {
 	BlacklistModelAtributes,
 	TokenModelAttributes,
@@ -19,11 +19,11 @@ import {
 } from "../types/model";
 import { InfoAttribute } from "../types/passport";
 import { insert_function, read_function } from "../utils/db_methods";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { User } from "../database/models/User";
-import cloudinary from "../helpers/cloudinary";
-import bcrypt from "bcrypt";
-import { HttpException } from "../utils/http.exception";
+import { handleNewUser, handleUserLogin } from "../utils/google.auth";
+import { HttpException, sendResponse } from "../utils/http.exception";
+import { ACCESS_TOKEN_SECRET } from "../utils/keys";
+import HTML_TEMPLATE from "../utils/mail-template";
+import { validateToken } from "../utils/token.validation";
 
 const registerUser = async (
 	req: Request,
@@ -209,35 +209,10 @@ export const handleGoogleAuth = async (
 				);
 
 				if (userExist) {
-					const token = generateAccessToken({
-						id: userExist.id,
-						role: userExist.role,
-					});
-					return sendResponse(
-						res,
-						200,
-						"SUCCESS",
-						"Logged in to you account successfully!",
-						token,
-					);
+					return await handleUserLogin(res, userExist);
 				}
 
-				const newUser = await insert_function<UserModelAttributes>(
-					"User",
-					"create",
-					{ ...userData },
-				);
-				const token = generateAccessToken({
-					id: newUser.id,
-					role: newUser.role,
-				});
-				return sendResponse(
-					res,
-					201,
-					"SUCCESS",
-					"Account Created successfully!",
-					token,
-				);
+				return await handleNewUser(res, userData);
 			},
 		)(req, res, next);
 	} catch (error) {
