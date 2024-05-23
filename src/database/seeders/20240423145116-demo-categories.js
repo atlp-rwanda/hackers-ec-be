@@ -35,6 +35,13 @@ module.exports = {
 					updatedAt: new Date(),
 					createdAt: new Date(),
 				},
+				{
+					id: "a64aeab5-eaa1-48f4-9e52-8a0924a0490a",
+					name: "Wigs",
+					description: "Elegant wigs for Elegant ladies!",
+					updatedAt: new Date(),
+					createdAt: new Date(),
+				},
 			],
 			{},
 		);

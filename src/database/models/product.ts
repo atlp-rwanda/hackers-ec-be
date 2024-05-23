@@ -1,5 +1,6 @@
 import { DataTypes, Model, Sequelize, UUIDV4 } from "sequelize";
 import { User } from "./User";
+import { Sales } from "./sales";
 import { Category } from "./category";
 import {
 	ProductAttributes,
@@ -26,6 +27,7 @@ export class Product extends Model<
 		User: typeof User;
 		Category: typeof Category;
 		review: typeof database_models.review;
+		Sales: typeof Sales;
 	}) {
 		this.belongsTo(models.User, {
 			foreignKey: "sellerId",
@@ -37,6 +39,11 @@ export class Product extends Model<
 			as: "category",
 		});
 		this.hasMany(models.review, { foreignKey: "productId", as: "product" });
+
+		this.hasMany(models.Sales, {
+			foreignKey: "productId",
+			as: "sales",
+		});
 	}
 }
 

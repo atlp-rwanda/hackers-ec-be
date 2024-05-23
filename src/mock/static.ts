@@ -363,3 +363,28 @@ export const role_buyer_review = {
 export const role_seller_review = {
 	roleName: "ADMIN",
 };
+
+export const order_status = {
+	status: "canceled",
+	deliveryDate: "2024-06-18T11:14:50.065Z",
+};
+
+export const status_not_neither_canceler_delivered_nor_pending = {
+	status: "ending",
+	deliveryDate: "2024-06-18T11:14:50.065Z",
+};
+
+export const status_empty = {
+	status: "",
+	deliveryDate: "2024-06-18T11:14:50.065Z",
+};
+
+export const status_invalid_date = {
+	status: "canceled",
+	deliveryDate: "204-06-18T11:14:50.065Z",
+};
+
+export const status_past_date = {
+	status: "canceled",
+	deliveryDate: "2020-06-18T11:14:50.065Z",
+};

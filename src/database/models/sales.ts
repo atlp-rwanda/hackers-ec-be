@@ -31,9 +31,10 @@ export class Sales extends Model<
 			foreignKey: "orderId",
 			as: "order",
 		});
+
 		this.belongsTo(models.Product, {
 			foreignKey: "productId",
-			as: "soldProduct",
+			as: "soldProducts",
 		});
 	}
 }
