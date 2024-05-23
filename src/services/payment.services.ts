@@ -110,7 +110,7 @@ export const orderItems = async (cart: cartModelAttributes) => {
 				include: [
 					{
 						model: Product,
-						as: "soldProducts",
+						as: "soldProduct",
 						attributes: ["name", "price", "images", "productStatus"],
 					},
 				],
