@@ -1,7 +1,5 @@
 import express from "express";
 import userRoutes from "./userRoutes";
-import orderRoutes from "./orderRoutes";
-import salesRoutes from "./salesRoute";
 import { roleRoutes } from "./roleRoutes";
 import productRouter from "./productRoutes";
 import categoryRouter from "./categoryRoutes";
@@ -24,7 +22,5 @@ router.use("/wishes", wishesRouter);
 router.use("/carts", cartRouter);
 router.use("/payments", paymentRouter);
 router.use("/", statisticsRouter);
-router.use("/orders", orderRoutes);
-router.use("/sales", salesRoutes);
 
 export default router;
