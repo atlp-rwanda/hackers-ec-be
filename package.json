@@ -54,7 +54,7 @@
 		"sequelize": "^6.37.3",
 		"socket.io": "^4.7.5",
 		"socket.io-client": "^4.7.5",
-		"stripe": "^15.6.0",
+		"stripe": "^15.7.0",
 		"uuid": "^9.0.1"
 	},
 	"jest": {
@@ -73,7 +73,8 @@
 			"src/helpers",
 			"src/documention/index.ts",
 			"/src/utils",
-			"src/middlewares"
+			"src/middlewares",
+			"src/services"
 		]
 	},
 	"devDependencies": {

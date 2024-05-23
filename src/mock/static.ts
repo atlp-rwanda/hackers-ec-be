@@ -186,6 +186,14 @@ export const new_product = {
 	quantity: 356,
 	expiryDate: "2324-04-30T00:00:00.000Z",
 };
+export const expired_product = {
+	name: "BMW",
+	price: 49900,
+	images: [image_one_path, image_two_path, image_three_path, image_four_path],
+	discount: 100,
+	quantity: 356,
+	expiryDate: "2022-04-30T00:00:00.000Z",
+};
 export const new_update_product = {
 	name: "Ferrari",
 	price: 49900,

@@ -8,6 +8,7 @@ import profileRouter from "./profileRouter";
 import wishesRouter from "./wishesRoutes";
 import cartRouter from "./cartRoutes";
 import paymentRouter from "./paymentsRoutes";
+import { statisticsRouter } from "./statisticsRoutes";
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use("/", profileRouter);
 router.use("/wishes", wishesRouter);
 router.use("/carts", cartRouter);
 router.use("/payments", paymentRouter);
+router.use("/", statisticsRouter);
 
 export default router;
