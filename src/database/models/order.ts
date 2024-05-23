@@ -5,6 +5,7 @@ import {
 } from "../../types/model";
 import { User } from "./User";
 import { Sales } from "./sales";
+
 export class Order extends Model<
 	OrderModelAttributes,
 	OrderCreationAttributes
@@ -24,6 +25,7 @@ export class Order extends Model<
 		});
 	}
 }
+
 const order_model = (sequelize: Sequelize) => {
 	Order.init(
 		{

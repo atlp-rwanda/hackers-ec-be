@@ -27,6 +27,7 @@ import {
 	update_pass,
 	disable_user,
 	new_category,
+	order_status,
 	enable_user,
 	account_status_invalid,
 } from "../mock/static";
@@ -54,6 +55,7 @@ function logErrors(
 	next(err);
 }
 let token: string;
+let buyer_token: string;
 
 const Jest_request = request(app.use(logErrors));
 
@@ -79,6 +81,8 @@ describe("SERVER API TEST", () => {
 		if (userStatus) {
 			userId = userStatus?.dataValues.id;
 		}
+
+		buyer_token = generateAccessToken({ id: userId, role: "BUYER" });
 		const adminUser = await user.findOne({
 			where: { role: "12afd4f1-0bed-4a3b-8ad5-0978dabf8fcd" },
 		});
@@ -166,5 +170,60 @@ describe("SERVER API TEST", () => {
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toStrictEqual("Something went wrong!");
 		expect(body.data).toBeDefined();
+	});
+
+	it("should return 500 when something went wrong on getting all orders", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+
+		const { body } = await Jest_request.get("/api/v1/orders")
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on getting a single order", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+
+		const { body } = await Jest_request.get(`/api/v1/orders/{id}`)
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went Wrong!");
+	});
+
+	it("should return 500 when something went wrong on getting all sales", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+
+		const { body } = await Jest_request.get(`/api/v1/sales`)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went Wrong!");
+	});
+
+	it("should return 500 when something went wrong on getting a single sales", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+
+		const { body } = await Jest_request.get(`/api/v1/sales/{id}`)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on updating a status of a sale", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+
+		const { body } = await Jest_request.patch(`/api/v1/sales/{id}/status`)
+			.send(order_status)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(500);
+
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
 	});
 });

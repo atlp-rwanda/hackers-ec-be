@@ -6,6 +6,7 @@ import {
 import { Order } from "./order";
 import { User } from "./User";
 import { Product } from "./product";
+
 export class Sales extends Model<
 	salesModelAttributes,
 	salesCreationAttributes
@@ -27,16 +28,19 @@ export class Sales extends Model<
 			foreignKey: "buyerId",
 			as: "customer",
 		});
+
 		this.belongsTo(models.Order, {
 			foreignKey: "orderId",
 			as: "order",
 		});
+
 		this.belongsTo(models.Product, {
 			foreignKey: "productId",
-			as: "soldProduct",
+			as: "soldProducts",
 		});
 	}
 }
+
 const sales_model = (sequelize: Sequelize) => {
 	Sales.init(
 		{
