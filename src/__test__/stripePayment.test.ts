@@ -20,10 +20,6 @@ import { stripe } from "../controllers/paymentController";
 import cartService from "../services/carts.services";
 jest.setTimeout(100000);
 
-// jest.mock("../services/payment.services", () => ({
-// 	lineCartItems: jest.fn()
-// }))
-
 function logErrors(
 	err: { stack: any },
 	_req: any,
