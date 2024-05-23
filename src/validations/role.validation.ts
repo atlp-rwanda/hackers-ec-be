@@ -21,5 +21,4 @@ const validateNewRole = (body: any) => {
 	const { error } = createRoleValidation.validate(body);
 	return error;
 };
-
 export { validateNewRole, validateRoleID };

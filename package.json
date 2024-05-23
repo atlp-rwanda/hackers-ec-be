@@ -54,8 +54,9 @@
 		"sequelize": "^6.37.3",
 		"socket.io": "^4.7.5",
 		"socket.io-client": "^4.7.5",
-		"stripe": "^15.7.0",
-		"uuid": "^9.0.1"
+		"stripe": "^15.6.0",
+		"uuid": "^9.0.1",
+		"uuidv4": "^6.2.13"
 	},
 	"jest": {
 		"preset": "ts-jest",

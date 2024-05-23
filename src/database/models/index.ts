@@ -4,15 +4,18 @@ import blacklist_model from "./blacklist";
 import cart_model from "./cart";
 import category_model from "./category";
 import message_model from "./message";
-import order_model from "./order";
+//import order_model from "./order";
 import paymemt_model from "./payments";
 import product_model from "./product";
 import reset_model from "./resetPassword";
 import Role_model from "./role";
-import sales_model from "./sales";
+//import sales_model from "./sales";
 import token_model from "./token";
 import wish_model from "./wishlist";
 
+import reviewModel from "./review";
+import order_model from "./order";
+import sales_model from "./sales";
 const Models = (sequelize: Sequelize) => {
 	const Product = product_model(sequelize);
 	const Category = category_model(sequelize);
@@ -26,8 +29,11 @@ const Models = (sequelize: Sequelize) => {
 	const Cart = cart_model(sequelize);
 	const Payments = paymemt_model(sequelize);
 	const Order = order_model(sequelize);
-	const Sales = sales_model(sequelize);
+	//	const Sales = sales_model(sequelize);
 
+	const review = reviewModel(sequelize);
+	//const Order = order_model(sequelize);
+	const Sales = sales_model(sequelize);
 	return {
 		Product,
 		Category,
@@ -40,6 +46,7 @@ const Models = (sequelize: Sequelize) => {
 		wish,
 		Cart,
 		Payments,
+		review,
 		Order,
 		Sales,
 	};

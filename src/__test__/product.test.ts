@@ -14,6 +14,9 @@ import {
 	sameAsOldStatus,
 	search_product,
 	search_product_Not_found,
+	review_user,
+	login_user,
+	review_user_login,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { read_function } from "../utils/db_methods";
@@ -35,7 +38,6 @@ const Jest_request = request(app.use(logErrors));
 let seller_token: string;
 let category_id: string;
 let product_id: any;
-
 describe("PRODUCT API TEST", () => {
 	beforeAll(async () => {
 		await connectionToDatabase();
@@ -374,6 +376,16 @@ describe("PRODUCT API TEST", () => {
 		expect(body.status).toStrictEqual("NOT FOUND");
 		expect(body.message).toStrictEqual(
 			"The product you're trying to update status for is not found or owned!",
+		);
+	});
+
+	it("it should  register a user and return 201", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/register")
+			.send(review_user)
+			.expect(201);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual(
+			"Account Created successfully, Please Verify your Account",
 		);
 	});
 

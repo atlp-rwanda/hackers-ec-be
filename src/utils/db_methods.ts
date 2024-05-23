@@ -15,7 +15,8 @@ type ModelTypes =
 	| "Payments"
 	| "Cart"
 	| "Order"
-	| "Sales";
+	| "Sales"
+	| "review";
 type MethodTypes = "findAll" | "findOne" | "destroy" | "create" | "update";
 
 export const read_function = async <T>(
