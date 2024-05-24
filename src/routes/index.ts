@@ -13,6 +13,7 @@ import paymentRouter from "./paymentsRoutes";
 import { statisticsRouter } from "./statisticsRoutes";
 
 import reviewRouter from "./review.routes";
+import notificationRouter from "./notificationsRoutes";
 const router = express.Router();
 
 router.use("/users", userRoutes);
@@ -28,5 +29,6 @@ router.use("/", statisticsRouter);
 router.use("/reviews", reviewRouter);
 router.use("/orders", orderRoutes);
 router.use("/sales", salesRoutes);
+router.use("/notifications", notificationRouter);
 
 export default router;

@@ -8,9 +8,10 @@ import {
 } from "../types/model";
 import { sendResponse } from "../utils/http.exception";
 import { Product } from "../database/models/product";
+import { getProductID } from "../utils/controller";
 import { Wishes } from "../database/models/wishlist";
 import sequelize from "sequelize";
-import { getProductID } from "../utils/controller";
+import { EventName, myEmitter } from "../utils/nodeEvents";
 
 let productId: string;
 
@@ -31,7 +32,7 @@ const include = [
 		],
 	},
 ];
-// create wishes
+
 export const createWishlist = async (req: Request, res: Response) => {
 	try {
 		const user = (req as ExpandedRequest).user;
@@ -58,6 +59,11 @@ export const createWishlist = async (req: Request, res: Response) => {
 
 		if (wishExist) {
 			await read_function<WishesAttributes>("wish", "destroy", wish_condition);
+			myEmitter.emit(
+				EventName.PRODUCT_REMOVED_FROM_WISHLIST,
+				userId,
+				productId,
+			);
 
 			return sendResponse(
 				res,
@@ -76,6 +82,8 @@ export const createWishlist = async (req: Request, res: Response) => {
 				"create",
 				wishData,
 			);
+
+			myEmitter.emit(EventName.PRODUCT_ADDED_TO_WISHLIST, userId, productId);
 
 			return sendResponse(
 				res,

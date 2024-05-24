@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Order } from "../database/models/order";
 import { Sales } from "../database/models/sales";
+import { EventName, myEmitter } from "../utils/nodeEvents";
 
 export const updateOrderStatusMiddleware = async (
 	req: Request,
@@ -18,7 +19,6 @@ export const updateOrderStatusMiddleware = async (
 				message: "Sale not found",
 			});
 		}
-
 		const orderSales = await Sales.findAll({
 			where: { orderId: sale.orderId },
 		});
@@ -34,9 +34,11 @@ export const updateOrderStatusMiddleware = async (
 
 		if (order && allAproved) {
 			order?.update({ status: "delivered" });
+			myEmitter.emit(EventName.ORDERS_DELIVERED, order);
 		}
 		if (order && anyRejected) {
 			order?.update({ status: "canceled" });
+			myEmitter.emit(EventName.ORDERS_CANCELED, order);
 		}
 
 		next();

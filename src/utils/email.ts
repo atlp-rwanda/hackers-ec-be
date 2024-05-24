@@ -22,8 +22,7 @@ const sendEmail = async (emailData: emailAttribute) => {
 		});
 		console.log("email sent sucessfully");
 	} catch (error) {
-		console.log("email not sent");
-		console.log(error);
+		console.log("email not sent", error);
 	}
 };
 

@@ -226,4 +226,55 @@ describe("SERVER API TEST", () => {
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
 	});
+	//server errors=================notifications=================
+	it("should return 500 when something went wrong on getting all notifications", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.get(`/api/v1/notifications`)
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on getting a single notification", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.get(
+			`/api/v1/notifications/001b7a8c-c767-4aaf-ba61-b71238526bb0`,
+		)
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on marking a notification as read", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.patch(
+			`/api/v1/notifications/001b7a8c-c767-4aaf-ba61-b71238526bb0`,
+		)
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on marking all notifications as read", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.patch(`/api/v1/notifications`)
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on deleting a notification", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.delete(
+			`/api/v1/notifications/001b7a8c-c767-4aaf-ba61-b71238526bb0`,
+		)
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
 });

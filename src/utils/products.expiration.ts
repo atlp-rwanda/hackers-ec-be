@@ -3,6 +3,7 @@ import { findAllProducts } from "../services/products.services";
 import { ProductAttributes, UserModelAttributes } from "../types/model";
 import { insert_function, read_function } from "./db_methods";
 import { update_product_email_template } from "./html.utils";
+import { EventName, myEmitter } from "./nodeEvents";
 
 export const checkProductExpiration = async () => {
 	const products: ProductAttributes[] = await findAllProducts();
@@ -46,6 +47,7 @@ export const checkProductExpiration = async () => {
 				{ productStatus },
 				condition,
 			);
+			myEmitter.emit(EventName.PRODUCT_GOT_EXPIRED, product, user);
 		}
 	}
 };

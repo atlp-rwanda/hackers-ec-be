@@ -4,6 +4,9 @@ import * as http from "http";
 import { config } from "./utils/socket.util";
 import { startCheckPasswordExpiration } from "./helpers/cronJobs";
 import { CLONE_TIME, PORT } from "./utils/keys";
+import { myEventListener } from "./utils/notificationListeners";
+
+myEventListener();
 
 const startServer = async () => {
 	await connectionToDatabase();

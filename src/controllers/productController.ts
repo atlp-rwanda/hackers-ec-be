@@ -318,7 +318,6 @@ const update_product = async (req: Request, res: Response) => {
 	}
 };
 
-//update product status: available or unavailable
 const update_product_status = async (req: Request, res: Response) => {
 	try {
 		product_id = category_utils(req, res).getId;

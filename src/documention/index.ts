@@ -12,6 +12,7 @@ import { sales } from "./sales";
 import { app_payments } from "./payments";
 import { stats } from "./stats";
 import { review } from "./review";
+import { notifications } from "./notifications/notifications";
 
 export default {
 	...basicInfo,
@@ -29,5 +30,6 @@ export default {
 		...review,
 		...orders,
 		...sales,
+		...notifications,
 	},
 };
