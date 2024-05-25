@@ -12,7 +12,7 @@ paymentRouter.post(
 	paymentMiddlewares.userHasCart,
 	paymentMiddlewares.cartHasProducts,
 	paymentMiddlewares.TAMOUNT_NOTBELOW(600),
-	paymentMiddlewares.validMomo,
+	// paymentMiddlewares.validMomo,
 	paymentMiddlewares.requestToPay,
 	paymentController.create_checkout_session,
 );

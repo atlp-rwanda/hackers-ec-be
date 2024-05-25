@@ -14,13 +14,6 @@ export const getToken = async () => {
 		const credentials = base64.encode(`${username}:${password}`);
 		const subscriptionKey = MTN_MOMO_SUBSCRIPTION_KEY;
 
-		console.log(
-			"credentials: ",
-			credentials,
-			"subscriptionKey:",
-			subscriptionKey,
-		);
-
 		const response = await axios.post(
 			`${MTN_MOMO_GET_TOKEN_URL}`,
 			{},
@@ -33,7 +26,6 @@ export const getToken = async () => {
 		);
 
 		const token = response.data.access_token;
-		console.log("token created:", token);
 		return token;
 	} catch (error: any) {
 		console.log("error: ", error?.message);

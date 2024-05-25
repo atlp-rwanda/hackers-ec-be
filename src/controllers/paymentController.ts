@@ -10,9 +10,18 @@ import {
 	orderItems,
 	recordPaymentDetails,
 } from "../services/payment.services";
-import { UserModelAttributes, cartModelAttributes } from "../types/model";
-import { CartRequest, MomoInfo, PaymentDetails } from "../types/payment";
-import { read_function } from "../utils/db_methods";
+import {
+	PaymentsModelAttributes,
+	UserModelAttributes,
+	cartModelAttributes,
+} from "../types/model";
+import {
+	CartRequest,
+	MomoInfo,
+	PaymentDetails,
+	TransactionRequest,
+} from "../types/payment";
+import { insert_function, read_function } from "../utils/db_methods";
 import { sendResponse } from "../utils/http.exception";
 import {
 	DEPLOYED_URL,
@@ -64,6 +73,7 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 			const { XReferenceId } = (req as MomoInfo).momoInfo as {
 				XReferenceId: string;
 			};
+
 			const url = `${MTN_MOMO_REQUEST_PAYMENT_URL}/${XReferenceId}`;
 			const target = MTN_MOMO_TARGET_ENVIRONMENT;
 			const subscriptionKey = MTN_MOMO_SUBSCRIPTION_KEY;
@@ -77,24 +87,35 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 
 			const response = await axios.get(url, { headers });
 
-			console.log(response);
 			const transaction = response.data;
-			if (transaction.status === "SUCCESSFUL") {
-				// save payment info
-				console.log("transdfjfttttttttttttttttttttttttttttt", transaction);
+
+			const transactionExist = (req as TransactionRequest).transaction;
+			const transactionData = (req as TransactionRequest).transactionData;
+			// save payment info
+			if (!transactionExist) {
 				const userId = (req as ExpandedRequest).user?.id;
 				await recordPaymentDetails({
 					payerId: userId,
-					paymentId: transaction.externalId,
+					paymentId: XReferenceId,
 					paymentMethod: "momo",
+					status: transaction.status,
+					phoneNumber: req.body.phoneNumber,
 				});
+			}
 
+			if (transaction.status === "SUCCESSFUL") {
 				order = await orderItems(cart);
-
+				if (transactionExist) {
+					await insert_function<PaymentsModelAttributes>(
+						"Payments",
+						"update",
+						{ status: transaction.status },
+						{ where: { id: transactionExist.id } },
+					);
+				}
 				await database_models.Cart.destroy({ where: { id: cart.id } });
 			}
 
-			console.log("+++++++++++++++++++++++++++", transaction);
 			return sendResponse(
 				res,
 				200,
@@ -103,7 +124,7 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 					? "Products are successfully paid and ordered!"
 					: `Payment ${transaction.status}`,
 
-				transaction.status === "SUCCESSFUL" ? { order } : transaction.reason,
+				transaction.status === "SUCCESSFUL" ? { order } : transactionData,
 			);
 		}
 	} catch (error) {

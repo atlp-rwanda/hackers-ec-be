@@ -1,8 +1,15 @@
 import axios from "axios";
 import { NextFunction, Request, Response } from "express";
-import { findUserCartById } from "../services/payment.services";
+import { findUserCartById, generateUUID } from "../services/payment.services";
 import { cartItem } from "../types/cart";
-import { CartRequest, MomoInfo } from "../types/payment";
+import { PaymentsModelAttributes } from "../types/model";
+import {
+	CartRequest,
+	MomoInfo,
+	TransactionRequest,
+	transactionDataTypes,
+} from "../types/payment";
+import { read_function } from "../utils/db_methods";
 import { sendResponse } from "../utils/http.exception";
 import {
 	MTN_MOMO_CURRENCY,
@@ -107,17 +114,48 @@ const requestToPay = async (
 		const subscriptionKey = MTN_MOMO_SUBSCRIPTION_KEY;
 		const token = await getToken();
 
-		// const referenceId = generateUUID();
+		const transactionData: transactionDataTypes = {
+			token,
+			targetEnvironment: target,
+			subscriptionKey: "*******************************",
+		};
+		const transaction = await read_function<PaymentsModelAttributes>(
+			"Payments",
+			"findOne",
+			{
+				where: {
+					// paymentId: cart.id,
+					phoneNumber,
+					status: "PENDING",
+
+					// {
+					// 	[Op.notIn]: ""PENDING",
+					// 	// [Op.notIn]: ""PENDING",
+					// },
+				},
+			},
+		);
+
+		let referenceId: string;
+
+		if (transaction) {
+			referenceId = transaction.paymentId;
+			(req as TransactionRequest).transaction = transaction;
+		} else {
+			referenceId = generateUUID();
+		}
 
 		const headers = {
-			// "X-Reference-Id": `${referenceId}`,
-			"X-Reference-Id": `${cart.id}`,
+			"X-Reference-Id": `${referenceId}`,
 			"X-Target-Environment": target,
 			"Ocp-Apim-Subscription-Key": subscriptionKey,
 			Authorization: `Bearer ${token}`,
 		};
+		// console.log("headddd Iiiiiiiiiiiiiid ", headers["X-Reference-Id"]);
 
-		console.log("head dddddddddddddd", headers["X-Reference-Id"]);
+		transactionData.XReferenceId = headers["X-Reference-Id"];
+		(req as TransactionRequest).transactionData = transactionData;
+
 		const body = {
 			amount: `${cart.total}`,
 			currency: `${MTN_MOMO_CURRENCY}`,
@@ -126,13 +164,15 @@ const requestToPay = async (
 				partyIdType: "MSISDN",
 				partyId: phoneNumber,
 			},
-			payerMessage: "Thank you for payment",
-			payeeNote: "Thank you for payment",
+			payerMessage: "Payment initialize",
+			payeeNote: "Payment initialize",
 		};
-		console.log("X-reference: ", body.externalId);
+
 		try {
 			res = await axios.post(url, body, { headers });
 
+			// generate Id
+			// assign on XReference
 			(req as MomoInfo).momoInfo = {
 				XReferenceId: headers["X-Reference-Id"],
 			};

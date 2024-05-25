@@ -1,10 +1,12 @@
 import { Request } from "express";
-import { cartModelAttributes } from "./model";
+import { PaymentsModelAttributes, cartModelAttributes } from "./model";
 
 export type PaymentDetails = {
 	payerId: string;
 	paymentMethod: string;
 	paymentId: string;
+	phoneNumber?: string;
+	status?: string;
 };
 
 export interface CartRequest extends Request {
@@ -16,3 +18,15 @@ export interface MomoInfo extends Request {
 		XReferenceId: string;
 	};
 }
+
+export interface TransactionRequest extends Request {
+	transaction?: PaymentsModelAttributes;
+	transactionData?: transactionDataTypes;
+}
+
+export type transactionDataTypes = {
+	token?: string;
+	XReferenceId?: string;
+	subscriptionKey?: string;
+	targetEnvironment?: string;
+};

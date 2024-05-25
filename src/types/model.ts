@@ -219,11 +219,13 @@ export interface PaymentsModelAttributes {
 	payerId: string;
 	paymentMethod: string;
 	paymentId: string;
+	status: string;
+	phoneNumber: string;
 }
 
 export type paymentsCreationAttributes = Optional<
 	PaymentsModelAttributes,
-	"id"
+	"id" | "status" | "phoneNumber"
 >;
 /**
  * -------------- Review Model ---------------------
