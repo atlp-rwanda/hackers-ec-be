@@ -389,11 +389,11 @@ export const status_past_date = {
 	deliveryDate: "2020-06-18T11:14:50.065Z",
 };
 
-export const momoPayWithExpectedData = {
+export const momoPayWithSuccessNum = {
 	phoneNumber: "0783520504",
 };
-export const momoPayWithInsufficientAmount = {
-	phoneNumber: "0782570202",
+export const momoPayWithFailedNum = {
+	phoneNumber: "46733123450",
 };
 
 export const noAmountMomo = {
@@ -409,3 +409,19 @@ export const noExternalIdMomo = {
 export const momoPayWithRejectUSSD = {
 	phoneNumber: "3",
 };
+
+export const momoPayAllowedNumber = [
+	"46733123450",
+	"46733123451",
+	"46733123452",
+	"46733123453",
+	"46733123454",
+];
+
+export const momoPayInValidNumber = [
+	"0771234567",
+	"078123456",
+	"07998765432",
+	"46733123455",
+	"1234567890",
+];

@@ -59,6 +59,8 @@ describe("SALE API TEST", () => {
 		await deleteTableData(database_models.Category, "categories");
 		await deleteTableData(database_models.User, "users");
 		await deleteTableData(database_models.Cart, "carts");
+		await deleteTableData(database_models.Order, "orders");
+		await deleteTableData(database_models.Payments, "payments");
 	});
 
 	it("it should  register a user and return 201", async () => {

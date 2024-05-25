@@ -56,7 +56,7 @@ const paymemt_model = (sequelize: Sequelize) => {
 			},
 			phoneNumber: {
 				type: DataTypes.STRING,
-				allowNull: false,
+				allowNull: true,
 			},
 		},
 		{

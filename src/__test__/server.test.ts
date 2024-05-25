@@ -34,6 +34,7 @@ import {
 import { generateAccessToken } from "../helpers/security.helpers";
 import { resetPassword } from "../database/models/resetPassword";
 import { read_function } from "../utils/db_methods";
+import { allRole, assignRole, createRole } from "../controllers/roleController";
 
 jest.mock("../utils/db_methods", () => ({
 	read_function: jest.fn(),
@@ -276,5 +277,18 @@ describe("SERVER API TEST", () => {
 			.expect(500);
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
+	});
+
+	//server errors=================role =================
+
+	it("it should return server error and return 500 when creates role", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+		await createRole(req, res);
+		expect(res.status).toHaveBeenCalledWith(500);
 	});
 });

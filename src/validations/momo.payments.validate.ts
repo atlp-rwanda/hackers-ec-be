@@ -1,13 +1,11 @@
 import Joi from "joi";
 
 const allowedNumbers = [
+	"46733123450",
 	"46733123451",
 	"46733123452",
 	"46733123453",
 	"46733123454",
-	"46733123455",
-	"46733123456",
-	"46733123457",
 ];
 
 export const momoValidation = Joi.alternatives()

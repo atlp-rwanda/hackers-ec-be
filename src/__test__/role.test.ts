@@ -5,7 +5,7 @@ import { deleteTableData } from "../utils/database.utils";
 import database_models from "../database/config/db.config";
 import { roleAdmin, mock_not_Role, mockRole, NewUser } from "../mock/static";
 import { Token } from "../database/models/token";
-import { updateRole } from "../controllers/roleController";
+import { createRole, updateRole } from "../controllers/roleController";
 import { Request, Response } from "express";
 import { read_function, insert_function } from "../utils/db_methods"; // replace with actual import
 
@@ -170,5 +170,32 @@ describe("ROLE API TEST", () => {
 			.set("Authorization", `Bearer ${token}`)
 			.send(roleNewName);
 		expect(body.message).toStrictEqual("Role updated successfully");
+	});
+	// internal server error
+
+	it("should return 500 when create user role something went wrong", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await createRole(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
+	it("should return 500 when something went wrong on assign roler", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+
+		await createRole(req, res);
+
+		expect(res.status).toHaveBeenCalledWith(500);
 	});
 });

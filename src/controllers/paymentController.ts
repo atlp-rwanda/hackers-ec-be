@@ -66,7 +66,9 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 				{ sessionUrl: session.url as string },
 			);
 		} else {
-			// *************************************** MOMO **************************************
+			// *****************************************************************************
+			// ********************************* MOMO **************************************
+			// *****************************************************************************
 			let order;
 			const { cart } = req as CartRequest;
 
@@ -123,8 +125,12 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 				transaction.status === "SUCCESSFUL"
 					? "Products are successfully paid and ordered!"
 					: `Payment ${transaction.status}`,
-
-				transaction.status === "SUCCESSFUL" ? { order } : transactionData,
+				transaction.status === "SUCCESSFUL"
+					? { order }
+					: // : transactionExist || transaction.status === "PENDING"
+						transaction.status === "PENDING"
+						? transactionData
+						: transaction.reason,
 			);
 		}
 	} catch (error) {

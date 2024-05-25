@@ -124,14 +124,8 @@ const requestToPay = async (
 			"findOne",
 			{
 				where: {
-					// paymentId: cart.id,
 					phoneNumber,
 					status: "PENDING",
-
-					// {
-					// 	[Op.notIn]: ""PENDING",
-					// 	// [Op.notIn]: ""PENDING",
-					// },
 				},
 			},
 		);
@@ -151,8 +145,6 @@ const requestToPay = async (
 			"Ocp-Apim-Subscription-Key": subscriptionKey,
 			Authorization: `Bearer ${token}`,
 		};
-		// console.log("headddd Iiiiiiiiiiiiiid ", headers["X-Reference-Id"]);
-
 		transactionData.XReferenceId = headers["X-Reference-Id"];
 		(req as TransactionRequest).transactionData = transactionData;
 
@@ -169,14 +161,12 @@ const requestToPay = async (
 		};
 
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			res = await axios.post(url, body, { headers });
-
-			// generate Id
-			// assign on XReference
 			(req as MomoInfo).momoInfo = {
 				XReferenceId: headers["X-Reference-Id"],
 			};
-			res;
+			// res;
 
 			return next();
 		} catch (error: any) {
