@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Login Page</title>
+		<title>Signin Page</title>
 		<style>
 			body {
 				font-family: Arial, sans-serif;
@@ -96,8 +96,12 @@
 					.then((response) => response.json())
 					.then((response) => {
 						if (response.status == "SUCCESS") {
-							localStorage.setItem("loggedUser", JSON.stringify(response.data));
-							window.location.href = "hackers-ec-be.onrender.com/api/v1/chats";
+							localStorage.setItem(
+								"loggedUser1",
+								JSON.stringify(response.data),
+							);
+							window.location.href =
+								"hackers-ec-be.onrender.com/api/v1/notifications/appnotifications";
 						}
 					})
 					.catch((error) => {

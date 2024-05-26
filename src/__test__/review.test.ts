@@ -22,6 +22,7 @@ import {
 	getReviewsOnProduct,
 	updateReviews,
 } from "../controllers/review.controller";
+import { isAvailable } from "../utils/nodeEvents";
 
 function logErrors(
 	err: { stack: any },
@@ -176,7 +177,7 @@ describe("REVIEW API TEST", () => {
 
 	it("it should  create a review and return 201", async () => {
 		const x = await database_models.Product.update(
-			{ productStatus: "Available" },
+			{ isAvailable },
 			{ where: { id: product_id } },
 		);
 
