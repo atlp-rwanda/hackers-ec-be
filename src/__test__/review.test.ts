@@ -290,6 +290,7 @@ describe("REVIEW API TEST", () => {
 		await updateReviews(req, res);
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
+
 	it("it should return server error and return 500 when deleting review on product", async () => {
 		const req: any = {};
 
@@ -300,4 +301,14 @@ describe("REVIEW API TEST", () => {
 		await deleteReviews(req, res);
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
+	// it("it should return server error and return 500 when getting all review on product", async () => {
+	// 	const req: any = {};
+
+	// 	const res: any = {
+	// 		status: jest.fn().mockReturnThis(),
+	// 		json: jest.fn(),
+	// 	};
+	// 	await getAllReview(req, res);
+	// 	expect(res.status).toHaveBeenCalledWith(500);
+	// });
 });

@@ -12,6 +12,7 @@ import {
 } from "../types/model";
 
 export interface ExpandedRequest extends Request {
+	cart?: any;
 	user?: JwtPayload;
 	product?: ProductWithAssociations;
 	review?: reviewsAttribute;

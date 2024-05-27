@@ -45,6 +45,8 @@ describe("STRIPE PAYMENTS API TEST", () => {
 		await deleteTableData(database_models.Category, "categories");
 		await deleteTableData(database_models.User, "users");
 		await deleteTableData(database_models.Cart, "carts");
+		await deleteTableData(database_models.Order, "orders");
+		await deleteTableData(database_models.Payments, "payments");
 	});
 
 	it("it should  register a user and return 201", async () => {
@@ -189,7 +191,7 @@ describe("STRIPE PAYMENTS API TEST", () => {
 
 		expect(body.status).toStrictEqual("PAYMENT REQUIRED");
 		expect(body.message).toStrictEqual(
-			"Invalid payment method! I recommend you to use stripe here!",
+			"Invalid payment method! I recommend you to use stripe or momo here!",
 		);
 	});
 

@@ -8,10 +8,12 @@ const paymentRouter = express.Router();
 paymentRouter.post(
 	"/",
 	userAuthentication.isBuyer,
-	paymentMiddlewares.paymentMethods(["stripe"]),
+	paymentMiddlewares.paymentMethods(["stripe", "momo"]),
 	paymentMiddlewares.userHasCart,
 	paymentMiddlewares.cartHasProducts,
 	paymentMiddlewares.TAMOUNT_NOTBELOW(600),
+	paymentMiddlewares.validMomo,
+	paymentMiddlewares.requestToPay,
 	paymentController.create_checkout_session,
 );
 paymentRouter.get("/success", paymentController.checkout_success);

@@ -13,6 +13,8 @@ export class Payments extends Model<
 	public payerId!: string;
 	public paymentMethod!: string;
 	public paymentId!: string;
+	public status!: string;
+	public phoneNumber!: string;
 
 	public static associate(models: { User: typeof User }) {
 		this.belongsTo(models.User, {
@@ -46,6 +48,15 @@ const paymemt_model = (sequelize: Sequelize) => {
 			paymentId: {
 				type: DataTypes.STRING,
 				allowNull: false,
+			},
+			status: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				defaultValue: "SUCCESSFUL",
+			},
+			phoneNumber: {
+				type: DataTypes.STRING,
+				allowNull: true,
 			},
 		},
 		{

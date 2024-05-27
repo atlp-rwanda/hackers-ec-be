@@ -39,6 +39,17 @@ jobs:
       DEPLOYED_URL: ${{ secrets.DEPLOYED_URL }}
       PASS_EXPIRE_DURATION: ${{ secrets.PASS_EXPIRE_DURATION }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+
+      MTN_CALLBACK_HOST: ${{ secrets.MTN_CALLBACK_HOST }}
+      MTN_CALLBACK_URL: ${{ secrets.MTN_CALLBACK_URL }}
+      MTN_MOMO_USERNAME: ${{ secrets.MTN_MOMO_USERNAME }}
+      MTN_MOMO_API_KEY: ${{ secrets.MTN_MOMO_API_KEY }}
+      MTN_MOMO_SUBSCRIPTION_KEY: ${{ secrets.MTN_MOMO_SUBSCRIPTION_KEY }}
+      MTN_MOMO_REQUEST_PAYMENT_URL: ${{ secrets.MTN_MOMO_REQUEST_PAYMENT_URL }}
+      MTN_MOMO_TARGET_ENVIRONMENT: ${{ secrets.MTN_MOMO_TARGET_ENVIRONMENT }}
+      MTN_MOMO_GET_TOKEN_URL: ${{ secrets.MTN_MOMO_GET_TOKEN_URL }}
+      MTN_MOMO_CURRENCY: ${{ secrets.MTN_MOMO_CURRENCY }}
+
     strategy:
       matrix:
         node-version: ["20.x"]
