@@ -21,6 +21,7 @@ import {
 import { generateAccessToken } from "../helpers/security.helpers";
 import { read_function } from "../utils/db_methods";
 import { response } from "express";
+import searchProduct from "../controllers/searchProduct";
 
 jest.setTimeout(100000);
 
@@ -445,5 +446,15 @@ describe("PRODUCT API TEST", () => {
 
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toStrictEqual("Something went wrong!");
+	});
+	it("it should return server error and return 500 when searching product", async () => {
+		const req: any = {};
+
+		const res: any = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+		};
+		await searchProduct.search_product(req, res);
+		expect(res.status).toHaveBeenCalledWith(500);
 	});
 });
