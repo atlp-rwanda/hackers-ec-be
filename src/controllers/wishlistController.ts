@@ -1,35 +1,35 @@
 import { Request, Response } from "express";
+import sequelize from "sequelize";
+import { Product } from "../database/models/product";
+import { Wishes } from "../database/models/wishlist";
 import { ExpandedRequest } from "../middlewares/auth";
-import { insert_function, read_function } from "../utils/db_methods";
 import {
 	ProductAttributes,
 	WishesAttributes,
 	WishesCreationAttributes,
 } from "../types/model";
+import { insert_function, read_function } from "../utils/db_methods";
 import { sendResponse } from "../utils/http.exception";
-import { Product } from "../database/models/product";
-import { getProductID } from "../utils/controller";
-import { Wishes } from "../database/models/wishlist";
-import sequelize from "sequelize";
 import { EventName, myEmitter } from "../utils/nodeEvents";
-
-let productId: string;
 
 const include = [
 	{
 		model: Product,
 		as: "product",
-		attributes: [
-			"id",
-			"name",
-			"price",
-			"images",
-			"discount",
-			"quantity",
-			"categoryId",
-			"sellerId",
-			"expiryDate",
-		],
+		attributes: {
+			exclude: ["id"],
+			include: [
+				"id",
+				"name",
+				"price",
+				"images",
+				"discount",
+				"quantity",
+				"categoryId",
+				"sellerId",
+				"expiryDate",
+			],
+		},
 	},
 ];
 
@@ -38,7 +38,7 @@ export const createWishlist = async (req: Request, res: Response) => {
 		const user = (req as ExpandedRequest).user;
 		const userId = user?.id;
 
-		productId = req.body.productId;
+		const productId = req.body.productId;
 
 		const wish_condition = { where: { userId, productId } };
 
@@ -114,13 +114,16 @@ export const getWishlist = async (req: Request, res: Response) => {
 		if (user?.role === "SELLER") {
 			const wishedProduct = await Wishes.findAll({
 				where: {},
-				include: { model: Product, as: "product", where: { sellerId: userId } },
+				include: {
+					model: Product,
+					as: "product",
+					where: { sellerId: userId },
+				},
 				attributes: [
 					[
 						sequelize.fn("COUNT", sequelize.col("productId")),
 						"numberOfUserWishProduct",
 					],
-					"productId",
 				],
 				group: ["productId", "product.id"],
 			});
@@ -174,17 +177,11 @@ export const getWishlist = async (req: Request, res: Response) => {
 		);
 	}
 };
+
 // Get a single wishes
-const getSingleWishlist = async (req: Request, res: Response) => {
+export const getSingleWishlist = async (req: Request, res: Response) => {
 	try {
-		productId = getProductID(req, res) as string;
-		if (!productId) {
-			return;
-		}
-
-		const user = (req as ExpandedRequest).user;
-		const userId = user?.id;
-
+		const productId = (req as ExpandedRequest).product?.id;
 		const wish = await read_function<WishesAttributes>("wish", "findOne", {
 			where: { productId },
 			include,
@@ -199,16 +196,6 @@ const getSingleWishlist = async (req: Request, res: Response) => {
 			);
 		}
 
-		const sellerId = wish.product?.sellerId;
-
-		if (sellerId !== userId) {
-			return sendResponse(
-				res,
-				404,
-				"NOT FOUND",
-				"product not owned by the seller",
-			);
-		}
 		const countNumProduct = await Wishes.count({ where: { productId } });
 
 		const sellerData = {

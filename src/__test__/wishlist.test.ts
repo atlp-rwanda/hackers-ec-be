@@ -189,14 +189,14 @@ describe("WISHLIST API TEST", () => {
 		expect(body).toBeDefined();
 	});
 
-	it("It should return 404 when Product not found in the wishlist", async () => {
+	it("It should return 404 when Seller product not found", async () => {
 		const { body } = await Jest_request.get(
 			`/api/v1/wishes/9e555bd6-0f36-454a-a3d5-89edef4ff9d4`,
 		)
 			.set("Authorization", `Bearer ${seller_token}`)
 			.expect(404);
 		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("Product not found in the wishlist");
+		expect(body.message).toStrictEqual("Product doesn't exist");
 	});
 
 	it("It should return 401 when not token for seller", async () => {
@@ -254,7 +254,7 @@ describe("WISHLIST API TEST", () => {
 		expect(body.message).toStrictEqual("No product found in the wishlist");
 	});
 
-	it("It should return 404 when seller fetch product which is not own", async () => {
+	it("It should return 404 when fetch product which is found in wishlist", async () => {
 		const { body } = await Jest_request.get("/api/v1/wishes")
 			.set("Authorization", `Bearer ${seller_token}`)
 			.expect(404);
