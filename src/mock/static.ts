@@ -72,7 +72,7 @@ export const updated_profile_data = {
 	country: "Rwanda",
 	city: "Kigali",
 	birthDate: "1909-02-09",
-	zipCode: "jshshs",
+	zipCode: 5432,
 };
 export const updated_profile_error = {
 	firstName: "Hannah",
