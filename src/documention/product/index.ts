@@ -203,24 +203,6 @@ const update_product_status = {
 			},
 		},
 	],
-	requestBody: {
-		required: true,
-		content: {
-			"application/json": {
-				schema: {
-					type: "object",
-					properties: {
-						productStatus: {
-							type: "string",
-							description: "Product availability status",
-							required: true,
-							example: "Available",
-						},
-					},
-				},
-			},
-		},
-	},
 	responses,
 };
 

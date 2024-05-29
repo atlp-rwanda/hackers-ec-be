@@ -12,6 +12,7 @@ import {
 	NewUser,
 	invalidTokens,
 } from "../mock/static";
+import { isAvailable } from "../utils/nodeEvents";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { Token } from "../database/models/token";
 import cartService from "../services/carts.services";
@@ -186,7 +187,6 @@ describe("CART API TEST", () => {
 		expect(body.status).toStrictEqual("NOT FOUND");
 		expect(body.message).toStrictEqual("product is not found");
 	});
-	//TODO: Update product status
 	it("should return 403 and product is expired", async () => {
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
@@ -229,7 +229,7 @@ describe("CART API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ productStatus: "Available" },
+			{ isAvailable },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
