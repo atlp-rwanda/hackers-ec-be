@@ -2,7 +2,7 @@ import { sendEmail } from "../helpers/nodemailer";
 import { EventName, myEmitter } from "./nodeEvents";
 import { User } from "../database/models/User";
 import { Product } from "../database/models/product";
-import { Notification as DBNotification } from "../database/models/notification";
+import { Notification } from "../database/models/notification";
 import { emitNotification } from "./socket.util";
 import { OrderModelAttributes } from "../types/model";
 
@@ -38,22 +38,21 @@ export const myEventListener = () => {
 					unread: true,
 				};
 
-				const [buyerNotificationRecord, sellerNotificationRecord] =
-					await Promise.all([
-						DBNotification.create(buyerNotification),
-						DBNotification.create(sellerNotification),
-					]);
+				const notifications = await Promise.all([
+					Notification.create(buyerNotification),
+					Notification.create(sellerNotification),
+				]);
 
 				const sendEmailOptions = {
 					to: user.dataValues.email as string,
 					subject: "Product Added to Wishlist",
-					html: buyerNotificationRecord.message,
+					html: buyerNotification.message,
 				};
 
 				const sendEmailOptions_Seller = {
 					to: seller?.dataValues.email as string,
 					subject: "Product Added to Wishlist",
-					html: sellerNotificationRecord.message,
+					html: sellerNotification.message,
 				};
 
 				await Promise.all([
@@ -61,12 +60,13 @@ export const myEventListener = () => {
 					sendEmail(sendEmailOptions_Seller),
 				]);
 
-				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
+				emitNotification(notifications);
 			} catch (error) {
 				console.error("Error processing event:", error);
 			}
 		},
 	);
+
 	myEmitter.on(
 		EventName.PRODUCT_REMOVED_FROM_WISHLIST,
 		async (userId: string, productId: string) => {
@@ -99,22 +99,21 @@ export const myEventListener = () => {
 					unread: true,
 				};
 
-				const [buyerNotificationRecord, sellerNotificationRecord] =
-					await Promise.all([
-						DBNotification.create(buyerNotification),
-						DBNotification.create(sellerNotification),
-					]);
+				const notifications = await Promise.all([
+					Notification.create(buyerNotification),
+					Notification.create(sellerNotification),
+				]);
 
 				const sendEmailOptions = {
 					to: user.dataValues.email,
 					subject: "Product Removed from Wishlist",
-					html: buyerNotificationRecord?.message,
+					html: buyerNotification?.message,
 				};
 
 				const sendEmailOptions_Seller = {
 					to: seller?.dataValues.email as string,
 					subject: "Product Removed from Wishlist",
-					html: sellerNotificationRecord?.message,
+					html: sellerNotification?.message,
 				};
 
 				await Promise.all([
@@ -122,7 +121,7 @@ export const myEventListener = () => {
 					sendEmail(sendEmailOptions_Seller),
 				]);
 
-				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
+				emitNotification(notifications);
 			} catch (error) {
 				console.error("Error processing event:", error);
 			}
@@ -136,8 +135,8 @@ export const myEventListener = () => {
 			unread: true,
 		};
 
-		const [sellerNotificationRecord] = await Promise.all([
-			DBNotification.create(sellerNotification),
+		const notifications = await Promise.all([
+			Notification.create(sellerNotification),
 		]);
 
 		const sendEmailOptions = {
@@ -148,7 +147,7 @@ export const myEventListener = () => {
 
 		await Promise.all([sendEmail(sendEmailOptions)]);
 
-		emitNotification([sellerNotificationRecord]);
+		emitNotification(notifications);
 	});
 
 	myEmitter.on(
@@ -185,27 +184,26 @@ export const myEventListener = () => {
 					unread: true,
 				};
 
-				const [buyerNotificationRecord, sellerNotificationRecord] =
-					await Promise.all([
-						DBNotification.create(buyerNotification),
-						DBNotification.create(sellerNotification),
-					]);
+				const notifications = await Promise.all([
+					Notification.create(buyerNotification),
+					Notification.create(sellerNotification),
+				]);
 
 				const sellerEmail = {
 					to: seller.email,
 					subject: "Product Bought",
-					html: sellerNotificationRecord.message,
+					html: sellerNotification.message,
 				};
 
 				const buyerEmail = {
 					to: buyer.email,
 					subject: "Product Bought",
-					html: buyerNotificationRecord.message,
+					html: buyerNotification.message,
 				};
 
 				await Promise.all([sendEmail(sellerEmail), sendEmail(buyerEmail)]);
 
-				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
+				emitNotification(notifications);
 			} catch (error) {
 				console.error("Error processing product bought event:", error);
 			}
@@ -227,18 +225,18 @@ export const myEventListener = () => {
 				message: `Your order has been delivered!, Enjoy your product!`,
 				unread: true,
 			};
-			const [buyerNotificationRecord] = await Promise.all([
-				DBNotification.create(notificationInput),
+			const notifications = await Promise.all([
+				Notification.create(notificationInput),
 			]);
 			const buyer = await User.findOne({ where: { id: buyerId } });
 			const emailingData = {
 				to: buyer?.email as string,
 				subject: "Order Delivered",
-				html: buyerNotificationRecord?.message,
+				html: notificationInput?.message,
 			};
 			await Promise.all([sendEmail(emailingData)]);
 
-			emitNotification([buyerNotificationRecord]);
+			emitNotification(notifications);
 		},
 	);
 
@@ -254,21 +252,21 @@ export const myEventListener = () => {
 
 			const notificationInput = {
 				userId: buyerId,
-				message: `Your order has been canceled!`,
+				message: `Your order ${order} has been canceled!`,
 				unread: true,
 			};
-			const [buyerNotificationRecord] = await Promise.all([
-				DBNotification.create(notificationInput),
+			const notifications = await Promise.all([
+				Notification.create(notificationInput),
 			]);
 			const buyer = await User.findOne({ where: { id: buyerId } });
 			const emailingData = {
 				to: buyer?.email as string,
 				subject: "Order Canceled",
-				html: buyerNotificationRecord?.message,
+				html: notificationInput?.message,
 			};
 			await Promise.all([sendEmail(emailingData)]);
 
-			emitNotification([buyerNotificationRecord]);
+			emitNotification(notifications);
 		},
 	);
 };

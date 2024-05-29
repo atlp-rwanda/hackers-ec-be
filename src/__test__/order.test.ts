@@ -12,7 +12,6 @@ import {
 	NewUser,
 	mock_users,
 } from "../mock/static";
-import { isAvailable } from "../utils/nodeEvents";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { Token } from "../database/models/token";
 import { jest } from "@jest/globals";
@@ -173,7 +172,7 @@ describe("ORDER API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable },
+			{ productStatus: "Available" },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -222,7 +221,7 @@ describe("ORDER API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable, price: 5 },
+			{ productStatus: "Available", price: 5 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -243,7 +242,7 @@ describe("ORDER API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable, price: 499000 },
+			{ productStatus: "Available", price: 499000 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)

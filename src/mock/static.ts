@@ -1,5 +1,4 @@
 import path from "path";
-import { isAvailable } from "../utils/nodeEvents";
 
 export const image_one_path: string = path.resolve(
 	__dirname,
@@ -203,10 +202,10 @@ export const new_update_product = {
 	images: [image_one_path],
 };
 export const new_updated_status = {
-	isAvailable,
+	productStatus: "Available",
 };
 export const sameAsOldStatus = {
-	isAvailable,
+	productStatus: "Available",
 };
 
 export const new_category = {

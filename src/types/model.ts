@@ -130,7 +130,7 @@ export interface ProductAttributes {
 	sellerId: string;
 	categoryId: string;
 	expiryDate: Date;
-	isAvailable?: boolean;
+	productStatus?: string;
 	isExpired?: boolean;
 	isSold?: boolean;
 }

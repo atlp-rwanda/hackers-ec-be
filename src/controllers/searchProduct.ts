@@ -13,8 +13,8 @@ const search_product = async (req: Request, res: Response) => {
 				expiryDate: {
 					[Op.gt]: new Date(),
 				},
-				isAvailable: {
-					[Op.not]: false,
+				productStatus: {
+					[Op.eq]: "Available",
 				},
 			},
 		});

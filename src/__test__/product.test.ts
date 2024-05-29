@@ -10,6 +10,8 @@ import {
 	new_seller_user,
 	new_update_product,
 	two_factor_authentication_data,
+	new_updated_status,
+	sameAsOldStatus,
 	search_product,
 	search_product_Not_found,
 	review_user,
@@ -287,6 +289,7 @@ describe("PRODUCT API TEST", () => {
 			`/api/v1/products/${product_id}/availability-status`,
 		)
 			.set("Authorization", `Bearer ${seller_token}`)
+			.send(new_updated_status)
 			.expect(200);
 
 		expect(body.status).toStrictEqual("SUCCESS");
@@ -296,9 +299,7 @@ describe("PRODUCT API TEST", () => {
 
 	it("it should return searched product with name only", async () => {
 		const { body } = await Jest_request.get("/api/v1/products/search?")
-			.query({
-				name: search_product.name,
-			})
+			.query({ name: search_product.name })
 			.expect(200);
 		expect(body.status).toStrictEqual("success");
 		expect(body.product).toBeDefined();
@@ -352,11 +353,25 @@ describe("PRODUCT API TEST", () => {
 		expect(body.message).toStrictEqual("no product found");
 	});
 
+	it("It should return 400 not update product availability status with the same status", async () => {
+		const { body } = await Jest_request.patch(
+			`/api/v1/products/${product_id}/availability-status`,
+		)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.send(sameAsOldStatus)
+			.expect(400);
+
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual(
+			"You can't change product status to the current status!",
+		);
+	});
 	it("should not update product availability status of unavailable product and return 404", async () => {
 		const { body } = await Jest_request.patch(
 			`/api/v1/products/4dde8798-5e62-4a84-b44f-c04b71859b25/availability-status`,
 		)
 			.set("Authorization", `Bearer ${seller_token}`)
+			.send(new_updated_status)
 			.expect(404);
 
 		expect(body.status).toStrictEqual("NOT FOUND");

@@ -167,7 +167,7 @@ describe("STRIPE PAYMENTS API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable: true },
+			{ productStatus: "Available" },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -216,7 +216,7 @@ describe("STRIPE PAYMENTS API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable: true, price: 5 },
+			{ productStatus: "Available", price: 5 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -237,7 +237,7 @@ describe("STRIPE PAYMENTS API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable: true, price: 499000 },
+			{ productStatus: "Available", price: 499000 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -295,7 +295,7 @@ describe("STRIPE PAYMENTS API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable: true, price: 499000 },
+			{ productStatus: "Available", price: 499000 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)

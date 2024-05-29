@@ -39,6 +39,7 @@ productRouter.patch(
 );
 productRouter.patch(
 	"/:id/availability-status",
+	productMiddlewares.productStatusValidated,
 	userAuthentication.isSeller,
 	productController.update_product_status,
 );

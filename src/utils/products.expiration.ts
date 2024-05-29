@@ -1,6 +1,8 @@
+import { sendEmail } from "../helpers/nodemailer";
 import { findAllProducts } from "../services/products.services";
 import { ProductAttributes, UserModelAttributes } from "../types/model";
 import { insert_function, read_function } from "./db_methods";
+import { update_product_email_template } from "./html.utils";
 import { EventName, myEmitter } from "./nodeEvents";
 
 export const checkProductExpiration = async () => {
@@ -8,11 +10,10 @@ export const checkProductExpiration = async () => {
 	const expiredProducts = products.filter((product) => {
 		const expirationDate = new Date(product.expiryDate);
 		const currentDate = new Date();
-
 		return (
 			expirationDate <= currentDate &&
 			product.quantity > 0 &&
-			product.isAvailable
+			product.productStatus === "Available"
 		);
 	});
 
@@ -30,14 +31,20 @@ export const checkProductExpiration = async () => {
 			"findOne",
 			condition_one,
 		);
+		const options = {
+			to: user.email,
+			subject: `Your products on Hackers have been expired.`,
+			html: update_product_email_template(user, sellerProducts),
+		};
+		sendEmail(options);
 
 		for (const product of sellerProducts) {
 			const condition = { where: { id: product.id } };
-			const isAvailable = false;
+			const productStatus = "Unavailable";
 			await insert_function<ProductAttributes>(
 				"Product",
 				"update",
-				{ isAvailable },
+				{ productStatus },
 				condition,
 			);
 			myEmitter.emit(EventName.PRODUCT_GOT_EXPIRED, product, user);

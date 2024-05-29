@@ -185,7 +185,7 @@ const userProfile = async (
 		role: role?.dataValues.id as string,
 		password: "",
 		confirmPassword: "",
-		isVerified: true,
+		isVerified: false,
 		gender: "",
 		birthDate: new Date(),
 		phoneNumber: "+250",

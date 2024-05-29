@@ -472,6 +472,19 @@ describe("USER API TEST", () => {
 			.expect(200);
 	});
 
+	it("should return 400 if no decoded token is found", async () => {
+		const response = await request(app)
+			.post(
+				"/api/v1/users/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYmM3NzM4LWE5YWItNDc2MC1hYzIxLWUzNTZkNGY0NDZjNyIsImVtYWlsIjoiaXphbnlpYnVrYXl2ZXR0ZTEwNUBnbWFpbC5jb20iLCJpYXQiOjE3MTQwNzcxOTksImV4cCI6MTcxNDE2MzU5OX0.wwtJXaviKcQYqmVX0LI0Yw1jG0wmBSqW4rHZA0Vh8zk",
+			)
+			.send({
+				password: "newPassword123",
+			});
+
+		expect(404);
+		expect(response.body.message).toBe("Invalid link");
+	});
+
 	it("it should return 400 when new password is the same to old password", async () => {
 		const { body } = await Jest_request.post(
 			`/api/v1/users/reset-password/${resetToken}`,
