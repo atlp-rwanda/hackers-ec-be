@@ -10,5 +10,4 @@ chatRoutes.get(
 	userAuthentication.authenticateUser,
 	read_all_messages,
 );
-
 export default chatRoutes;

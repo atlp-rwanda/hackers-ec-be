@@ -86,7 +86,7 @@
 					email: email,
 					password: password,
 				};
-				fetch("hackers-ec-be.onrender.com/api/v1/users/login", {
+				fetch("https://hackers-ec-be.onrender.com/api/v1/users/login", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -97,7 +97,8 @@
 					.then((response) => {
 						if (response.status == "SUCCESS") {
 							localStorage.setItem("loggedUser", JSON.stringify(response.data));
-							window.location.href = "hackers-ec-be.onrender.com/api/v1/chats";
+							window.location.href =
+								"https://hackers-ec-be.onrender.com/api/v1/chats";
 						}
 					})
 					.catch((error) => {

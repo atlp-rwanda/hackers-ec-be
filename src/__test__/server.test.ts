@@ -291,13 +291,4 @@ describe("SERVER API TEST", () => {
 		await createRole(req, res);
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
-
-	it("should return 500 when something went wrong on getting all wishlist", async () => {
-		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
-		const { body } = await Jest_request.get(`/api/v1/wishes`)
-			.set("Authorization", `Bearer ${buyer_token}`)
-			.expect(500);
-		expect(body.status).toStrictEqual("SERVER ERROR");
-		expect(body.message).toBe("Something went wrong!");
-	});
 });

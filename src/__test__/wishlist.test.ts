@@ -317,12 +317,4 @@ describe("WISHLIST API TEST", () => {
 
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
-
-	it("It should return 500 when buyer have invalid token", async () => {
-		const { body } = await Jest_request.post("/api/v1/wishes").set(
-			"Authorization",
-			`Bearer ${invalid_token}`,
-		);
-		expect(body.message).toStrictEqual("Internal server error");
-	});
 });

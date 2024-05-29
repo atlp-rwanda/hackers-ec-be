@@ -12,7 +12,6 @@ import { User } from "../database/models/User";
 import { insert_function, read_function } from "../utils/db_methods";
 import { category_utils } from "../utils/controller";
 import { Info, Message } from "../types/upload";
-import { isAvailable } from "../utils/nodeEvents";
 
 let product_id;
 const include = [
@@ -114,7 +113,7 @@ const read_all_products = async (req: Request, res: Response) => {
 		const user = (req as ExpandedRequest).user;
 		const sellerId = user?.id;
 		const condition_one = { where: { sellerId }, include };
-		const condition_two = { where: { isAvailable }, include };
+		const condition_two = { where: { productStatus: "Available" }, include };
 		let products;
 
 		if (user?.role === "SELLER") {
@@ -145,6 +144,7 @@ const read_all_products = async (req: Request, res: Response) => {
 			);
 		}
 	} catch (error: unknown) {
+		console.log("error fetching products", error);
 		return sendResponse(
 			res,
 			500,
@@ -166,7 +166,7 @@ const read_single_product = async (req: Request, res: Response) => {
 		const sellerId = user?.id;
 		const condition_one = { where: { id: product_id, sellerId }, include };
 		const condition_two = {
-			where: { id: product_id, isAvailable },
+			where: { id: product_id, productStatus: "Available" },
 			include,
 		};
 		let product;
@@ -322,13 +322,12 @@ const update_product_status = async (req: Request, res: Response) => {
 	try {
 		product_id = category_utils(req, res).getId;
 		const isValidUUID = category_utils(req, res).isValidUUID(product_id);
-
 		if (!isValidUUID) {
 			return;
 		}
-
 		const user = (req as ExpandedRequest).user;
 		const sellerId = user?.id;
+		const newStatus = req.body.productStatus;
 
 		const condition = {
 			where: {
@@ -350,11 +349,18 @@ const update_product_status = async (req: Request, res: Response) => {
 				"The product you're trying to update status for is not found or owned!",
 			);
 		}
-
-		const newStatus = !productExist.isAvailable;
+		// Check if the new status is the same as the current status
+		if (productExist.productStatus === newStatus) {
+			return sendResponse(
+				res,
+				400,
+				"BAD REQUEST",
+				"You can't change product status to the current status!",
+			);
+		}
 
 		const updatedData: Partial<ProductAttributes> = {
-			isAvailable: newStatus,
+			productStatus: newStatus,
 		};
 
 		await insert_function<ProductAttributes>(
