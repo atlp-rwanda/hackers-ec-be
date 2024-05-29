@@ -7,8 +7,11 @@ import {
 	mark_all_as_read,
 	delete_notification,
 } from "../controllers/notificationController";
+import { notificationLogin, notificationPage } from "../utils/nodeEvents";
 const notificationRouter = express.Router();
 
+notificationRouter.get("/appnotifications", notificationPage);
+notificationRouter.get("/login", notificationLogin);
 notificationRouter.get(
 	"/",
 	userAuthentication.authenticateUser,

@@ -172,7 +172,11 @@ const isBuyer = async (
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
 
-		if (!decoded) {
+		const isInBlcaklist = await database_models.Blacklist.findOne({
+			where: { token },
+		});
+
+		if (!decoded || isInBlcaklist) {
 			return sendResponse(
 				res,
 				401,
@@ -252,7 +256,11 @@ const isSeller = async (
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
 
-		if (!payLoad) {
+		const isInBlcaklist = await database_models.Blacklist.findOne({
+			where: { token },
+		});
+
+		if (!payLoad || isInBlcaklist) {
 			return res
 				.status(401)
 				.json(new HttpException("UNAUTHORIZED", "Please login to continue!"));
@@ -309,7 +317,11 @@ const isAdmin = async (
 			token,
 			ACCESS_TOKEN_SECRET as string,
 		) as JwtPayload;
-		if (!decoded) {
+
+		const isInBlcaklist = await database_models.Blacklist.findOne({
+			where: { token },
+		});
+		if (!decoded || isInBlcaklist) {
 			return res.status(401).json({ message: "Expired token,Try Login Again" });
 		}
 		const role = decoded.role;

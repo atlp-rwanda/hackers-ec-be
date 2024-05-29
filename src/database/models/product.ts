@@ -21,7 +21,7 @@ export class Product extends Model<
 	public sellerId!: string;
 	public categoryId!: string;
 	public expiryDate!: Date;
-	public productStatus!: string;
+	public isAvailable!: boolean;
 
 	public static associate(models: {
 		User: typeof User;
@@ -96,10 +96,10 @@ const product_model = (sequelize: Sequelize) => {
 				type: DataTypes.DATE,
 				allowNull: false,
 			},
-			productStatus: {
-				type: DataTypes.STRING,
+			isAvailable: {
+				type: DataTypes.BOOLEAN,
 				allowNull: false,
-				defaultValue: "Unavailable",
+				defaultValue: false,
 			},
 		},
 		{

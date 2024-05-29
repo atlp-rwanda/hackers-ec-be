@@ -23,6 +23,7 @@ import { jest } from "@jest/globals";
 import { lineCartItems } from "../services/payment.services";
 import { stripe } from "../controllers/paymentController";
 import cartService from "../services/carts.services";
+import { isAvailable } from "../utils/nodeEvents";
 jest.setTimeout(100000);
 
 // jest.mock("../services/payment.services", () => ({
@@ -181,7 +182,7 @@ describe("SALE API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ productStatus: "Available" },
+			{ isAvailable },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -230,7 +231,7 @@ describe("SALE API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ productStatus: "Available", price: 5 },
+			{ isAvailable, price: 5 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
@@ -251,7 +252,7 @@ describe("SALE API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ productStatus: "Available", price: 499000 },
+			{ isAvailable, price: 499000 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
