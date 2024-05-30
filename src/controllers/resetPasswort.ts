@@ -88,9 +88,6 @@ export const resetPasswort = async (req: Request, res: Response) => {
 
 		const decoded = Jwt.verify(token, ACCESS_TOKEN_SECRET!) as resetTokenData;
 
-		if (!decoded || !decoded.id) {
-			return sendResponse(res, 404, "NOT FOUND", "Invalid link");
-		}
 		const resettingUser = await read_function<UserModelAttributes>(
 			"User",
 			"findOne",

@@ -2,13 +2,12 @@
 import { NextFunction, Request, Response } from "express";
 import { productValidation } from "../validations/product.validation";
 import { sendResponse } from "../utils/http.exception";
-import validateProductStatus from "../validations/productStatus.validation";
 import database_models from "../database/config/db.config";
 import { validate } from "uuid";
 import { validateuuid } from "../utils/validateuuid";
 import { ExpandedRequest } from "./auth";
 import { Op } from "sequelize";
-
+import { isAvailable } from "../utils/nodeEvents";
 const isValidProduct = async (
 	req: Request,
 	res: Response,
@@ -45,41 +44,13 @@ export const isProductExist = async (
 	if (!product) {
 		return sendResponse(res, 404, "NOT FOUND", "product is not found");
 	}
-	if (product?.dataValues.productStatus === "Unavailable") {
+	if (!product?.dataValues.isAvailable) {
 		return sendResponse(res, 403, "FORBIDDEN", "product is not available");
 	}
 	if (product.dataValues.quantity < quantity) {
 		return sendResponse(res, 404, "NOT FOUND", "Not enough quantity in stock");
 	}
 	next();
-};
-
-const productStatusValidated = (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
-	try {
-		const error = validateProductStatus(req.body);
-		if (error) {
-			return sendResponse(
-				res,
-				400,
-				"BAD REQUEST",
-				error.details[0].message.replace(/"/g, ""),
-			);
-		}
-
-		next();
-	} catch (error) {
-		return sendResponse(
-			res,
-			500,
-			"SERVER ERROR",
-			"Something went wrong!",
-			error as Error,
-		);
-	}
 };
 
 const IdValidated = (field: string, idName: string) => {
@@ -103,7 +74,7 @@ const isProductAvailable = (field: string) => {
 			const product = await database_models.Product.findOne({
 				where: {
 					id: productId,
-					productStatus: "Available",
+					isAvailable,
 					expiryDate: {
 						[Op.gt]: new Date(),
 					},
@@ -119,6 +90,7 @@ const isProductAvailable = (field: string) => {
 			if (!product) {
 				return sendResponse(res, 404, "BAD REQUEST", "product not found!");
 			}
+
 			req.product = product;
 			next();
 		} catch (error) {
@@ -135,7 +107,6 @@ const isProductAvailable = (field: string) => {
 
 export default {
 	isValidProduct,
-	productStatusValidated,
 	isProductAvailable,
 	IdValidated,
 };
