@@ -104,7 +104,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					authenticationtoken = generateAccessToken(tokenData);
 
 					const host =
-						process.env.HOST || `http://localhost:${process.env.port}`;
+						process.env.DEPLOYED_URL || `http://localhost:${process.env.port}`;
 
 					const authenticationlink = `${host}host/api/v1/users/2fa?token=${authenticationtoken}`;
 
