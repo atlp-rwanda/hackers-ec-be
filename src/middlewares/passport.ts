@@ -59,7 +59,7 @@ passport.use(
 					lastName: req.body.lastName,
 					role: role?.dataValues.id as string,
 					isActive: true,
-					isVerified: true,
+					isVerified: false,
 					gender: req.body.gender || " ",
 					birthDate: req.body.birthDate || "01.01.1900",
 					phoneNumber: req.body.phoneNumber || "+250",
