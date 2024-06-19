@@ -5,6 +5,7 @@ import { Product } from "../database/models/product";
 import { Notification as DBNotification } from "../database/models/notification";
 import { emitNotification } from "./socket.util";
 import { OrderModelAttributes } from "../types/model";
+import HTML_TEMPLATE from "./mail-template";
 
 export const myEventListener = () => {
 	myEmitter.on(
@@ -47,13 +48,19 @@ export const myEventListener = () => {
 				const sendEmailOptions = {
 					to: user.dataValues.email as string,
 					subject: "Product Added to Wishlist",
-					html: buyerNotificationRecord.message,
+					html: HTML_TEMPLATE(
+						buyerNotificationRecord.message,
+						"Product Added to Wishlist",
+					),
 				};
 
 				const sendEmailOptions_Seller = {
 					to: seller?.dataValues.email as string,
 					subject: "Product Added to Wishlist",
-					html: sellerNotificationRecord.message,
+					html: HTML_TEMPLATE(
+						sellerNotificationRecord.message,
+						"Product Added to Wishlist",
+					),
 				};
 
 				await Promise.all([
@@ -67,6 +74,7 @@ export const myEventListener = () => {
 			}
 		},
 	);
+
 	myEmitter.on(
 		EventName.PRODUCT_REMOVED_FROM_WISHLIST,
 		async (userId: string, productId: string) => {
@@ -108,13 +116,19 @@ export const myEventListener = () => {
 				const sendEmailOptions = {
 					to: user.dataValues.email,
 					subject: "Product Removed from Wishlist",
-					html: buyerNotificationRecord?.message,
+					html: HTML_TEMPLATE(
+						buyerNotificationRecord?.message,
+						"Product Removed from Wishlist",
+					),
 				};
 
 				const sendEmailOptions_Seller = {
 					to: seller?.dataValues.email as string,
 					subject: "Product Removed from Wishlist",
-					html: sellerNotificationRecord?.message,
+					html: HTML_TEMPLATE(
+						sellerNotificationRecord?.message,
+						"Product Removed from Wishlist",
+					),
 				};
 
 				await Promise.all([
@@ -143,7 +157,7 @@ export const myEventListener = () => {
 		const sendEmailOptions = {
 			to: user.email as string,
 			subject: "Product Expired",
-			html: sellerNotification?.message,
+			html: HTML_TEMPLATE(sellerNotification?.message, "Product Expired"),
 		};
 
 		await Promise.all([sendEmail(sendEmailOptions)]);
@@ -194,13 +208,19 @@ export const myEventListener = () => {
 				const sellerEmail = {
 					to: seller.email,
 					subject: "Product Bought",
-					html: sellerNotificationRecord.message,
+					html: HTML_TEMPLATE(
+						sellerNotificationRecord.message,
+						"Product Bought",
+					),
 				};
 
 				const buyerEmail = {
 					to: buyer.email,
 					subject: "Product Bought",
-					html: buyerNotificationRecord.message,
+					html: HTML_TEMPLATE(
+						buyerNotificationRecord.message,
+						"Product Bought",
+					),
 				};
 
 				await Promise.all([sendEmail(sellerEmail), sendEmail(buyerEmail)]);
@@ -234,7 +254,10 @@ export const myEventListener = () => {
 			const emailingData = {
 				to: buyer?.email as string,
 				subject: "Order Delivered",
-				html: buyerNotificationRecord?.message,
+				html: HTML_TEMPLATE(
+					buyerNotificationRecord?.message,
+					"Order Delivered",
+				),
 			};
 			await Promise.all([sendEmail(emailingData)]);
 
@@ -264,7 +287,7 @@ export const myEventListener = () => {
 			const emailingData = {
 				to: buyer?.email as string,
 				subject: "Order Canceled",
-				html: buyerNotificationRecord?.message,
+				html: HTML_TEMPLATE(buyerNotificationRecord?.message, "Order Canceled"),
 			};
 			await Promise.all([sendEmail(emailingData)]);
 

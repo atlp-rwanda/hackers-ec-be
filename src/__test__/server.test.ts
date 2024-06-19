@@ -300,4 +300,21 @@ describe("SERVER API TEST", () => {
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
 	});
+	it("should return 500 when something went wrong on getting a single guest product", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.get(
+			`/api/v1/products/guest-products/96ff9146-ad09-4dbc-b100-94d3b0c33562`,
+		).expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on getting all guest products", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.get(
+			`/api/v1/products/guest-products`,
+		).expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
 });

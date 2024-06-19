@@ -1,5 +1,5 @@
 import { UserModelAttributes, reviewCreationAttributes } from "../types/model";
-import { DEPLOYED_URL, SERVER_URL } from "./keys";
+import { BASE_URL } from "./keys";
 import { ProductAttributes } from "../types/model";
 
 export const root_home_page = `
@@ -39,7 +39,7 @@ export const update_pass_email_template = (user: UserModelAttributes) => {
       <p>We wanted to inform you that your password for Hacker's E-commerce has expired. This is just a friendly reminder to update your password to ensure the security of your account.</p>
       <p>Please follow these steps to update your password:</p>
       <ol>
-          <li>Click on the <a href="${DEPLOYED_URL ? DEPLOYED_URL : SERVER_URL}/api/v1/users/password-update">Update password</a> link.</li>
+          <li>Click on the <a href="${BASE_URL}/profile">Update password</a> link.</li>
           <li>Follow the instructions to set up a new password.</li>
       </ol>
       <p>If you have any questions or need further assistance, please don't hesitate to contact our support team.</p>
@@ -53,7 +53,7 @@ export const update_product_email_template = (
 	user: UserModelAttributes,
 	products: ProductAttributes[],
 ) => {
-	const host = process.env.BASE_URL;
+	const host = BASE_URL;
 	const productLinks = products
 		.map(
 			(product) =>

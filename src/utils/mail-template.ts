@@ -1,4 +1,4 @@
-const HTML_TEMPLATE = (text: string) => {
+const HTML_TEMPLATE = (text: string, title: string) => {
 	return `
     <!DOCTYPE html>
     <html>
@@ -31,7 +31,7 @@ const HTML_TEMPLATE = (text: string) => {
         <div class="container">
           <div class="email">
             <div class="email-header">
-              <h1>Account verification</h1>
+              <h1>${title}</h1>
             </div>
             <div class="email-body">
               <div>${text}</div>

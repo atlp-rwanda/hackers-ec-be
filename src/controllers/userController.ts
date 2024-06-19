@@ -43,11 +43,33 @@ const registerUser = async (
 						await insert_function<TokenModelAttributes>("Token", "create", {
 							token,
 						});
-						const message = `${process.env.BASE_URL}/users/account/verify/${token}`;
+						const message = `
+
+						<div style="max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;">
+        <h3 style="color: #333333;">Welcome to ShopTrove!</h3>
+        <p>To complete your signup process, please verify your account by clicking the link below:</p> <br/> <br/>
+        <a href="${BASE_URL}/users/account/verify/${token}" style="
+      background-color: MediumSeaGreen;
+      color: white;
+      padding: 6px 20px;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+    ">Verify</a> <br/> <br/>
+        <p>Thank you for joining us!</p>
+        <p>Best regards,</p>
+        <p>The ShopTrove Team</p>
+    </div>
+						`;
 						await sendEmail({
 							to: user.email,
 							subject: "Verify Email",
-							html: message,
+							html: HTML_TEMPLATE(message, "Account verification"),
 						});
 						return sendResponse(
 							res,
@@ -79,7 +101,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			}
 
 			if (info) {
-				return sendResponse(res, 401, "UNAUTHORIZED", info.message);
+				return sendResponse(res, 400, "BAD REQUEST", info.message);
 			}
 
 			(req as any).login(user, async (err: Error) => {
@@ -123,7 +145,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					const options = {
 						to: email,
 						subject: "Your Login Verification Code",
-						html: HTML_TEMPLATE(message),
+						html: HTML_TEMPLATE(message, "Account verification"),
 					};
 					await insert_function<TokenModelAttributes>("Token", "create", {
 						token: authenticationtoken,

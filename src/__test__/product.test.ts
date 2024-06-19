@@ -242,6 +242,31 @@ describe("PRODUCT API TEST", () => {
 		expect(body.message).toStrictEqual("You provided Invalid ID!");
 	});
 
+	it("it should fetch all guest products", async () => {
+		const { body } = await Jest_request.get(
+			"/api/v1/products/guest-products",
+		).expect(200);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Products fetched successfully!");
+		expect(body.data).toBeDefined();
+	});
+
+	it("it should fetch guest single product and return 404 if not found", async () => {
+		const { body } = await Jest_request.get(
+			`/api/v1/products/guest-products/96ff9146-ad09-4dbc-b100-94d3b0c33562`,
+		).expect(404);
+		expect(body.status).toStrictEqual("NOT FOUND");
+		expect(body.message).toStrictEqual("Product not found or not available!");
+	});
+
+	it("it should return 400 to the guest when product is invalid", async () => {
+		const { body } = await Jest_request.get(
+			`/api/v1/products/guest-products/97dcfe1e-0686-4876-808a-f3d3ec36c`,
+		).expect(400);
+		expect(body.status).toStrictEqual("BAD REQUEST");
+		expect(body.message).toStrictEqual("You provided Invalid ID!");
+	});
+
 	it("should update product and return 200", async () => {
 		const { body } = await Jest_request.patch(`/api/v1/products/${product_id}`)
 			.set("Authorization", `Bearer ${seller_token}`)

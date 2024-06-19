@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ACCESS_TOKEN_SECRET, PORT } from "../utils/keys";
+import { ACCESS_TOKEN_SECRET, BASE_URL } from "../utils/keys";
 import { generateAccessToken } from "../helpers/security.helpers";
 import Jwt from "jsonwebtoken";
 import { sendEmail } from "../helpers/nodemailer";
@@ -12,6 +12,7 @@ import {
 	resetPasswordModelAtributes,
 } from "../types/model";
 import { sendResponse } from "../utils/http.exception";
+import HTML_TEMPLATE from "../utils/mail-template";
 
 let condition;
 
@@ -46,15 +47,38 @@ export const forgotPassword = async (req: Request, res: Response) => {
 			condition,
 		);
 
-		const host = process.env.BASE_URL || `http://localhost:${PORT}`;
-		const confirmlink: string = `${host}/passwordReset?token=${resetToken}`;
+		const host = `${BASE_URL}/users`;
+		const confirmlink: string = `${host}/reset-password?token=${resetToken}`;
 
 		const mailOptions = {
 			to: email,
 			subject: "Reset Password",
-			html: `
-                <p>Click <a href="${confirmlink}">here</a> to reset your password</p>
-            `,
+			html: HTML_TEMPLATE(
+				`
+<div style="max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;">
+        <h3 style="color: #333333;">Welcome to ShopTrove!</h3>
+        <p>To have new new password, click the button below to reset your password:</p> <br/> <br/>
+       <a href="${confirmlink}" style="
+      background-color: MediumSeaGreen;
+      color: white;
+      padding: 6px 20px;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+    ">Reset Password</a>
+	 <br/> <br/>
+        <p>Thank you for working with us!</p>
+        <p>Best regards,</p>
+        <p>The ShopTrove Team</p>
+    </div>
+`,
+				"Reset Password",
+			),
 		};
 
 		await sendEmail(mailOptions);
