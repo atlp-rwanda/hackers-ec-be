@@ -21,7 +21,7 @@ import { InfoAttribute } from "../types/passport";
 import { insert_function, read_function } from "../utils/db_methods";
 import { handleNewUser, handleUserLogin } from "../utils/google.auth";
 import { HttpException, sendResponse } from "../utils/http.exception";
-import { ACCESS_TOKEN_SECRET } from "../utils/keys";
+import { ACCESS_TOKEN_SECRET, BASE_URL } from "../utils/keys";
 import HTML_TEMPLATE from "../utils/mail-template";
 import { validateToken } from "../utils/token.validation";
 
@@ -103,14 +103,19 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					}
 					authenticationtoken = generateAccessToken(tokenData);
 
-					const host =
-						process.env.HOST || `http://localhost:${process.env.port}`;
-
-					const authenticationlink = `${host}host/api/v1/users/2fa?token=${authenticationtoken}`;
+					const host = `${BASE_URL}/users`;
+					const authenticationlink = `${host}/2fa?token=${authenticationtoken}`;
 
 					const message = `Hello ${firstName + " " + lastName},<br><br>
 
-        You recently requested to log in to ShopTrove E-Commerce app. To complete the login process,Please enter the following verification code <br><br> OTP:${otp} <br><br> You can also use the following link along with the provided OTP to complete your login:<br><br> <a href ='${authenticationlink}'>${authenticationlink}</a> <br><br> If you didn't request this, you can safely ignore this email. Your account is secure.
+        You recently requested to log in to ShopTrove E-Commerce app. To complete the login process,Please enter the following verification code <br><br> OTP:${otp} <br><br> You can also use the following link along with the provided OTP to complete your login:<br><br> <a href ='${authenticationlink}' style="
+      background-color: MediumSeaGreen;
+      color: white;
+      padding: 6px 20px;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+    ">Click here to login</a> <br><br> If you didn't request this, you can safely ignore this email. Your account is secure.
 
         Thank you,<br><br>
         The ShopTrove E-Commerce app Team`;
