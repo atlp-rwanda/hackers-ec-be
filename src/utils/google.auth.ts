@@ -1,10 +1,8 @@
-// service/authService.ts
-
 import { UserModelAttributes, roleModelAttributes } from "../types/model";
 import { read_function, insert_function } from "../utils/db_methods";
 import { generateAccessToken } from "../helpers/security.helpers";
-import { sendResponse } from "../utils/http.exception";
 import { Response } from "express";
+import { BASE_URL } from "../utils/keys";
 
 export async function handleUserLogin(
 	res: Response,
@@ -19,12 +17,8 @@ export async function handleUserLogin(
 		role: role.roleName,
 	});
 
-	return sendResponse(
-		res,
-		200,
-		"SUCCESS",
-		"Logged in to your account successfully!",
-		token,
+	return res.redirect(
+		`${BASE_URL}/google?token=${token}&message=${`Logged in to you account successfully!`}`,
 	);
 }
 
@@ -45,11 +39,7 @@ export async function handleNewUser(
 		role: role.roleName,
 	});
 
-	return sendResponse(
-		res,
-		201,
-		"SUCCESS",
-		"Account created successfully!",
-		token,
+	return res.redirect(
+		`${BASE_URL}/google?token=${token}?message=${`Account Created successfully!`}`,
 	);
 }
