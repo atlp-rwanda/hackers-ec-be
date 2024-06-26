@@ -367,7 +367,7 @@ export const role_seller_review = {
 
 export const order_status = {
 	status: "canceled",
-	deliveryDate: "2024-06-18T11:14:50.065Z",
+	deliveryDate: "2524-06-18T11:14:50.065Z",
 };
 
 export const status_not_neither_canceler_delivered_nor_pending = {

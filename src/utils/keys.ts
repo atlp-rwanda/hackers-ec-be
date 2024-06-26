@@ -35,3 +35,4 @@ export const MTN_MOMO_TARGET_ENVIRONMENT = process.env
 export const MTN_MOMO_GET_TOKEN_URL = process.env
 	.MTN_MOMO_GET_TOKEN_URL as string;
 export const MTN_MOMO_CURRENCY = process.env.MTN_MOMO_CURRENCY as string;
+export const BASE_URL = process.env.BASE_URL;
