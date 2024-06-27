@@ -24,7 +24,12 @@ productRouter.get(
 	userAuthentication.authenticateUser,
 	productController.read_all_products,
 );
+productRouter.get("/guest-products", productController.guest_read_all_products);
 
+productRouter.get(
+	"/guest-products/:id",
+	productController.guest_read_single_product,
+);
 productRouter.get(
 	"/:id",
 	userAuthentication.authenticateUser,
@@ -54,4 +59,5 @@ productRouter.get(
 	productMiddlewares.isProductAvailable("id"),
 	getReviewsOnProduct,
 );
+
 export default productRouter;

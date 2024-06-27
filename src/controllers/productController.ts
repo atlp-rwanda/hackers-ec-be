@@ -448,6 +448,71 @@ const delete_product = async (req: Request, res: Response) => {
 	}
 };
 
+const guest_read_all_products = async (req: Request, res: Response) => {
+	try {
+		const condition = { where: { isAvailable }, include };
+		const products = await read_function<ProductAttributes>(
+			"Product",
+			"findAll",
+			condition,
+		);
+		return sendResponse(
+			res,
+			200,
+			"SUCCESS",
+			"Products fetched successfully!",
+			products,
+		);
+	} catch (error: unknown) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			error as Error,
+		);
+	}
+};
+
+const guest_read_single_product = async (req: Request, res: Response) => {
+	try {
+		product_id = category_utils(req, res).getId;
+		const isValidUUID = category_utils(req, res).isValidUUID(product_id);
+		if (!isValidUUID) {
+			return;
+		}
+		const condition = { where: { id: product_id, isAvailable }, include };
+		const product = await read_function<ProductAttributes>(
+			"Product",
+			"findOne",
+			condition,
+		);
+		if (!product) {
+			return sendResponse(
+				res,
+				404,
+				"NOT FOUND",
+				"Product not found or not available!",
+			);
+		}
+		return sendResponse(
+			res,
+			200,
+			"SUCCESS",
+			"Product fetched successfully!",
+			product,
+		);
+	} catch (error: unknown) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			error as Error,
+		);
+	}
+};
+
 export default {
 	create_product,
 	update_product,
@@ -455,4 +520,6 @@ export default {
 	read_all_products,
 	read_single_product,
 	delete_product,
+	guest_read_all_products,
+	guest_read_single_product,
 };
