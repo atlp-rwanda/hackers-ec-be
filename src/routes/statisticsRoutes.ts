@@ -9,5 +9,6 @@ statisticsRouter.get(
 	"/stats",
 	authenticate.authenticateUser,
 	authenticate.isSeller,
+
 	sellerStatistics,
 );

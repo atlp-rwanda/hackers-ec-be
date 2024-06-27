@@ -132,7 +132,7 @@ const checkAccountStatus = async (
 	try {
 		const user = await User.findOne({ where: { email: email } });
 		if (!user) {
-			return sendResponse(res, 404, "NOT FOUND", "User not found");
+			return next();
 		}
 		if (user.isActive === false) {
 			return sendResponse(

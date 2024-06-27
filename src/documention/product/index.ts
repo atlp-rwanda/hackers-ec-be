@@ -228,6 +228,30 @@ const delete_product = {
 	responses,
 };
 
+const guest_read_all_products = {
+	tags: ["Products"],
+	summary: "List of all the products",
+	description: "Get all of the products",
+	responses,
+};
+
+const guest_read_single_product = {
+	tags: ["Products"],
+	summary: "Get a single product",
+	description: "Get a single product",
+	parameters: [
+		{
+			in: "path",
+			name: "id",
+			required: true,
+			schema: {
+				type: "string",
+				format: "uuid",
+			},
+		},
+	],
+	responses,
+};
 export const products = {
 	"/api/v1/products": {
 		post: createProduct,
@@ -246,5 +270,11 @@ export const products = {
 	},
 	"/api/v1/products/{ID}": {
 		delete: delete_product,
+	},
+	"/api/v1/products/guest-products": {
+		get: guest_read_all_products,
+	},
+	"/api/v1/products/guest-products/{id}": {
+		get: guest_read_single_product,
 	},
 };
