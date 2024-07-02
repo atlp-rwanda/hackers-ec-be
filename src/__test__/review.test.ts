@@ -214,10 +214,10 @@ describe("REVIEW API TEST", () => {
 		expect(body.message).toStrictEqual("review added successfully!");
 	});
 
-	it("it should return  all reviews on  product and return 201", async () => {
+	it("it should return  all reviews on  product and return 200", async () => {
 		const { body } = await Jest_request.get(
 			`/api/v1/products/${product_id}/reviews/`,
-		).expect(201);
+		).expect(200);
 		expect(body.message).toStrictEqual("review retrieved successfully!");
 	});
 

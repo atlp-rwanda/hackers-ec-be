@@ -5,6 +5,8 @@ import { sendResponse } from "../utils/http.exception";
 import { ExpandedRequest } from "../middlewares/auth";
 import { sendEmail } from "../helpers/nodemailer";
 import { review_product_email_template } from "../utils/html.utils";
+import { User } from "../database/models/User";
+import { Product } from "../database/models/product";
 
 export const getAllReview = async (req: ExpandedRequest, res: Response) => {
 	try {
@@ -78,16 +80,20 @@ export const getReviewsOnProduct = async (
 	try {
 		const productId = req.product?.id;
 
-		const condition_one = { where: { productId } };
-
-		const reviews = await read_function<reviewsAttribute>(
-			"review",
-			"findAll",
-			condition_one,
-		);
+		const reviews = await read_function<reviewsAttribute>("review", "findAll", {
+			where: { productId },
+			include: [
+				{ model: User, as: "user", attributes: { exclude: ["id"] } },
+				{
+					model: Product,
+					as: "product",
+					attributes: { exclude: ["id"] },
+				},
+			],
+		});
 		return sendResponse(
 			res,
-			201,
+			200,
 			"SUCCESS",
 			"review retrieved successfully!",
 			reviews,
