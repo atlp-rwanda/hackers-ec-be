@@ -63,12 +63,11 @@ export const myEventListener = () => {
 					),
 				};
 
+				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
 				await Promise.all([
 					sendEmail(sendEmailOptions),
 					sendEmail(sendEmailOptions_Seller),
 				]);
-
-				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
 			} catch (error) {
 				console.error("Error processing event:", error);
 			}
@@ -131,12 +130,11 @@ export const myEventListener = () => {
 					),
 				};
 
+				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
 				await Promise.all([
 					sendEmail(sendEmailOptions),
 					sendEmail(sendEmailOptions_Seller),
 				]);
-
-				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
 			} catch (error) {
 				console.error("Error processing event:", error);
 			}
@@ -160,9 +158,9 @@ export const myEventListener = () => {
 			html: HTML_TEMPLATE(sellerNotification?.message, "Product Expired"),
 		};
 
-		await Promise.all([sendEmail(sendEmailOptions)]);
-
 		emitNotification([sellerNotificationRecord]);
+
+		await Promise.all([sendEmail(sendEmailOptions)]);
 	});
 
 	myEmitter.on(
@@ -223,9 +221,9 @@ export const myEventListener = () => {
 					),
 				};
 
-				await Promise.all([sendEmail(sellerEmail), sendEmail(buyerEmail)]);
-
 				emitNotification([buyerNotificationRecord, sellerNotificationRecord]);
+
+				await Promise.all([sendEmail(sellerEmail), sendEmail(buyerEmail)]);
 			} catch (error) {
 				console.error("Error processing product bought event:", error);
 			}
@@ -259,9 +257,9 @@ export const myEventListener = () => {
 					"Order Delivered",
 				),
 			};
-			await Promise.all([sendEmail(emailingData)]);
-
 			emitNotification([buyerNotificationRecord]);
+
+			await Promise.all([sendEmail(emailingData)]);
 		},
 	);
 
@@ -289,9 +287,9 @@ export const myEventListener = () => {
 				subject: "Order Canceled",
 				html: HTML_TEMPLATE(buyerNotificationRecord?.message, "Order Canceled"),
 			};
-			await Promise.all([sendEmail(emailingData)]);
-
 			emitNotification([buyerNotificationRecord]);
+
+			await Promise.all([sendEmail(emailingData)]);
 		},
 	);
 };
