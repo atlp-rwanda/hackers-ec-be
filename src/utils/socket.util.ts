@@ -83,17 +83,14 @@ export const config = (server: http.Server) => {
 				console.error("Error sending message:", error);
 			}
 		});
-
-		socket.on("notification", (data) => {
-			io.emit("notification", data);
-		});
 	});
 };
 
 export const emitNotification = (notifications: NotificationEmition[]) => {
 	if (io) {
 		notifications.forEach((notification) => {
-			io.emit("notification", notification);
+			const eventName = `notification-${notification.userId}`;
+			io.emit(eventName, notification);
 		});
 	} else {
 		console.error("Socket.io is not initialized.");

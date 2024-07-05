@@ -76,7 +76,7 @@
 						document.getElementById("newNotifications").scrollHeight;
 				});
 
-				socket.on("notification", (data) => {
+				socket.on(`notification-${userId}`, (data) => {
 					if (data.userId === userId) {
 						const newNotification = document.createElement("p");
 						newNotification.innerText = data.message;
