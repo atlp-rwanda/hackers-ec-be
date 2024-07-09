@@ -238,6 +238,7 @@ describe("CART API TEST", () => {
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("added to cart successfully");
 	});
+
 	it("should return 201 and added to cart successfully again", async () => {
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
@@ -374,5 +375,24 @@ describe("CART API TEST", () => {
 
 		expect(body.status).toStrictEqual("ERROR");
 		expect(body.message).toStrictEqual("Internal Server Error");
+	});
+
+	it("should return 400 and fail to delete product due to foreign key constraint", async () => {
+		const mockError = new Error();
+		mockError.name = "SequelizeForeignKeyConstraintError";
+		jest
+			.spyOn(database_models.Product, "destroy")
+			.mockImplementationOnce(() => {
+				throw mockError;
+			});
+
+		const { body } = await Jest_request.delete(`/api/v1/products/${product_id}`)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(400);
+
+		expect(body.status).toStrictEqual("CASCADE DELETE REQUIRED");
+		expect(body.message).toStrictEqual(
+			"Cannot delete the product because it is linked to other records.",
+		);
 	});
 });
