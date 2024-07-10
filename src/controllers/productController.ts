@@ -437,7 +437,15 @@ const delete_product = async (req: Request, res: Response) => {
 				"The product you're trying to delete is not found or owned!",
 			);
 		}
-	} catch (error: unknown) {
+	} catch (error: any) {
+		if (error.name === "SequelizeForeignKeyConstraintError") {
+			return sendResponse(
+				res,
+				400,
+				"CASCADE DELETE REQUIRED",
+				"Cannot delete the product because it is linked to other records.",
+			);
+		}
 		return sendResponse(
 			res,
 			500,
