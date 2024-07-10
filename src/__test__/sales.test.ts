@@ -231,12 +231,12 @@ describe("SALE API TEST", () => {
 
 	it("should return 201 and added to cart successfully", async () => {
 		await database_models.Product.update(
-			{ isAvailable, price: 5 },
+			{ isAvailable, price: 500 },
 			{ where: { id: product_id } },
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id, quantity: 10 });
+			.send({ productId: product_id, quantity: 1 });
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Added to cart successfully");
 	});
@@ -257,14 +257,14 @@ describe("SALE API TEST", () => {
 		);
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id, quantity: 10 });
+			.send({ productId: product_id, quantity: 4 });
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Added to cart successfully");
 	});
 	it("should return 201 and added to cart successfully again", async () => {
 		const { body } = await Jest_request.post(`/api/v1/carts/`)
 			.set("Authorization", `Bearer ${token}`)
-			.send({ productId: product_id, quantity: 10 });
+			.send({ productId: product_id, quantity: 4 });
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Added to cart successfully");
 	});
