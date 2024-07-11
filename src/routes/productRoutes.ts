@@ -36,6 +36,12 @@ productRouter.get(
 	productController.read_single_product,
 );
 
+productRouter.post(
+	"/recommended",
+	userAuthentication.authenticateUser,
+	productController.getRecommendedProducts,
+);
+
 productRouter.patch(
 	"/:id",
 	userAuthentication.isSeller,

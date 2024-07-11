@@ -13,13 +13,16 @@ import {
 	search_product,
 	search_product_Not_found,
 	review_user,
+	new_buyer_user,
 	login_user,
 	review_user_login,
+	buyer_login,
 } from "../mock/static";
 import { generateAccessToken } from "../helpers/security.helpers";
 import { read_function } from "../utils/db_methods";
 import { response } from "express";
 import searchProduct from "../controllers/searchProduct";
+import { Console } from "node:console";
 
 jest.setTimeout(100000);
 
@@ -35,6 +38,7 @@ function logErrors(
 
 const Jest_request = request(app.use(logErrors));
 let seller_token: string;
+let buyer_token: string;
 let category_id: string;
 let product_id: any;
 describe("PRODUCT API TEST", () => {
@@ -56,6 +60,38 @@ describe("PRODUCT API TEST", () => {
 		expect(body.message).toStrictEqual(
 			"Account Created successfully, Please Verify your Account",
 		);
+	});
+
+	//buyer
+
+	it("should register a buyer and return 200", async () => {
+		const { body } = await Jest_request.post("/api/v1/users/register")
+			.send(new_buyer_user)
+			.expect(201);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual(
+			"Account Created successfully, Please Verify your Account",
+		);
+
+		buyer_token = body.data;
+	});
+
+	it("should successfully login a user and return 200", async () => {
+		await database_models.User.update(
+			{ isVerified: true },
+			{
+				where: { email: buyer_login.email },
+			},
+		);
+
+		const { body } = await Jest_request.post("/api/v1/users/login")
+			.send(buyer_login)
+			.expect(200);
+
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual("Login successfully!");
+
+		buyer_token = body.data;
 	});
 
 	it("should authenticate the user and return SUCCESS", async () => {
@@ -184,11 +220,10 @@ describe("PRODUCT API TEST", () => {
 		expect(body.message).toStrictEqual("Product not found or not owned!");
 	});
 
-	it("should fetch single and return 200", async () => {
+	it("should fetch single product and return 200", async () => {
 		const { body } = await Jest_request.get(`/api/v1/products/${product_id}`)
 			.set("Authorization", `Bearer ${seller_token}`)
 			.expect(200);
-
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Product fetched successfully!");
 		expect(body.data).toBeDefined();
@@ -317,6 +352,39 @@ describe("PRODUCT API TEST", () => {
 		expect(body.status).toStrictEqual("SUCCESS");
 		expect(body.message).toStrictEqual("Product status updated successfully!");
 		expect(body.data).toBeDefined();
+	});
+
+	//recommended
+
+	it("seller should get recommended product and return 200", async () => {
+		const { body } = await Jest_request.post(`/api/v1/products/recommended`)
+			.send({ id: `${product_id}` })
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(200);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual(
+			"Recommended Products fetched successfully!",
+		);
+	});
+
+	it("buyer should get recommended product and return 200", async () => {
+		const { body } = await Jest_request.post(`/api/v1/products/recommended`)
+			.send({ id: `${product_id}` })
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(200);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual(
+			"Recommended Products fetched successfully!",
+		);
+	});
+
+	it("should return 404 when product is not found to get recommended product", async () => {
+		const { body } = await Jest_request.post(`/api/v1/products/recommended`)
+			.send({ id: "97dcfe1e-0686-4876-808a-f3d3ec36c7ff" })
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(404);
+		expect(body.status).toStrictEqual("NOT FOUND");
+		expect(body.message).toStrictEqual("Product not found or not owned!");
 	});
 
 	it("it should return searched product with name only", async () => {

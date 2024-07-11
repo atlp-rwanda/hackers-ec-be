@@ -107,6 +107,36 @@ const read_products = {
 	},
 };
 
+const product_recommendations = {
+	tags: ["Products"],
+	security: [
+		{
+			bearerAuth: [],
+		},
+	],
+	summary: "Get product recommendations",
+	description: "Get product recommendations",
+	requestBody: {
+		required: true,
+		content: {
+			"application/json": {
+				schema: {
+					type: "object",
+					properties: {
+						id: {
+							type: "string",
+							description: "product Id",
+							required: true,
+							example: "12nvctyknbvnhg6teffhgfrtyuikmnb",
+						},
+					},
+				},
+			},
+		},
+	},
+	responses,
+};
+
 const update_product = {
 	tags: ["Products"],
 	security: [
@@ -261,6 +291,9 @@ export const products = {
 	},
 	"/api/v1/products/{id}": {
 		get: read_products["single"],
+	},
+	"/api/v1/products/recommended": {
+		post: product_recommendations,
 	},
 	"/api/v1/products/{id}/": {
 		patch: update_product,

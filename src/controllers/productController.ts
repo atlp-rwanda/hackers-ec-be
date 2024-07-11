@@ -13,6 +13,7 @@ import { insert_function, read_function } from "../utils/db_methods";
 import { category_utils } from "../utils/controller";
 import { Info, Message } from "../types/upload";
 import { isAvailable } from "../utils/nodeEvents";
+import { Op, OrderItem } from "sequelize";
 
 let product_id;
 const include = [
@@ -206,6 +207,7 @@ const read_single_product = async (req: Request, res: Response) => {
 					"Product not found or not owned!",
 				);
 			}
+
 			return sendResponse(
 				res,
 				200,
@@ -214,6 +216,57 @@ const read_single_product = async (req: Request, res: Response) => {
 				product,
 			);
 		}
+	} catch (error: unknown) {
+		return sendResponse(
+			res,
+			500,
+			"SERVER ERROR",
+			"Something went wrong!",
+			error as Error,
+		);
+	}
+};
+
+const getRecommendedProducts = async (req: Request, res: Response) => {
+	try {
+		const productId = req.body.id as string;
+		const product = await read_function<ProductAttributes>(
+			"Product",
+			"findOne",
+			{ where: { id: productId }, include },
+		);
+
+		if (!product) {
+			return sendResponse(
+				res,
+				404,
+				"NOT FOUND",
+				"Product not found or not owned!",
+			);
+		}
+
+		const condition = {
+			where: {
+				categoryId: product.categoryId,
+				isAvailable: true,
+				id: { [Op.ne]: productId },
+			},
+			include,
+			limit: 5,
+			order: [["createdAt", "DESC"]] as OrderItem[],
+		};
+		const recommended = await read_function<ProductAttributes>(
+			"Product",
+			"findAll",
+			condition,
+		);
+		return sendResponse(
+			res,
+			200,
+			"SUCCESS",
+			"Recommended Products fetched successfully!",
+			recommended,
+		);
 	} catch (error: unknown) {
 		return sendResponse(
 			res,
@@ -530,4 +583,5 @@ export default {
 	delete_product,
 	guest_read_all_products,
 	guest_read_single_product,
+	getRecommendedProducts,
 };
