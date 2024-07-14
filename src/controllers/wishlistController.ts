@@ -11,6 +11,7 @@ import {
 import { insert_function, read_function } from "../utils/db_methods";
 import { sendResponse } from "../utils/http.exception";
 import { EventName, myEmitter } from "../utils/nodeEvents";
+import { Category } from "../database/models/category";
 
 const include = [
 	{
@@ -104,7 +105,6 @@ export const createWishlist = async (req: Request, res: Response) => {
 	}
 };
 
-// Get all wishes
 export const getWishlist = async (req: Request, res: Response) => {
 	try {
 		let wishes;
@@ -128,15 +128,6 @@ export const getWishlist = async (req: Request, res: Response) => {
 				group: ["productId", "product.id"],
 			});
 
-			if (!wishedProduct || wishedProduct.length === 0) {
-				return sendResponse(
-					res,
-					404,
-					"NOT FOUND",
-					"No products found in wishlist",
-				);
-			}
-
 			return sendResponse(
 				res,
 				200,
@@ -147,17 +138,21 @@ export const getWishlist = async (req: Request, res: Response) => {
 		} else if (user?.role === "BUYER") {
 			wishes = await read_function<WishesAttributes>("wish", "findAll", {
 				where: { userId },
-				include,
+				include: [
+					{
+						model: Product,
+						as: "product",
+						attributes: { exclude: ["id"] },
+						include: [
+							{
+								model: Category,
+								as: "category",
+								attributes: { exclude: ["id"] },
+							},
+						],
+					},
+				],
 			});
-
-			if (Array.isArray(wishes) && wishes.length === 0) {
-				return sendResponse(
-					res,
-					404,
-					"NOT FOUND",
-					"No product found in the wishlist",
-				);
-			}
 
 			return sendResponse(
 				res,
