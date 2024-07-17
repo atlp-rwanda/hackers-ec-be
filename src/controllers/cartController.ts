@@ -3,12 +3,11 @@ import cartService from "../services/carts.services";
 
 import { ProductAttributes } from "../types/model";
 
-import { sendResponse } from "../utils/http.exception";
 import database_models from "../database/config/db.config";
-import { read_function } from "../utils/db_methods";
 import { ExpandedRequest } from "../middlewares/auth";
+import { read_function } from "../utils/db_methods";
+import { sendResponse } from "../utils/http.exception";
 import UserUtils from "../utils/users";
-import CartUtils from "../utils/cart.utils";
 
 const addItemToCart = async (req: ExpandedRequest, res: Response) => {
 	try {
@@ -26,6 +25,7 @@ const addItemToCart = async (req: ExpandedRequest, res: Response) => {
 		);
 
 		const newprice = product!.price * quantity;
+
 		const item = {
 			id: product!.id,
 			name: product!.name,
@@ -38,7 +38,7 @@ const addItemToCart = async (req: ExpandedRequest, res: Response) => {
 		const cart = await cartService.findCartByUserIdService(userid);
 
 		if (!cart) {
-			const newCart = await new database_models.Cart({
+			const newCart = new database_models.Cart({
 				products: [item],
 				userId: userid,
 				total: newprice,
@@ -46,26 +46,30 @@ const addItemToCart = async (req: ExpandedRequest, res: Response) => {
 			await newCart.save();
 			return sendResponse(res, 201, "SUCCESS", "added to cart successfully");
 		}
-		const itemExist = cart.products.findIndex((cItem) => cItem.id === item.id);
-		let removedProduct;
-		if (itemExist !== -1) {
-			removedProduct = cart.products.splice(itemExist, 1);
-		}
-		if (removedProduct) {
-			item.quantity += removedProduct[0].quantity;
-			item.totalPrice = item.quantity * item.price;
-		}
-		const updateCart = CartUtils.updateCart(cart, item);
 
-		await cartService.updateCartProductsAndTotalService(
-			updateCart.cart,
-			updateCart.newTotal,
+		const itemIndex = cart.products.findIndex((cItem) => cItem.id === item.id);
+
+		if (itemIndex !== -1) {
+			cart.products[itemIndex].quantity = item.quantity;
+			cart.products[itemIndex].totalPrice = item.totalPrice;
+		} else {
+			cart.products.push(item);
+		}
+
+		const newTotal = cart.products.reduce(
+			(acc, cItem) => acc + cItem.totalPrice,
+			0,
 		);
+		cart.total = newTotal;
+
+		await cartService.updateCartProductsAndTotalService(cart, newTotal);
+
 		return sendResponse(res, 201, "SUCCESS", "Added to cart successfully");
 	} catch (error) {
 		return sendResponse(res, 500, "ERROR", "Internal Server error");
 	}
 };
+
 const viewCart = async (req: ExpandedRequest, res: Response) => {
 	try {
 		const userId = UserUtils.getRequestUserId(req);
