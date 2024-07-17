@@ -2,6 +2,8 @@ import { Request } from "express";
 import { PaymentsModelAttributes, cartModelAttributes } from "./model";
 
 export type PaymentDetails = {
+	sessionId?: string;
+	orderId?: string;
 	payerId: string;
 	paymentMethod: string;
 	paymentId: string;

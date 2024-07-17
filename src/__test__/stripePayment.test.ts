@@ -285,6 +285,24 @@ describe("STRIPE PAYMENTS API TEST", () => {
 		);
 		expect(body.data.order).toBeDefined();
 	});
+	it("should return 200 when the order is successfully ordered", async () => {
+		const user = await database_models.User.findOne({
+			where: { email: NewUser.email },
+		});
+		const query = {
+			sessionId:
+				"cs_test_b1nkEgjxDOwll8JGLEnh7E4VYQK1SJOwX4347rR043VKOFwVT37HhA8FCX",
+			payerId: user?.id,
+		};
+		const { body } = await Jest_request.get(
+			`/api/v1/payments/success?sessionId=${query.sessionId}&payerId=${query.payerId}`,
+		).expect(200);
+		expect(body.status).toStrictEqual("SUCCESS");
+		expect(body.message).toStrictEqual(
+			"Products are successfully paid and ordered!",
+		);
+		expect(body.data.order).toBeDefined();
+	});
 
 	it("should return 500 when payment goes wrong!", async () => {
 		const { body } = await Jest_request.post("/api/v1/payments/cancel").expect(

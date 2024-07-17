@@ -1,8 +1,26 @@
 import { Request, Response } from "express";
+import { Order } from "../database/models/order";
+import { Product } from "../database/models/product";
+import { Sales } from "../database/models/sales";
 import { ExpandedRequest } from "../middlewares/auth";
 import { sendResponse } from "../utils/http.exception";
-import { Order } from "../database/models/order";
-import { Sales } from "../database/models/sales";
+
+const include = [
+	{
+		model: Sales,
+		as: "sales",
+		attributes: {
+			exclude: ["createdAt", "updatedAt", "orderId", "buyerId"],
+		},
+		include: [
+			{
+				model: Product,
+				as: "soldProducts",
+				attributes: ["name", "images", "price"],
+			},
+		],
+	},
+];
 
 const getOrders = async (req: Request, res: Response) => {
 	try {
@@ -11,7 +29,7 @@ const getOrders = async (req: Request, res: Response) => {
 
 		const orders = await Order.findAll({
 			where: { buyerId: userId },
-			include: [{ model: Sales, as: "sales" }],
+			include,
 		});
 
 		return sendResponse(
@@ -41,7 +59,7 @@ const getSingleOrder = async (req: Request, res: Response) => {
 
 		const order = await Order.findOne({
 			where: { id, buyerId: userId },
-			include: [{ model: Sales, as: "sales" }],
+			include,
 		});
 
 		if (!order) {

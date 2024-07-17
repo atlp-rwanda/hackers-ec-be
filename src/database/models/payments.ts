@@ -13,6 +13,8 @@ export class Payments extends Model<
 	public payerId!: string;
 	public paymentMethod!: string;
 	public paymentId!: string;
+	public sessionId!: string;
+	public orderId!: string;
 	public status!: string;
 	public phoneNumber!: string;
 
@@ -48,6 +50,14 @@ const paymemt_model = (sequelize: Sequelize) => {
 			paymentId: {
 				type: DataTypes.STRING,
 				allowNull: false,
+			},
+			sessionId: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			orderId: {
+				type: DataTypes.STRING,
+				allowNull: true,
 			},
 			status: {
 				type: DataTypes.STRING,
