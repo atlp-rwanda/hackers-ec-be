@@ -97,6 +97,12 @@ export const new_buyer_user = {
 	password: "passwordQWE123",
 	confirmPassword: "passwordQWE123",
 };
+
+export const buyer_login = {
+	email: "mark234565@gmail.com",
+	password: "passwordQWE123",
+};
+
 export const new_seller_user = {
 	userName: "peter",
 	firstName: "peter",
