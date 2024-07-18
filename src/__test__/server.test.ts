@@ -317,4 +317,14 @@ describe("SERVER API TEST", () => {
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
 	});
+
+	it("should return 500 when something went wrong in getting recommended products", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.post(`/api/v1/products/recommended`)
+			.send({ id: "97dcfe1e-0686-4876-808a-f3d3ec36c7ff" })
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
 });
