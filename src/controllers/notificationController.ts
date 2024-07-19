@@ -137,7 +137,7 @@ export const mark_all_as_read = async (req: Request, res: Response) => {
 		const user = (req as any).user;
 		const userId = user?.id;
 
-		const condition = { where: { userId } };
+		const condition = { where: { userId, unread: true } };
 
 		const notifications: NotificationAttributes[] = await read_function<
 			NotificationAttributes[]
