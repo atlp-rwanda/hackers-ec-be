@@ -16,7 +16,7 @@ module.exports = {
 				},
 				{
 					id: uuidv4(),
-					senderId: "7221d946-7265-45a1-9ce3-3da1789e657e",
+					senderId: "1001d946-7265-45a1-9ce3-3da1789e100a",
 					message: "Sample message 2",
 					createdAt: new Date(),
 					updatedAt: new Date(),
