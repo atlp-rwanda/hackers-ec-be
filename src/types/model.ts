@@ -219,6 +219,8 @@ export interface PaymentsModelAttributes {
 	payerId: string;
 	paymentMethod: string;
 	paymentId: string;
+	sessionId: string;
+	orderId: string;
 	status: string;
 	phoneNumber: string;
 }

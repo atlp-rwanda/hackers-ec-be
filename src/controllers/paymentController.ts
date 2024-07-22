@@ -6,8 +6,10 @@ import { ExpandedRequest } from "../middlewares/auth";
 import cartService from "../services/carts.services";
 import {
 	getOrCreateStripeCustomer,
+	getPaymentBySession,
 	lineCartItems,
 	orderItems,
+	readOrderById,
 	recordPaymentDetails,
 } from "../services/payment.services";
 import {
@@ -24,7 +26,7 @@ import {
 import { insert_function, read_function } from "../utils/db_methods";
 import { sendResponse } from "../utils/http.exception";
 import {
-	DEPLOYED_URL,
+	BASE_URL,
 	MTN_MOMO_REQUEST_PAYMENT_URL,
 	MTN_MOMO_SUBSCRIPTION_KEY,
 	MTN_MOMO_TARGET_ENVIRONMENT,
@@ -55,8 +57,8 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 				payment_method_types: ["card"],
 				billing_address_collection: "auto",
 				customer: customer.id,
-				success_url: `${DEPLOYED_URL}/api/v1/payments/success?sessionId={CHECKOUT_SESSION_ID}&payerId=${user.id}`,
-				cancel_url: `${DEPLOYED_URL}/api/v1/payments/cancel`,
+				success_url: `${BASE_URL}/payments/success?sessionId={CHECKOUT_SESSION_ID}&payerId=${user.id}`,
+				cancel_url: `${BASE_URL}/api/v1/payments/cancel`,
 			});
 			return sendResponse(
 				res,
@@ -146,23 +148,32 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 
 const checkout_success = async (req: Request, res: Response) => {
 	try {
+		let order;
 		const { sessionId, payerId } = req.query as {
 			sessionId: string;
 			payerId: string;
 		};
 		const session = await stripe.checkout.sessions.retrieve(sessionId);
 		const paymentId = session.payment_intent as string;
-		const paymentDetails: PaymentDetails = {
-			payerId,
-			paymentMethod: "stripe",
-			paymentId,
-		};
 		const cart = (await cartService.findCartByUserIdService(
 			payerId,
 		)) as cartModelAttributes;
+
 		if (session.payment_status === "paid") {
-			await recordPaymentDetails(paymentDetails);
-			const order = await orderItems(cart);
+			const sessionById: PaymentDetails = await getPaymentBySession(session.id);
+			if (!sessionById) {
+				order = await orderItems(cart);
+				const paymentDetails: PaymentDetails = {
+					payerId,
+					paymentMethod: "stripe",
+					paymentId,
+					orderId: order.id,
+					sessionId: session.id,
+				};
+				await recordPaymentDetails(paymentDetails);
+			} else {
+				order = await readOrderById(sessionById.orderId!);
+			}
 			return sendResponse(
 				res,
 				200,

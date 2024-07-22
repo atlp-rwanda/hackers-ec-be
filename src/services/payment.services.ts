@@ -4,6 +4,7 @@ import { Product } from "../database/models/product";
 import { Sales } from "../database/models/sales";
 import { cartItem } from "../types/cart";
 import {
+	OrderCreationAttributes,
 	OrderModelAttributes,
 	PaymentsModelAttributes,
 	UserModelAttributes,
@@ -67,6 +68,11 @@ export const lineCartItems = (cart: cartModelAttributes) => {
 	}
 	return line_items;
 };
+export const getPaymentBySession = async (sessionId: string) => {
+	return await read_function<PaymentDetails>("Payments", "findOne", {
+		where: { sessionId },
+	});
+};
 
 export const recordPaymentDetails = async (paymentDetails: PaymentDetails) => {
 	const paymantDetails = await insert_function<PaymentsModelAttributes>(
@@ -78,6 +84,11 @@ export const recordPaymentDetails = async (paymentDetails: PaymentDetails) => {
 		throw new Error("Error while recording payment details!");
 	}
 	return paymantDetails;
+};
+export const readOrderById = async (orderId: string) => {
+	return await read_function<OrderCreationAttributes>("Order", "findOne", {
+		where: { id: orderId },
+	});
 };
 
 export const orderItems = async (cart: cartModelAttributes) => {
