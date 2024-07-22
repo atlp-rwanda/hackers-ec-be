@@ -196,7 +196,6 @@ describe("SERVER API TEST", () => {
 
 	it("should return 500 when something went wrong on getting all sales", async () => {
 		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
-
 		const { body } = await Jest_request.get(`/api/v1/sales`)
 			.set("Authorization", `Bearer ${seller_token}`)
 			.expect(500);
@@ -322,6 +321,15 @@ describe("SERVER API TEST", () => {
 		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 		const { body } = await Jest_request.post(`/api/v1/products/recommended`)
 			.send({ id: "97dcfe1e-0686-4876-808a-f3d3ec36c7ff" })
+			.set("Authorization", `Bearer ${buyer_token}`)
+			.expect(500);
+			expect(body.status).toStrictEqual("SERVER ERROR");
+			expect(body.message).toBe("Something went wrong!");
+		});
+
+	it("should return 500 when something went wrong on getting all sales", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.get(`/api/v1/wishes`)
 			.set("Authorization", `Bearer ${buyer_token}`)
 			.expect(500);
 		expect(body.status).toStrictEqual("SERVER ERROR");

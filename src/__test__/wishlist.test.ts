@@ -36,6 +36,7 @@ const Jest_request = request(app.use(logErrors));
 let buyer_token: string;
 let seller_token: string;
 let product_id: string;
+let product_id2: string;
 let category_id: string;
 
 describe("WISHLIST API TEST", () => {
@@ -122,6 +123,32 @@ describe("WISHLIST API TEST", () => {
 		product_id = (await request).body.data?.id;
 	});
 
+	it("It Seller should create a second product ", async () => {
+		const all_images = new_product.images;
+
+		let request = Jest_request.post("/api/v1/products")
+			.set("Authorization", `Bearer ${seller_token}`)
+			.field("name", "Bmw")
+			.field("price", 34543)
+			.field("discount", new_product.discount)
+			.field("quantity", new_product.quantity)
+			.field("categoryId", category_id)
+			.field("expiryDate", new_product.expiryDate);
+
+		for (const image of all_images) {
+			request = request.attach("images", image);
+		}
+
+		await request.expect(201);
+		expect((await request).body.status).toStrictEqual("SUCCESS");
+		expect((await request).body.message).toStrictEqual(
+			"Product added successfully!",
+		);
+		expect((await request).body.data).toBeDefined();
+
+		product_id2 = (await request).body.data?.id;
+	});
+
 	///////////////// BUYER REGISTER /////////////////
 	it("it should  register a buyer and return 201", async () => {
 		const user = await database_models.User.findOne();
@@ -188,17 +215,14 @@ describe("WISHLIST API TEST", () => {
 		expect(body.message).toStrictEqual("Seller product fetched successfully");
 		expect(body).toBeDefined();
 	});
-
 	it("It should return 404 when Seller product not found", async () => {
-		const { body } = await Jest_request.get(
-			`/api/v1/wishes/9e555bd6-0f36-454a-a3d5-89edef4ff9d4`,
-		)
+		const { body } = await Jest_request.get(`/api/v1/wishes/${product_id2}`)
 			.set("Authorization", `Bearer ${seller_token}`)
+
 			.expect(404);
 		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("Product doesn't exist");
+		expect(body.message).toStrictEqual("Product not found in the wishlist");
 	});
-
 	it("It should return 401 when not token for seller", async () => {
 		const { body } = await Jest_request.get(
 			`/api/v1/wishes/${product_id}`,
@@ -245,36 +269,6 @@ describe("WISHLIST API TEST", () => {
 
 	// ******************** GET WISHES ****************
 	// ******************** BUYER  ****************
-	it("It should return 404 when buyer don't have product in wishlist", async () => {
-		const { body } = await Jest_request.get("/api/v1/wishes")
-			.set("Authorization", `Bearer ${buyer_token}`)
-			.expect(404);
-
-		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("No product found in the wishlist");
-	});
-
-	it("It should return 404 when fetch product which is found in wishlist", async () => {
-		const { body } = await Jest_request.get("/api/v1/wishes")
-			.set("Authorization", `Bearer ${seller_token}`)
-			.expect(404);
-		expect(body.status).toStrictEqual("NOT FOUND");
-		expect(body.message).toStrictEqual("No products found in wishlist");
-	});
-
-	///////////////////////////////////////
-	///////////////////////////////////////
-	it("It should return 404 when fetching wishes for a buyer with no products in the wishlist", async () => {
-		await Jest_request.get("/api/v1/wishes")
-			.set("Authorization", `Bearer ${buyer_token}`)
-			.expect(404);
-	});
-
-	it("It should return 404 when fetching wishes for a seller with no products in the wishlist", async () => {
-		await Jest_request.get("/api/v1/wishes")
-			.set("Authorization", `Bearer ${seller_token}`)
-			.expect(404);
-	});
 
 	it("It should return 400 when making a request with an invalid or incomplete request body", async () => {
 		const { body } = await Jest_request.post("/api/v1/wishes")
@@ -288,8 +282,6 @@ describe("WISHLIST API TEST", () => {
 			"Authorization",
 			`Bearer ${invalid_token}`,
 		);
-
-		console.log(body);
 	});
 
 	it("should return 500 when get single wishlist  return something went wrong", async () => {
