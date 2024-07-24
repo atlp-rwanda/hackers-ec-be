@@ -14,6 +14,7 @@ import { statisticsRouter } from "./statisticsRoutes";
 
 import reviewRouter from "./review.routes";
 import notificationRouter from "./notificationsRoutes";
+import { AdminstatisticsRouter } from "./adminStatsRoute";
 const router = express.Router();
 
 router.use("/users", userRoutes);
@@ -30,5 +31,6 @@ router.use("/reviews", reviewRouter);
 router.use("/orders", orderRoutes);
 router.use("/sales", salesRoutes);
 router.use("/notifications", notificationRouter);
+router.use("/", AdminstatisticsRouter);
 
 export default router;
