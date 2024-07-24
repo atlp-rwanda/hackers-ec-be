@@ -52,7 +52,7 @@ export const config = (server: http.Server) => {
 			socket.emit("chat messages", messages);
 
 			const unreadNotifications = await DBNotification.findAll({
-				where: { userId, unread: true },
+				where: { userId },
 			});
 
 			socket.emit("notifications", unreadNotifications);
