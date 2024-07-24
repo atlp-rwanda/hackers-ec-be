@@ -24,12 +24,14 @@ const addItemToCart = async (req: ExpandedRequest, res: Response) => {
 			condition,
 		);
 
-		const newprice = product!.price * quantity;
+		const newprice =
+			(product!.price - (product?.price * product?.discount) / 100) * quantity;
 
 		const item = {
 			id: product!.id,
 			name: product!.name,
 			image: product!.images[0],
+			discount: product?.discount,
 			quantity: quantity,
 			price: product!.price,
 			totalPrice: newprice,

@@ -395,4 +395,23 @@ describe("CART API TEST", () => {
 			"Cannot delete the product because it is linked to other records.",
 		);
 	});
+
+	it("should return 500 when adding to cart", async () => {
+		await database_models.Product.update(
+			{ isAvailable },
+			{ where: { id: product_id } },
+		);
+
+		jest
+			.spyOn(cartService, "findCartByUserIdService")
+			.mockImplementationOnce(() => {
+				throw new Error("Internal server error");
+			});
+
+		const { body } = await Jest_request.post(`/api/v1/carts/`)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ productId: product_id, quantity: 10 });
+		expect(body.status).toStrictEqual("ERROR");
+		expect(body.message).toStrictEqual("Internal Server error");
+	});
 });

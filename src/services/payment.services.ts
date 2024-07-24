@@ -60,7 +60,9 @@ export const lineCartItems = (cart: cartModelAttributes) => {
 					name: product.name,
 					images: [product.image],
 				},
-				unit_amount: Math.floor(product.price),
+				unit_amount: Math.floor(
+					product.price - (product.price * product.discount) / 100,
+				),
 			},
 			quantity: product.quantity,
 		};
@@ -125,7 +127,7 @@ export const orderItems = async (cart: cartModelAttributes) => {
 					{
 						model: Product,
 						as: "soldProducts",
-						attributes: ["name", "price", "images", "isAvailable"],
+						attributes: ["name", "price", "images", "isAvailable", "discount"],
 					},
 				],
 			},

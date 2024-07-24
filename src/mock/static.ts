@@ -189,7 +189,7 @@ export const new_product = {
 	name: "BMW",
 	price: 49900,
 	images: [image_one_path, image_two_path, image_three_path, image_four_path],
-	discount: 100,
+	discount: 10,
 	quantity: 356,
 	expiryDate: "2324-04-30T00:00:00.000Z",
 };

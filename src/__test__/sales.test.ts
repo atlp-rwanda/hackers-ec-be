@@ -381,6 +381,17 @@ describe("SALE API TEST", () => {
 		expect(body.message).toStrictEqual("Sale not found");
 	});
 
+	it(" should return 404 when find a single sale", async () => {
+		const { body } = await Jest_request.get(
+			"/api/v1/sales/9e555bd6-0f36-454a-a3d5-89edef4ff9d1",
+		)
+			.set("Authorization", `Bearer ${seller_token}`)
+			.expect(404);
+
+		expect(body.status).toStrictEqual("NOT FOUND");
+		expect(body.message).toStrictEqual("Sale not found");
+	});
+
 	it("should return error when status value is neither cancelled, delivered nor pending", async () => {
 		const { body } = await Jest_request.patch(`/api/v1/sales/${sale_id}/status`)
 			.set("Authorization", `Bearer ${seller_token}`)
