@@ -16,7 +16,7 @@ const include = [
 			{
 				model: Product,
 				as: "soldProducts",
-				attributes: ["name", "images", "price"],
+				attributes: ["name", "images", "price", "discount"],
 			},
 		],
 	},
