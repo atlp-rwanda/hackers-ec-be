@@ -284,3 +284,12 @@ export interface salesModelAttributes {
 	createdAt?: Date;
 	updatedAt?: Date;
 }
+
+export interface querriesModelAttributes {
+	id?: string;
+	firstName: string;
+	lastName: string;
+	subject: string;
+	email: string;
+	message: string;
+}

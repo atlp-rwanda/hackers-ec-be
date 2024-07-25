@@ -11,10 +11,11 @@ import wishesRouter from "./wishesRoutes";
 import cartRouter from "./cartRoutes";
 import paymentRouter from "./paymentsRoutes";
 import { statisticsRouter } from "./statisticsRoutes";
-
 import reviewRouter from "./review.routes";
 import notificationRouter from "./notificationsRoutes";
 import { AdminstatisticsRouter } from "./adminStatsRoute";
+import querryRouter from "./querryRoutes";
+
 const router = express.Router();
 
 router.use("/users", userRoutes);
@@ -32,5 +33,6 @@ router.use("/orders", orderRoutes);
 router.use("/sales", salesRoutes);
 router.use("/notifications", notificationRouter);
 router.use("/", AdminstatisticsRouter);
+router.use("/querries", querryRouter);
 
 export default router;
