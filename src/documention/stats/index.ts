@@ -17,4 +17,7 @@ export const stats = {
 	"/api/v1/stats": {
 		get: read_statistics,
 	},
+	"/api/v1/admin/stats": {
+		get: read_statistics,
+	},
 };
