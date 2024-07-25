@@ -32,6 +32,7 @@ import {
 	MTN_MOMO_TARGET_ENVIRONMENT,
 } from "../utils/keys";
 import { getToken } from "../utils/momoMethods";
+import { findUserById } from "../services/user.services";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 	apiVersion: "2024-04-10",
@@ -158,6 +159,10 @@ const checkout_success = async (req: Request, res: Response) => {
 		const cart = (await cartService.findCartByUserIdService(
 			payerId,
 		)) as cartModelAttributes;
+		const user = await findUserById(payerId);
+		if (!user || !user.email) {
+			throw new Error("User email not found");
+		}
 
 		if (session.payment_status === "paid") {
 			const sessionById: PaymentDetails = await getPaymentBySession(session.id);
@@ -170,10 +175,12 @@ const checkout_success = async (req: Request, res: Response) => {
 					orderId: order.id,
 					sessionId: session.id,
 				};
+
 				await recordPaymentDetails(paymentDetails);
 			} else {
 				order = await readOrderById(sessionById.orderId!);
 			}
+
 			return sendResponse(
 				res,
 				200,

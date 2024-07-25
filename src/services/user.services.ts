@@ -13,3 +13,10 @@ export const findAllUsers = async () => {
 		await read_function<UserModelAttributes>("User", "findAll"),
 	);
 };
+export const findUserById = async (
+	id: string,
+): Promise<UserModelAttributes | null> => {
+	return await database_models.User.findOne({
+		where: { id },
+	});
+};

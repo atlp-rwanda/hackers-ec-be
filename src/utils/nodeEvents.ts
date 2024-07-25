@@ -12,6 +12,7 @@ export const EventName = {
 	ORDER_PENDING: "ORDER_PENDING",
 	ORDERS_DELIVERED: "ORDERS_DELIVERED",
 	ORDERS_CANCELED: "ORDERS_CANCELED",
+	ORDERS_COMPLETED: "ORDERS_COMPLETED",
 };
 
 export const notificationPage = async (req: Request, res: Response) => {
