@@ -335,4 +335,38 @@ describe("SERVER API TEST", () => {
 		expect(body.status).toStrictEqual("SERVER ERROR");
 		expect(body.message).toBe("Something went wrong!");
 	});
+
+	//===============================Querries======================
+	it("should return 500 when something went wrong on creating a querry", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.post(`/api/v1/querries`)
+			.send({
+				firstName: "john",
+				lastName: "doe",
+				subject: "Biiter",
+				email: "example@gmail.com",
+				message: "I hated this app",
+			})
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on getting all querries", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.get(`/api/v1/querries`)
+			.set("Authorization", `Bearer ${token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
+
+	it("should return 500 when something went wrong on getting a single querry", async () => {
+		(read_function as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+		const { body } = await Jest_request.get(`/api/v1/querries/{id}`)
+			.set("Authorization", `Bearer ${token}`)
+			.expect(500);
+		expect(body.status).toStrictEqual("SERVER ERROR");
+		expect(body.message).toBe("Something went wrong!");
+	});
 });
