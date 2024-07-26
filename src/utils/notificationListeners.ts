@@ -6,6 +6,8 @@ import { Notification as DBNotification } from "../database/models/notification"
 import { emitNotification } from "./socket.util";
 import { OrderModelAttributes } from "../types/model";
 import HTML_TEMPLATE from "./mail-template";
+import { cartItem } from "../types/cart";
+import generateInvoicePdf from "./generateInvoicePdf";
 
 export const myEventListener = () => {
 	myEmitter.on(
@@ -290,6 +292,62 @@ export const myEventListener = () => {
 			emitNotification([buyerNotificationRecord]);
 
 			await Promise.all([sendEmail(emailingData)]);
+		},
+	);
+	myEmitter.on(
+		EventName.ORDERS_COMPLETED,
+		async (order: OrderModelAttributes, products: cartItem[]) => {
+			try {
+				const buyerId = order?.buyerId;
+				const buyer = await User.findOne({ where: { id: buyerId } });
+
+				if (!buyer) {
+					console.log("Buyer not found");
+					return;
+				}
+
+				const notifications = [];
+
+				const invoiceData = {
+					products: products,
+					clientAddress: buyer,
+					companyAddress: "Kigali, Rwanda",
+					logoUrl: "https://i.imghippo.com/files/8YpmR1721977307.png",
+				};
+				const invoicePdf = await generateInvoicePdf(invoiceData);
+
+				const buyerNotification = {
+					userId: buyerId,
+					message:
+						"Your order has been placed successfully. You can now track your order!",
+					unread: true,
+				};
+
+				const buyerNotificationRecord =
+					await DBNotification.create(buyerNotification);
+				notifications.push(buyerNotificationRecord);
+
+				emitNotification(notifications);
+
+				const buyerEmail = {
+					to: buyer.email,
+					subject: "Order Confirmation",
+					html: HTML_TEMPLATE(
+						`Dear ${buyer.firstName}, Thank you for your purchase! Your order has been successfully placed and is now being processed. You will receive a confirmation email with your order details shortly. We appreciate your business and are excited to deliver your items soon. If you have any questions or need further assistance, please feel free to contact our customer support. Happy shopping!`,
+						"Order Confirmation",
+					),
+					attachments: [
+						{
+							filename: "invoice.pdf",
+							content: invoicePdf,
+						},
+					],
+				};
+
+				await sendEmail(buyerEmail);
+			} catch (error) {
+				console.error("Error processing order pending event:", error);
+			}
 		},
 	);
 };

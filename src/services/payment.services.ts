@@ -112,10 +112,15 @@ export const orderItems = async (cart: cartModelAttributes) => {
 		await insert_function<salesModelAttributes>("Sales", "create", sale_data);
 		myEmitter.emit(EventName.PRRODUCT_BOUGHT, product.id, order);
 	}
+
+	// Emit ORDERS_COMPLETED event only once per order
+	myEmitter.emit(EventName.ORDERS_COMPLETED, order, cart.products);
+
 	await database_models.Cart.update(
 		{ products: [], total: 0 },
 		{ where: { id: cart.id } },
 	);
+
 	return await read_function<OrderModelAttributes>("Order", "findOne", {
 		where: { id: order.id },
 		include: [
