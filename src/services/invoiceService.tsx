@@ -121,10 +121,20 @@ const InvoiceDocument: React.FC<{ data: InvoiceData }> = ({ data }) => (
 							<Image style={styles.productImage} src={product.image} />
 						</View>
 						<Text style={styles.tableCell}>{product.name}</Text>
-						<Text style={styles.tableCell}>{product.price.toFixed(2)} Rwf</Text>
+						<Text style={styles.tableCell}>
+							{(
+								product.price -
+								(product.price * product.discount) / 100
+							).toFixed(2)}{" "}
+							Rwf
+						</Text>
 						<Text style={styles.tableCell}>{product.quantity}</Text>
 						<Text style={styles.tableCell}>
-							{(product.price * product.quantity).toFixed(2)} Rwf
+							{(
+								(product.price - (product.price * product.discount) / 100) *
+								product.quantity
+							).toFixed(2)}{" "}
+							Rwf
 						</Text>
 					</View>
 				))}
@@ -135,7 +145,11 @@ const InvoiceDocument: React.FC<{ data: InvoiceData }> = ({ data }) => (
 				<Text style={styles.totalText}>Total:</Text>
 				<Text style={styles.totalAmount}>
 					{data.products
-						.reduce((sum, product) => sum + product.price * product.quantity, 0)
+						.reduce((sum, product) => {
+							const discountedPrice =
+								product.price - (product.price * product.discount) / 100;
+							return sum + discountedPrice * product.quantity;
+						}, 0)
 						.toFixed(2)}{" "}
 					Rwf
 				</Text>
