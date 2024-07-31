@@ -108,7 +108,6 @@ const register_login = {
 		responses,
 	},
 };
-
 const get_users = {
 	users: {
 		tags: ["User"],
@@ -118,6 +117,18 @@ const get_users = {
 			},
 		],
 		summary: "get all users",
+		parameters: [
+			{
+				name: "search",
+				in: "query",
+				description: "email of user",
+			},
+			{
+				name: "page",
+				in: "query",
+				description: "current page",
+			},
+		],
 		consumes: ["application/json"],
 		responses,
 	},

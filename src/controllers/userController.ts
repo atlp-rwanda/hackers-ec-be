@@ -24,6 +24,7 @@ import { HttpException, sendResponse } from "../utils/http.exception";
 import { ACCESS_TOKEN_SECRET, BASE_URL } from "../utils/keys";
 import HTML_TEMPLATE from "../utils/mail-template";
 import { validateToken } from "../utils/token.validation";
+import { Op } from "sequelize";
 
 const registerUser = async (
 	req: Request,
@@ -560,7 +561,28 @@ export const accountStatus = async (req: Request, res: Response) => {
 
 export const allUsers = async (req: Request, res: Response) => {
 	try {
-		if (req.body) {
+		if (req.query.page || req.query.search) {
+			const page = parseInt(req.query.page as string) || 1;
+			const limit = 7;
+			const search = req.query.search || "";
+			const offset = (page - 1) * limit;
+			const { count, rows: users } = await User.findAndCountAll({
+				where: {
+					email: {
+						[Op.iLike]: `%${search}%`,
+					},
+				},
+				limit,
+				offset,
+			});
+			const totalPages = Math.ceil(count / limit);
+			return sendResponse(res, 200, "SUCCESS", "Here is a list of users", {
+				users,
+				totalPages,
+				currentPage: page,
+				offset,
+			});
+		} else {
 			const users = await read_function<UserModelAttributes>("User", "findAll");
 			return sendResponse(
 				res,
